@@ -4,10 +4,11 @@
 #   - no real upside due to lack of architecture-specific definitions
 #   - rust-bindgen carries many dependencies (including libclang)
 #   - updating manually prevents bugs
-${BINDGEN:-bindgen} --use-core --no-layout-tests gr/lib/gks/gks.h -o src/gks/bindings/gks.rs
-${BINDGEN:-bindgen} --use-core --no-layout-tests --blocklist-type 'size_t' gr/lib/gks/gkscore.h -o src/gks/bindings/gkscore.rs
+${BINDGEN:-bindgen} --use-core --default-macro-constant-type signed --no-layout-tests gr/lib/gks/gks.h -o src/gks/bindings/gks.rs
+${BINDGEN:-bindgen} --use-core --default-macro-constant-type signed --no-layout-tests --blocklist-type 'size_t' gr/lib/gks/gkscore.h -o src/gks/bindings/gkscore.rs
 
 cat <<- EOF >> src/gks/bindings/gks.rs
+	pub const GKS_K_CONID_DEFAULT: *mut ::core::ffi::c_char = ::core::ptr::null_mut();
 	pub unsafe fn gsetlinecolorind(x: Gint) -> ::core::ffi::c_int { gsetlinecolourind(x) }
 	pub unsafe fn gsetmarkercolorind(x: Gint) -> ::core::ffi::c_int { gsetmarkercolourind(x) }
 	pub unsafe fn gsettextcolorind(x: Gint) -> ::core::ffi::c_int { gsettextcolourind(x) }
@@ -19,5 +20,5 @@ cat <<- EOF >> src/gks/bindings/gks.rs
 EOF
 cat <<- EOF >> src/gks/bindings/gkscore.rs
 	#[allow(non_snake_case)]
-	pub fn FIX_COLORIND(c: u32) -> u32 { if c < MAX_COLOR { c } else { MAX_COLOR - 1 } }
+	pub fn FIX_COLORIND(c: ::core::ffi::c_int) -> ::core::ffi::c_int { if c < MAX_COLOR { c } else { MAX_COLOR - 1 } }
 EOF
