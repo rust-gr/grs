@@ -1258,3 +1258,11 @@ extern "C" {
 extern "C" {
     pub fn gemergencyclosegks() -> ::core::ffi::c_int;
 }
+pub unsafe fn gsetlinecolorind(x: Gint) -> ::core::ffi::c_int { gsetlinecolourind(x) }
+pub unsafe fn gsetmarkercolorind(x: Gint) -> ::core::ffi::c_int { gsetmarkercolourind(x) }
+pub unsafe fn gsettextcolorind(x: Gint) -> ::core::ffi::c_int { gsettextcolourind(x) }
+pub unsafe fn gsetfillcolorind(x: Gint) -> ::core::ffi::c_int { gsetfillcolourind(x) }
+pub unsafe fn gsetcolorrep(x: Gint, y: Gint, p: *mut Gcobundl) -> ::core::ffi::c_int { gsetcolourrep(x, y, p) }
+pub unsafe fn ginqlinecolorind(a: *mut Gint, b: *mut Gint) -> ::core::ffi::c_int { ginqlinecolourind(a, b) }
+pub unsafe fn ginqtextcolorind(a: *mut Gint, b: *mut Gint) -> ::core::ffi::c_int { ginqtextcolourind(a, b) }
+pub unsafe fn ginqmarkercolorind(a: *mut Gint, b: *mut Gint) -> ::core::ffi::c_int { ginqmarkercolourind(a, b) }

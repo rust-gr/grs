@@ -151,14 +151,6 @@ pub struct gks_state_list_t {
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
-pub struct gks_list {
-    pub item: ::core::ffi::c_int,
-    pub next: *mut gks_list,
-    pub ptr: *mut ::core::ffi::c_void,
-}
-pub type gks_list_t = gks_list;
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
 pub struct ws_list_t {
     pub wkid: ::core::ffi::c_int,
     pub path: *mut ::core::ffi::c_char,
@@ -194,19 +186,6 @@ pub struct gks_display_list_t {
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
-pub struct stroke_data_t {
-    pub left: ::core::ffi::c_int,
-    pub right: ::core::ffi::c_int,
-    pub size: ::core::ffi::c_int,
-    pub bottom: ::core::ffi::c_int,
-    pub base: ::core::ffi::c_int,
-    pub cap: ::core::ffi::c_int,
-    pub top: ::core::ffi::c_int,
-    pub length: ::core::ffi::c_int,
-    pub coord: [[::core::ffi::c_int; 2usize]; 124usize],
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
 pub struct gks_ws_state_t {
     pub width: ::core::ffi::c_int,
     pub height: ::core::ffi::c_int,
@@ -218,28 +197,6 @@ pub struct gks_locator_t {
     pub x: f64,
     pub y: f64,
     pub status: ::core::ffi::c_int,
-}
-extern "C" {
-    pub fn gks_open_font() -> ::core::ffi::c_int;
-}
-extern "C" {
-    pub fn gks_lookup_font(
-        fd: ::core::ffi::c_int,
-        version: ::core::ffi::c_int,
-        font: ::core::ffi::c_int,
-        chr: ::core::ffi::c_int,
-        buffer: *mut stroke_data_t,
-    );
-}
-extern "C" {
-    pub fn gks_close_font(fd: ::core::ffi::c_int);
-}
-extern "C" {
-    pub fn gks_lookup_afm(
-        font: ::core::ffi::c_int,
-        chr: ::core::ffi::c_int,
-        buffer: *mut stroke_data_t,
-    );
 }
 extern "C" {
     pub fn gks_malloc(size: ::core::ffi::c_int) -> *mut ::core::ffi::c_char;
@@ -260,15 +217,6 @@ extern "C" {
     pub fn gks_perror(arg1: *const ::core::ffi::c_char, ...);
 }
 extern "C" {
-    pub fn gks_fatal_error(arg1: *const ::core::ffi::c_char, ...);
-}
-extern "C" {
-    pub fn gks_function_name(routine: ::core::ffi::c_int) -> *const ::core::ffi::c_char;
-}
-extern "C" {
-    pub fn gks_report_error(routine: ::core::ffi::c_int, errnum: ::core::ffi::c_int);
-}
-extern "C" {
     pub fn gks_resample(
         source_image: *const ::core::ffi::c_uchar,
         target_image: *mut ::core::ffi::c_uchar,
@@ -283,233 +231,7 @@ extern "C" {
     );
 }
 extern "C" {
-    pub fn gks_init_core(list: *mut gks_state_list_t);
-}
-extern "C" {
-    pub fn gks_list_find(list: *mut gks_list_t, element: ::core::ffi::c_int) -> *mut gks_list_t;
-}
-extern "C" {
-    pub fn gks_list_add(
-        list: *mut gks_list_t,
-        element: ::core::ffi::c_int,
-        ptr: *mut ::core::ffi::c_void,
-    ) -> *mut gks_list_t;
-}
-extern "C" {
-    pub fn gks_list_del(list: *mut gks_list_t, element: ::core::ffi::c_int) -> *mut gks_list_t;
-}
-extern "C" {
-    pub fn gks_list_free(list: *mut gks_list_t);
-}
-extern "C" {
-    pub fn gks_inq_pattern_array(index: ::core::ffi::c_int, pa: *mut ::core::ffi::c_int);
-}
-extern "C" {
-    pub fn gks_set_pattern_array(index: ::core::ffi::c_int, pa: *mut ::core::ffi::c_int);
-}
-extern "C" {
-    pub fn gks_inq_rgb(index: ::core::ffi::c_int, red: *mut f64, green: *mut f64, blue: *mut f64);
-}
-extern "C" {
-    pub fn gks_set_rgb(index: ::core::ffi::c_int, red: f64, green: f64, blue: f64);
-}
-extern "C" {
-    pub fn gks_inq_pixel(index: ::core::ffi::c_int, pixel: *mut ::core::ffi::c_int);
-}
-extern "C" {
-    pub fn gks_set_pixel(index: ::core::ffi::c_int, pixel: ::core::ffi::c_int);
-}
-extern "C" {
-    pub fn gks_fit_ws_viewport(viewport: *mut f64, xmax: f64, ymax: f64, margin: f64);
-}
-extern "C" {
-    pub fn gks_set_norm_xform(tnr: ::core::ffi::c_int, window: *mut f64, viewport: *mut f64);
-}
-extern "C" {
-    pub fn gks_set_xform_matrix(tran: *mut [f64; 2usize]);
-}
-extern "C" {
-    pub fn gks_seg_xform(x: *mut f64, y: *mut f64);
-}
-extern "C" {
-    pub fn gks_WC_to_NDC(tnr: ::core::ffi::c_int, x: *mut f64, y: *mut f64);
-}
-extern "C" {
-    pub fn gks_NDC_to_WC(tnr: ::core::ffi::c_int, x: *mut f64, y: *mut f64);
-}
-extern "C" {
-    pub fn gks_set_dev_xform(s: *mut gks_state_list_t, window: *mut f64, viewport: *mut f64);
-}
-extern "C" {
-    pub fn gks_inq_dev_xform(window: *mut f64, viewport: *mut f64);
-}
-extern "C" {
-    pub fn gks_set_chr_xform();
-}
-extern "C" {
-    pub fn gks_chr_height(height: *mut f64);
-}
-extern "C" {
-    pub fn gks_get_dash(ltype: ::core::ffi::c_int, scale: f64, dash: *mut ::core::ffi::c_char);
-}
-extern "C" {
-    pub fn gks_get_dash_list(ltype: ::core::ffi::c_int, scale: f64, list: *mut ::core::ffi::c_int);
-}
-extern "C" {
-    pub fn gks_move(
-        x: f64,
-        y: f64,
-        move_: ::core::option::Option<unsafe extern "C" fn(x: f64, y: f64)>,
-    );
-}
-extern "C" {
-    pub fn gks_dash(
-        x: f64,
-        y: f64,
-        move_: ::core::option::Option<unsafe extern "C" fn(x: f64, y: f64)>,
-        draw: ::core::option::Option<unsafe extern "C" fn(x: f64, y: f64)>,
-    );
-}
-extern "C" {
-    pub fn gks_emul_polyline(
-        n: ::core::ffi::c_int,
-        px: *mut f64,
-        py: *mut f64,
-        ltype: ::core::ffi::c_int,
-        tnr: ::core::ffi::c_int,
-        move_: ::core::option::Option<unsafe extern "C" fn(x: f64, y: f64)>,
-        draw: ::core::option::Option<unsafe extern "C" fn(x: f64, y: f64)>,
-    );
-}
-extern "C" {
-    pub fn gks_emul_polymarker(
-        n: ::core::ffi::c_int,
-        px: *mut f64,
-        py: *mut f64,
-        marker: ::core::option::Option<
-            unsafe extern "C" fn(x: f64, y: f64, mtype: ::core::ffi::c_int),
-        >,
-    );
-}
-extern "C" {
-    pub fn gks_emul_text(
-        px: f64,
-        py: f64,
-        nchars: ::core::ffi::c_int,
-        chars: *mut ::core::ffi::c_char,
-        polyline: ::core::option::Option<
-            unsafe extern "C" fn(
-                n: ::core::ffi::c_int,
-                px: *mut f64,
-                py: *mut f64,
-                ltype: ::core::ffi::c_int,
-                tnr: ::core::ffi::c_int,
-            ),
-        >,
-        fillarea: ::core::option::Option<
-            unsafe extern "C" fn(
-                n: ::core::ffi::c_int,
-                px: *mut f64,
-                py: *mut f64,
-                tnr: ::core::ffi::c_int,
-            ),
-        >,
-    );
-}
-extern "C" {
-    pub fn gks_emul_fillarea(
-        n: ::core::ffi::c_int,
-        px: *mut f64,
-        py: *mut f64,
-        tnr: ::core::ffi::c_int,
-        polyline: ::core::option::Option<
-            unsafe extern "C" fn(
-                n: ::core::ffi::c_int,
-                px: *mut f64,
-                py: *mut f64,
-                ltype: ::core::ffi::c_int,
-                tnr: ::core::ffi::c_int,
-            ),
-        >,
-        yres: f64,
-    );
-}
-extern "C" {
-    pub fn gks_util_inq_text_extent(
-        px: f64,
-        py: f64,
-        chars: *mut ::core::ffi::c_char,
-        nchars: ::core::ffi::c_int,
-        cpx: *mut f64,
-        cpy: *mut f64,
-        tx: *mut f64,
-        ty: *mut f64,
-    );
-}
-extern "C" {
-    pub fn gks_get_ws_type() -> ::core::ffi::c_int;
-}
-extern "C" {
-    pub fn gks_base64(
-        src: *mut ::core::ffi::c_uchar,
-        srclength: usize,
-        target: *mut ::core::ffi::c_char,
-        targsize: usize,
-    ) -> ::core::ffi::c_int;
-}
-extern "C" {
     pub fn gks_getenv(env: *const ::core::ffi::c_char) -> *const ::core::ffi::c_char;
-}
-extern "C" {
-    pub fn gks_iso2utf(c: ::core::ffi::c_uchar, utf: *mut ::core::ffi::c_char, len: *mut usize);
-}
-extern "C" {
-    pub fn gks_symbol2utf(c: ::core::ffi::c_uchar, utf: *mut ::core::ffi::c_char, len: *mut usize);
-}
-extern "C" {
-    pub fn gks_input2utf8(
-        input_str: *const ::core::ffi::c_char,
-        utf8_str: *mut ::core::ffi::c_char,
-        input_encoding: ::core::ffi::c_int,
-    );
-}
-extern "C" {
-    pub fn gks_utf82latin1(
-        utf8_str: *const ::core::ffi::c_char,
-        latin1_str: *mut ::core::ffi::c_char,
-    );
-}
-extern "C" {
-    pub fn gks_resize(
-        image: *mut ::core::ffi::c_int,
-        width: ::core::ffi::c_int,
-        height: ::core::ffi::c_int,
-        w: ::core::ffi::c_int,
-        h: ::core::ffi::c_int,
-    ) -> *mut ::core::ffi::c_int;
-}
-extern "C" {
-    pub fn gks_filepath(
-        path: *mut ::core::ffi::c_char,
-        defpath: *mut ::core::ffi::c_char,
-        type_: *const ::core::ffi::c_char,
-        page: ::core::ffi::c_int,
-        index: ::core::ffi::c_int,
-    );
-}
-extern "C" {
-    pub fn gks_adjust_cellarray(
-        qx: *mut f64,
-        qy: *mut f64,
-        rx: *mut f64,
-        ry: *mut f64,
-        scol: *mut ::core::ffi::c_int,
-        srow: *mut ::core::ffi::c_int,
-        ncol: *mut ::core::ffi::c_int,
-        nrow: *mut ::core::ffi::c_int,
-        dimx: ::core::ffi::c_int,
-        dimy: ::core::ffi::c_int,
-    );
 }
 extern "C" {
     pub fn gks_dl_write_item(
@@ -551,145 +273,7 @@ extern "C" {
     ) -> ::core::ffi::c_int;
 }
 extern "C" {
-    pub fn gks_wiss_dispatch(
-        fctid: ::core::ffi::c_int,
-        wkid: ::core::ffi::c_int,
-        segn: ::core::ffi::c_int,
-    );
-}
-extern "C" {
-    pub fn gks_debug() -> ::core::ffi::c_int;
-}
-extern "C" {
-    pub fn gks_drv_mo(
-        fctid: ::core::ffi::c_int,
-        dx: ::core::ffi::c_int,
-        dy: ::core::ffi::c_int,
-        dimx: ::core::ffi::c_int,
-        i_arr: *mut ::core::ffi::c_int,
-        len_f_arr_1: ::core::ffi::c_int,
-        f_arr_1: *mut f64,
-        len_f_arr_2: ::core::ffi::c_int,
-        f_arr_2: *mut f64,
-        len_c_arr: ::core::ffi::c_int,
-        c_arr: *mut ::core::ffi::c_char,
-        ptr: *mut *mut ::core::ffi::c_void,
-    );
-}
-extern "C" {
-    pub fn gks_drv_mi(
-        fctid: ::core::ffi::c_int,
-        dx: ::core::ffi::c_int,
-        dy: ::core::ffi::c_int,
-        dimx: ::core::ffi::c_int,
-        i_arr: *mut ::core::ffi::c_int,
-        len_f_arr_1: ::core::ffi::c_int,
-        f_arr_1: *mut f64,
-        len_f_arr_2: ::core::ffi::c_int,
-        f_arr_2: *mut f64,
-        len_c_arr: ::core::ffi::c_int,
-        c_arr: *mut ::core::ffi::c_char,
-        ptr: *mut *mut ::core::ffi::c_void,
-    );
-}
-extern "C" {
-    pub fn gks_drv_wiss(
-        fctid: ::core::ffi::c_int,
-        dx: ::core::ffi::c_int,
-        dy: ::core::ffi::c_int,
-        dimx: ::core::ffi::c_int,
-        i_arr: *mut ::core::ffi::c_int,
-        len_f_arr_1: ::core::ffi::c_int,
-        f_arr_1: *mut f64,
-        len_f_arr_2: ::core::ffi::c_int,
-        f_arr_2: *mut f64,
-        len_c_arr: ::core::ffi::c_int,
-        c_arr: *mut ::core::ffi::c_char,
-        ptr: *mut *mut ::core::ffi::c_void,
-    );
-}
-extern "C" {
-    pub fn gks_drv_win(
-        fctid: ::core::ffi::c_int,
-        dx: ::core::ffi::c_int,
-        dy: ::core::ffi::c_int,
-        dimx: ::core::ffi::c_int,
-        i_arr: *mut ::core::ffi::c_int,
-        len_f_arr_1: ::core::ffi::c_int,
-        f_arr_1: *mut f64,
-        len_f_arr_2: ::core::ffi::c_int,
-        f_arr_2: *mut f64,
-        len_c_arr: ::core::ffi::c_int,
-        c_arr: *mut ::core::ffi::c_char,
-        ptr: *mut *mut ::core::ffi::c_void,
-    );
-}
-extern "C" {
-    pub fn gks_drv_ps(
-        fctid: ::core::ffi::c_int,
-        dx: ::core::ffi::c_int,
-        dy: ::core::ffi::c_int,
-        dimx: ::core::ffi::c_int,
-        i_arr: *mut ::core::ffi::c_int,
-        len_f_arr_1: ::core::ffi::c_int,
-        f_arr_1: *mut f64,
-        len_f_arr_2: ::core::ffi::c_int,
-        f_arr_2: *mut f64,
-        len_c_arr: ::core::ffi::c_int,
-        c_arr: *mut ::core::ffi::c_char,
-        ptr: *mut *mut ::core::ffi::c_void,
-    );
-}
-extern "C" {
-    pub fn gks_drv_pdf(
-        fctid: ::core::ffi::c_int,
-        dx: ::core::ffi::c_int,
-        dy: ::core::ffi::c_int,
-        dimx: ::core::ffi::c_int,
-        i_arr: *mut ::core::ffi::c_int,
-        len_f_arr_1: ::core::ffi::c_int,
-        f_arr_1: *mut f64,
-        len_f_arr_2: ::core::ffi::c_int,
-        f_arr_2: *mut f64,
-        len_c_arr: ::core::ffi::c_int,
-        c_arr: *mut ::core::ffi::c_char,
-        ptr: *mut *mut ::core::ffi::c_void,
-    );
-}
-extern "C" {
     pub fn gks_x11_plugin(
-        fctid: ::core::ffi::c_int,
-        dx: ::core::ffi::c_int,
-        dy: ::core::ffi::c_int,
-        dimx: ::core::ffi::c_int,
-        i_arr: *mut ::core::ffi::c_int,
-        len_f_arr_1: ::core::ffi::c_int,
-        f_arr_1: *mut f64,
-        len_f_arr_2: ::core::ffi::c_int,
-        f_arr_2: *mut f64,
-        len_c_arr: ::core::ffi::c_int,
-        c_arr: *mut ::core::ffi::c_char,
-        ptr: *mut *mut ::core::ffi::c_void,
-    );
-}
-extern "C" {
-    pub fn gks_drv_socket(
-        fctid: ::core::ffi::c_int,
-        dx: ::core::ffi::c_int,
-        dy: ::core::ffi::c_int,
-        dimx: ::core::ffi::c_int,
-        i_arr: *mut ::core::ffi::c_int,
-        len_f_arr_1: ::core::ffi::c_int,
-        f_arr_1: *mut f64,
-        len_f_arr_2: ::core::ffi::c_int,
-        f_arr_2: *mut f64,
-        len_c_arr: ::core::ffi::c_int,
-        c_arr: *mut ::core::ffi::c_char,
-        ptr: *mut *mut ::core::ffi::c_void,
-    );
-}
-extern "C" {
-    pub fn gks_drv_plugin(
         fctid: ::core::ffi::c_int,
         dx: ::core::ffi::c_int,
         dy: ::core::ffi::c_int,
@@ -913,66 +497,6 @@ extern "C" {
     );
 }
 extern "C" {
-    pub fn gks_compress(
-        bits: ::core::ffi::c_int,
-        in_: *mut ::core::ffi::c_uchar,
-        in_len: ::core::ffi::c_int,
-        out: *mut ::core::ffi::c_uchar,
-        out_len: *mut ::core::ffi::c_int,
-    );
-}
-extern "C" {
-    pub fn gks_open_file(
-        path: *const ::core::ffi::c_char,
-        mode: *const ::core::ffi::c_char,
-    ) -> ::core::ffi::c_int;
-}
-extern "C" {
-    pub fn gks_read_file(
-        fd: ::core::ffi::c_int,
-        buf: *mut ::core::ffi::c_void,
-        count: ::core::ffi::c_int,
-    ) -> ::core::ffi::c_int;
-}
-extern "C" {
-    pub fn gks_write_file(
-        fd: ::core::ffi::c_int,
-        buf: *mut ::core::ffi::c_void,
-        count: ::core::ffi::c_int,
-    ) -> ::core::ffi::c_int;
-}
-extern "C" {
-    pub fn gks_close_file(fd: ::core::ffi::c_int) -> ::core::ffi::c_int;
-}
-extern "C" {
-    pub fn gks_ft_init() -> ::core::ffi::c_int;
-}
-extern "C" {
-    pub fn gks_ft_render(
-        x: *mut ::core::ffi::c_int,
-        y: *mut ::core::ffi::c_int,
-        width: *mut ::core::ffi::c_int,
-        height: *mut ::core::ffi::c_int,
-        gkss: *mut gks_state_list_t,
-        text: *const ::core::ffi::c_char,
-        length: ::core::ffi::c_int,
-    ) -> *mut ::core::ffi::c_int;
-}
-extern "C" {
-    pub fn gks_ft_get_bitmap(
-        x: *mut ::core::ffi::c_int,
-        y: *mut ::core::ffi::c_int,
-        width: *mut ::core::ffi::c_int,
-        height: *mut ::core::ffi::c_int,
-        gkss: *mut gks_state_list_t,
-        text: *const ::core::ffi::c_char,
-        length: ::core::ffi::c_int,
-    ) -> *mut ::core::ffi::c_uchar;
-}
-extern "C" {
-    pub fn gks_ft_get_face(arg1: ::core::ffi::c_int) -> *mut ::core::ffi::c_void;
-}
-extern "C" {
     pub fn gks_ft_get_metrics(
         font: ::core::ffi::c_int,
         fontsize: f64,
@@ -997,47 +521,6 @@ extern "C" {
         first_codepoint: ::core::ffi::c_uint,
         second_codepoint: ::core::ffi::c_uint,
     ) -> f64;
-}
-extern "C" {
-    pub fn gks_ft_terminate();
-}
-extern "C" {
-    pub fn gks_ft_text(
-        x: f64,
-        y: f64,
-        text: *mut ::core::ffi::c_char,
-        gkss: *mut gks_state_list_t,
-        gdp: ::core::option::Option<
-            unsafe extern "C" fn(
-                arg1: ::core::ffi::c_int,
-                arg2: *mut f64,
-                arg3: *mut f64,
-                arg4: ::core::ffi::c_int,
-                arg5: ::core::ffi::c_int,
-                arg6: *mut ::core::ffi::c_int,
-            ),
-        >,
-    );
-}
-extern "C" {
-    pub fn gks_ft_inq_text_extent(
-        x: f64,
-        y: f64,
-        text: *mut ::core::ffi::c_char,
-        gkss: *mut gks_state_list_t,
-        gdp: ::core::option::Option<
-            unsafe extern "C" fn(
-                arg1: ::core::ffi::c_int,
-                arg2: *mut f64,
-                arg3: *mut f64,
-                arg4: ::core::ffi::c_int,
-                arg5: ::core::ffi::c_int,
-                arg6: *mut ::core::ffi::c_int,
-            ),
-        >,
-        bx: *mut f64,
-        by: *mut f64,
-    );
 }
 extern "C" {
     pub fn gks_ft_text3d(
@@ -1116,3 +599,5 @@ extern "C" {
         >,
     );
 }
+#[allow(non_snake_case)]
+pub fn FIX_COLORIND(c: u32) -> u32 { if c < MAX_COLOR { c } else { MAX_COLOR - 1 } }
