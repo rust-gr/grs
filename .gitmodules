@@ -1,4 +1,4 @@
 [submodule "gr"]
 	path = gr
 	url = ../../vincenti/gr.git
-	branch = master
+	branch = grs_changes
