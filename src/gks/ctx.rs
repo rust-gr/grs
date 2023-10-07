@@ -1,7 +1,7 @@
+use super::bindings::gks::{gks_close_gks, gks_open_gks};
+use super::Gks;
 use ::core::ops::Deref;
 use ::std::sync::{Mutex, MutexGuard, TryLockError};
-use super::bindings::gks::{gks_open_gks, gks_close_gks};
-use super::Gks;
 
 static GKS_MUTEX: Mutex<bool> = Mutex::new(false);
 
@@ -40,7 +40,7 @@ impl Gks {
                 unsafe { gks_open_gks(errfill) }
                 *guard = true;
                 Some(GksGuard(guard))
-            },
+            }
         }
     }
 
@@ -60,7 +60,7 @@ impl Gks {
         let guard = GKS_MUTEX.lock().unwrap_or_else(|e| e.into_inner());
         match *guard {
             true => Some(GksGuard(guard)),
-            false => None
+            false => None,
         }
     }
 

@@ -600,4 +600,10 @@ extern "C" {
     );
 }
 #[allow(non_snake_case)]
-pub fn FIX_COLORIND(c: ::core::ffi::c_int) -> ::core::ffi::c_int { if c < MAX_COLOR { c } else { MAX_COLOR - 1 } }
+pub fn FIX_COLORIND(c: ::core::ffi::c_int) -> ::core::ffi::c_int {
+    if c < MAX_COLOR {
+        c
+    } else {
+        MAX_COLOR - 1
+    }
+}
