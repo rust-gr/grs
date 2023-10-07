@@ -1,4 +1,6 @@
-use super::bindings::gks::{gks_activate_ws, gks_close_ws, gks_deactivate_ws, GKS_K_CONID_DEFAULT, gks_open_ws};
+use super::bindings::gks::{
+    gks_activate_ws, gks_close_ws, gks_deactivate_ws, gks_open_ws, GKS_K_CONID_DEFAULT,
+};
 use super::bindings::gkscore::gks_errno;
 use super::Gks;
 use ::core::ffi::c_int;
@@ -22,14 +24,23 @@ pub enum GksOpenWsError {
 }
 
 impl Gks {
-    pub fn open_ws(&self, wkid: c_int, conid: Option<&str>, wtype: c_int) -> Result<GksUnactiveWs, GksOpenWsError> {
+    pub fn open_ws(
+        &self,
+        wkid: c_int,
+        conid: Option<&str>,
+        wtype: c_int,
+    ) -> Result<GksUnactiveWs, GksOpenWsError> {
         let errno = unsafe {
-            gks_open_ws(wkid, conid.map_or(GKS_K_CONID_DEFAULT, |s| s.as_ptr() as *mut i8), wtype);
+            gks_open_ws(
+                wkid,
+                conid.map_or(GKS_K_CONID_DEFAULT, |s| s.as_ptr() as *mut i8),
+                wtype,
+            );
             gks_errno
         };
         if errno == 0 {
             let wkid = unsafe { NonZeroI32::new_unchecked(wkid) };
-            return Ok(GksUnactiveWs(GksWs(wkid)))
+            return Ok(GksUnactiveWs(GksWs(wkid)));
         }
         unsafe { gks_errno = 0 }
         Err(match errno {
@@ -59,7 +70,7 @@ impl Drop for GksWs {
 
 impl GksUnactiveWs {
     pub fn activate(&mut self) -> GksActiveWs {
-        let wkid = self.0.0.into();
+        let wkid = self.0 .0.into();
         unsafe { gks_activate_ws(wkid) }
         GksActiveWs(self)
     }
@@ -106,7 +117,7 @@ impl DerefMut for GksActiveWs<'_> {
 
 impl Drop for GksActiveWs<'_> {
     fn drop(&mut self) {
-        let wkid = self.0.0.0.into();
+        let wkid = self.0 .0 .0.into();
         unsafe { gks_deactivate_ws(wkid) }
     }
 }
