@@ -7,6 +7,8 @@ static GKS_MUTEX: Mutex<bool> = Mutex::new(false);
 
 pub struct Gks;
 pub struct GksGuard(MutexGuard<'static, bool>);
+
+#[derive(Debug)]
 pub enum GksTryLockError {
     Closed,
     WouldBlock,
