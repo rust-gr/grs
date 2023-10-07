@@ -1,4 +1,4 @@
 pub mod bindings;
 mod gks;
 
-pub use gks::{GKS, Gks};
+pub use gks::{Gks, scope};
