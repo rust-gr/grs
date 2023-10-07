@@ -1,12 +1,14 @@
 use super::bindings::gks::{
     gks_activate_ws, gks_close_ws, gks_deactivate_ws, gks_open_ws, gks_update_ws,
-    GKS_K_CONID_DEFAULT,
+    GKS_K_CONID_DEFAULT, GKS_K_WSTYPE_DEFAULT,
 };
 use super::bindings::gkscore::gks_errno;
 use super::Gks;
 use ::core::ffi::c_int;
 use ::core::num::NonZeroI32;
 use ::core::ops::{Deref, DerefMut};
+
+// TODO configure, clear, window, viewport
 
 #[derive(Debug)]
 pub struct GksWs(NonZeroI32);
@@ -36,13 +38,13 @@ impl Gks {
         &self,
         wkid: c_int,
         conid: Option<&str>,
-        wtype: c_int,
+        wtype: Option<NonZeroI32>,
     ) -> Result<GksUnactiveWs, GksOpenWsError> {
         let errno = unsafe {
             gks_open_ws(
                 wkid,
                 conid.map_or(GKS_K_CONID_DEFAULT, |s| s.as_ptr() as *mut i8),
-                wtype,
+                wtype.map_or(GKS_K_WSTYPE_DEFAULT, Into::into),
             );
             gks_errno
         };
