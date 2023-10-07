@@ -1,5 +1,6 @@
 use super::bindings::gks::{
-    gks_activate_ws, gks_close_ws, gks_deactivate_ws, gks_open_ws, GKS_K_CONID_DEFAULT,
+    gks_activate_ws, gks_close_ws, gks_deactivate_ws, gks_open_ws, gks_update_ws,
+    GKS_K_CONID_DEFAULT,
 };
 use super::bindings::gkscore::gks_errno;
 use super::Gks;
@@ -21,6 +22,13 @@ pub enum GksOpenWsError {
     IndependentSegmentStorageAlreadyOpen,
     OpenFailed,
     Unknown,
+}
+
+#[derive(Debug)]
+pub enum GksRegenerationFlag {
+    Postpone,
+    Perform,
+    WritePage,
 }
 
 impl Gks {
@@ -58,6 +66,15 @@ impl Gks {
 impl GksWs {
     pub fn wkid(&self) -> NonZeroI32 {
         self.0
+    }
+
+    pub fn update(&mut self, regfl: GksRegenerationFlag) {
+        let regfl = match regfl {
+            GksRegenerationFlag::Postpone => 0,
+            GksRegenerationFlag::Perform => 1,
+            GksRegenerationFlag::WritePage => 0,
+        };
+        unsafe { gks_update_ws(self.0.into(), regfl) }
     }
 }
 
