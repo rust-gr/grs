@@ -1,4 +1,4 @@
-mod ctx;
-
 pub mod bindings;
-pub use ctx::{Gks, scope};
+pub mod ctx;
+
+pub use ctx::Gks;
