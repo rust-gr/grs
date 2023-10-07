@@ -1,5 +1,6 @@
 use super::bindings::gks::{gks_close_gks, gks_open_gks};
 use super::Gks;
+use ::core::ffi::c_int;
 use ::core::ops::Deref;
 use ::std::sync::{Mutex, MutexGuard, TryLockError};
 
@@ -11,7 +12,7 @@ pub enum GksTryLockError {
     WouldBlock,
 }
 
-pub fn scope<R>(errfill: ::core::ffi::c_int, f: impl FnOnce(Gks) -> R) -> R {
+pub fn scope<R>(errfill: c_int, f: impl FnOnce(Gks) -> R) -> R {
     struct DropGuard(MutexGuard<'static, bool>);
     impl Drop for DropGuard {
         fn drop(&mut self) {
@@ -32,7 +33,7 @@ impl Gks {
         Gks
     }
 
-    pub fn open(errfill: ::core::ffi::c_int) -> Option<GksGuard> {
+    pub fn open(errfill: c_int) -> Option<GksGuard> {
         let mut guard = GKS_MUTEX.lock().unwrap_or_else(|e| e.into_inner());
         match *guard {
             true => None,
@@ -44,7 +45,7 @@ impl Gks {
         }
     }
 
-    pub fn try_open(errfill: ::core::ffi::c_int) -> Option<GksGuard> {
+    pub fn try_open(errfill: c_int) -> Option<GksGuard> {
         let mut guard = match GKS_MUTEX.try_lock() {
             Ok(guard) if *guard => return None,
             Ok(guard) => guard,
@@ -73,7 +74,7 @@ impl Gks {
         }
     }
 
-    pub fn opened(errfill: ::core::ffi::c_int) -> GksGuard {
+    pub fn opened(errfill: c_int) -> GksGuard {
         let mut guard = GKS_MUTEX.lock().unwrap_or_else(|e| e.into_inner());
         if !*guard {
             unsafe { gks_open_gks(errfill) }
@@ -82,7 +83,7 @@ impl Gks {
         GksGuard(guard)
     }
 
-    pub fn try_opened(errfill: ::core::ffi::c_int) -> Option<GksGuard> {
+    pub fn try_opened(errfill: c_int) -> Option<GksGuard> {
         let mut guard = match GKS_MUTEX.try_lock() {
             Ok(guard) => guard,
             Err(TryLockError::Poisoned(err)) => err.into_inner(),
