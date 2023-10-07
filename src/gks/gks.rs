@@ -39,7 +39,7 @@ impl Gks {
             false => {
                 unsafe { gks_open_gks(errfill) }
                 *guard = true;
-                Some(GksGuard::new(guard))
+                Some(GksGuard(guard))
             },
         }
     }
@@ -53,22 +53,22 @@ impl Gks {
         };
         unsafe { gks_open_gks(errfill) }
         *guard = true;
-        Some(GksGuard::new(guard))
+        Some(GksGuard(guard))
     }
 
     pub fn lock() -> Option<GksGuard> {
         let guard = GKS_MUTEX.lock().unwrap_or_else(|e| e.into_inner());
         match *guard {
-            true => Some(GksGuard::new(guard)),
+            true => Some(GksGuard(guard)),
             false => None
         }
     }
 
     pub fn try_lock() -> Result<GksGuard, GksTryLockError> {
         match GKS_MUTEX.try_lock() {
-            Ok(guard) if *guard => Ok(GksGuard::new(guard)),
+            Ok(guard) if *guard => Ok(GksGuard(guard)),
             Ok(_) => Err(GksTryLockError::Closed),
-            Err(TryLockError::Poisoned(err)) => Ok(GksGuard::new(err.into_inner())),
+            Err(TryLockError::Poisoned(err)) => Ok(GksGuard(err.into_inner())),
             Err(TryLockError::WouldBlock) => Err(GksTryLockError::WouldBlock),
         }
     }
@@ -79,7 +79,7 @@ impl Gks {
             unsafe { gks_open_gks(errfill) }
             *guard = true;
         }
-        GksGuard::new(guard)
+        GksGuard(guard)
     }
 
     pub fn try_opened(errfill: ::core::ffi::c_int) -> Option<GksGuard> {
@@ -92,15 +92,11 @@ impl Gks {
             unsafe { gks_open_gks(errfill) }
             *guard = true;
         }
-        Some(GksGuard::new(guard))
+        Some(GksGuard(guard))
     }
 }
 
 impl GksGuard {
-    fn new(guard: MutexGuard<'static, bool>) -> Self {
-        Self(guard)
-    }
-
     pub fn close(mut self) {
         unsafe { gks_close_gks() }
         *self.0 = false;
