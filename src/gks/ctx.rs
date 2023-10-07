@@ -1,11 +1,11 @@
 use super::bindings::gks::{gks_close_gks, gks_open_gks};
-use super::Gks;
 use ::core::ffi::c_int;
 use ::core::ops::Deref;
 use ::std::sync::{Mutex, MutexGuard, TryLockError};
 
 static GKS_MUTEX: Mutex<bool> = Mutex::new(false);
 
+pub struct Gks;
 pub struct GksGuard(MutexGuard<'static, bool>);
 pub enum GksTryLockError {
     Closed,

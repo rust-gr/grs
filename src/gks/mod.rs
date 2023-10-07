@@ -1,5 +1,4 @@
 mod ctx;
 
 pub mod bindings;
-pub struct Gks;
-pub use ctx::scope;
+pub use ctx::{Gks, scope};
