@@ -1,6 +1,5 @@
+mod ctx;
+
 pub mod bindings;
-mod gks;
-
-pub use gks::scope;
-
 pub struct Gks;
+pub use ctx::scope;
