@@ -1,14 +1,14 @@
 use super::bindings::gks::{
-    gks_activate_ws, gks_clear_ws, gks_close_ws, gks_configure_ws, gks_deactivate_ws, gks_open_ws, gks_update_ws,
-    GKS_K_CONID_DEFAULT, GKS_K_WSTYPE_DEFAULT,
+    gks_activate_ws, gks_clear_ws, gks_close_ws, gks_configure_ws, gks_deactivate_ws, gks_open_ws,
+    gks_set_ws_viewport, gks_set_ws_window, gks_update_ws, GKS_K_CONID_DEFAULT,
+    GKS_K_WSTYPE_DEFAULT,
 };
 use super::bindings::gkscore::gks_errno;
 use super::Gks;
+use crate::util::f64range::F64Range;
 use ::core::ffi::c_int;
 use ::core::num::NonZeroI32;
 use ::core::ops::{Deref, DerefMut};
-
-// TODO window, viewport
 
 #[derive(Debug)]
 pub struct GksWs(NonZeroI32);
@@ -85,6 +85,18 @@ impl GksWs {
 
     pub fn clear(&mut self, cofl: c_int) {
         unsafe { gks_clear_ws(self.0.into(), cofl) }
+    }
+
+    pub fn set_window(&mut self, x: F64Range, y: F64Range) -> bool {
+        let valid = 0f64 <= x.min() && x.max() <= 1f64 && 0f64 <= y.min() && y.max() <= 1f64;
+        if valid {
+            unsafe { gks_set_ws_window(self.0.into(), x.min(), x.max(), y.min(), y.max()) }
+        }
+        valid
+    }
+
+    pub fn set_viewport(&mut self, x: F64Range, y: F64Range) {
+        unsafe { gks_set_ws_viewport(self.0.into(), x.min(), x.max(), y.min(), y.max()) }
     }
 }
 
