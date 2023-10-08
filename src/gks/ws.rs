@@ -1,5 +1,5 @@
 use super::bindings::gks::{
-    gks_activate_ws, gks_close_ws, gks_deactivate_ws, gks_open_ws, gks_update_ws,
+    gks_activate_ws, gks_clear_ws, gks_close_ws, gks_configure_ws, gks_deactivate_ws, gks_open_ws, gks_update_ws,
     GKS_K_CONID_DEFAULT, GKS_K_WSTYPE_DEFAULT,
 };
 use super::bindings::gkscore::gks_errno;
@@ -8,7 +8,7 @@ use ::core::ffi::c_int;
 use ::core::num::NonZeroI32;
 use ::core::ops::{Deref, DerefMut};
 
-// TODO configure, clear, window, viewport
+// TODO window, viewport
 
 #[derive(Debug)]
 pub struct GksWs(NonZeroI32);
@@ -77,6 +77,14 @@ impl GksWs {
             GksRegenerationFlag::WritePage => 0,
         };
         unsafe { gks_update_ws(self.0.into(), regfl) }
+    }
+
+    pub fn configure(&mut self) {
+        unsafe { gks_configure_ws(self.0.into()) }
+    }
+
+    pub fn clear(&mut self, cofl: c_int) {
+        unsafe { gks_clear_ws(self.0.into(), cofl) }
     }
 }
 
