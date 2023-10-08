@@ -52,7 +52,9 @@ impl Gks {
             let wkid = unsafe { NonZeroI32::new_unchecked(wkid) };
             return Ok(GksUnactiveWs(GksWs(wkid)));
         }
-        unsafe { gks_errno = 0 }
+        unsafe {
+            gks_errno = 0;
+        }
         Err(match errno {
             8 => GksOpenWsError::InvalidState,
             20 => GksOpenWsError::InvalidId,
@@ -76,27 +78,32 @@ impl GksWs {
             GksRegenerationFlag::Perform => 1,
             GksRegenerationFlag::WritePage => 0,
         };
-        unsafe { gks_update_ws(self.0.into(), regfl) }
+        let wkid = self.0.into();
+        unsafe { gks_update_ws(wkid, regfl) }
     }
 
     pub fn configure(&mut self) {
-        unsafe { gks_configure_ws(self.0.into()) }
+        let wkid = self.0.into();
+        unsafe { gks_configure_ws(wkid) }
     }
 
     pub fn clear(&mut self, cofl: c_int) {
-        unsafe { gks_clear_ws(self.0.into(), cofl) }
+        let wkid = self.0.into();
+        unsafe { gks_clear_ws(wkid, cofl) }
     }
 
     pub fn set_window(&mut self, x: F64Range, y: F64Range) -> bool {
         let valid = 0f64 <= x.min() && x.max() <= 1f64 && 0f64 <= y.min() && y.max() <= 1f64;
         if valid {
-            unsafe { gks_set_ws_window(self.0.into(), x.min(), x.max(), y.min(), y.max()) }
+            let wkid = self.0.into();
+            unsafe { gks_set_ws_window(wkid, x.min(), x.max(), y.min(), y.max()) }
         }
         valid
     }
 
     pub fn set_viewport(&mut self, x: F64Range, y: F64Range) {
-        unsafe { gks_set_ws_viewport(self.0.into(), x.min(), x.max(), y.min(), y.max()) }
+        let wkid = self.0.into();
+        unsafe { gks_set_ws_viewport(wkid, x.min(), x.max(), y.min(), y.max()) }
     }
 }
 
