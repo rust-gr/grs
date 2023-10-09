@@ -14,7 +14,7 @@ pub enum GksTryLockError {
     WouldBlock,
 }
 
-pub fn scope<R>(errfill: c_int, f: impl FnOnce(Gks) -> R) -> R {
+pub fn scope<R>(errfill: c_int, f: impl FnOnce(&Gks) -> R) -> R {
     struct DropGuard(MutexGuard<'static, bool>);
     impl Drop for DropGuard {
         fn drop(&mut self) {
@@ -27,7 +27,7 @@ pub fn scope<R>(errfill: c_int, f: impl FnOnce(Gks) -> R) -> R {
     if !*guard.0 {
         unsafe { gks_open_gks(errfill) }
     }
-    f(Gks)
+    f(&Gks)
 }
 
 impl Gks {
