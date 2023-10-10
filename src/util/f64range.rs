@@ -27,15 +27,14 @@ impl F64Range {
     }
 }
 
-// (min, max) ∈ f64Range ⇒ min < max ⇒ NaN ∉ {min, max}
+// (min, max) ∈ F64Range ⇒ min < max ⇒ NaN ∉ {min, max}
 impl Eq for F64Range {}
 
 impl PartialOrd for F64Range {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         let min = self.min.partial_cmp(&other.min);
         let max = self.max.partial_cmp(&other.max);
-        let min = unsafe { min.unwrap_unchecked() };
-        let max = unsafe { max.unwrap_unchecked() };
+        let (min, max) = (min?, max?);
         match min == max {
             true => Some(min),
             false => None,
