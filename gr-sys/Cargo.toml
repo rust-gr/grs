@@ -6,4 +6,5 @@ links = "gr"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
-[dependencies]
+[build-dependencies]
+bindgen = { version = "0.68", default-features = false, features = ["runtime"] }
