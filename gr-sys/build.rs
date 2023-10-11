@@ -141,4 +141,19 @@ fn main() {
                 .unwrap();
         }
     }
+    if !cfg!(feature = "bindgen") {
+        println!("Copying bindings:");
+        let mut out_path = PathBuf::from(env::var_os("OUT_DIR").expect("OUT_DIR not set"));
+        out_path.push("dummy");
+        let entries = std::fs::read_dir("bindings").unwrap(); // should never fail
+        for bindings in entries {
+            let binding_path = bindings
+                .unwrap() // should never fail
+                .path();
+            let name = binding_path.file_name().unwrap(); // should also never fail
+            out_path.set_file_name(name);
+            println!("{} -> {}", binding_path.display(), out_path.display());
+            std::fs::copy(binding_path, &out_path).unwrap();
+        }
+    }
 }
