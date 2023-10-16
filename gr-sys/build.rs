@@ -86,8 +86,6 @@ fn main() {
         .consider("/usr/local/gr/lib/")
         .consider("/usr/gr/lib/");
     let Some(lib_dir) = searcher.result() else {
-        // TODO download binaries
-        //   println!("cargo:warning=GR not found locally");
         panic!("missing GR installation");
     };
     println!("cargo:lib_dir={}", lib_dir.display());
