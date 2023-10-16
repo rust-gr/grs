@@ -11,7 +11,7 @@ fn main() {
         let path = env::var_os("PATH")
             .map(PathBuf::from)
             .expect("no PATH set!?");
-        println!("cargo:rustc-env=PATH={}:{}", lib_dir, path.display());
+        println!("cargo:rustc-env=PATH={};{}", lib_dir, path.display());
     } else {
         println!("cargo:rustc-link-arg-examples=-Wl,-rpath,{}", lib_dir);
     }
