@@ -134,7 +134,7 @@ fn main() {
             }
             builder
                 .generate()
-                .unwrap_or_else(|err| panic!("{err}"))
+                .unwrap()
                 .write_to_file(out_path.clone())
                 .unwrap();
         }
