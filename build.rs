@@ -11,7 +11,7 @@ fn main() {
     if cfg!(windows) {
         let path = env::var_os("PATH")
             .map(PathBuf::from)
-            .unwrap_or_else(Default::default);
+            .unwrap_or_default();
         let path = path.display();
         println!("cargo:rustc-env=PATH={lib_dir};{path}");
     } else {

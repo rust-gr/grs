@@ -22,7 +22,7 @@ mod search {
             if self.0.is_none() {
                 if let Some(p) = f() {
                     #[cfg(windows)]
-                    const POSSIBLE_EXTENSIONS: [&'static str; 1] = ["dll"];
+                    const POSSIBLE_EXTENSIONS: [&'static str; 1] = ["lib"];
                     #[cfg(target_vendor = "apple")]
                     const POSSIBLE_EXTENSIONS: [&'static str; 2] = ["dylib", "so"];
                     #[cfg(not(any(windows, target_vendor = "apple")))]
@@ -69,14 +69,18 @@ fn main() {
         .consider("~/gr/lib/")
         .consider("/usr/local/gr/lib/")
         .consider("/usr/gr/lib/");
-    if let Some(lib_dir) = searcher.result() {
-        let lib_dir = lib_dir.display();
-        println!("cargo:lib_dir={lib_dir}");
-        println!("cargo:rustc-link-search=native={lib_dir}");
+    if let Some(mut lib_dir) = searcher.result() {
+        println!("cargo:rustc-link-search=native={}", lib_dir.display());
+        if cfg!(windows) {
+            lib_dir.pop();
+            lib_dir.push("bin");
+        }
+        println!("cargo:lib_dir={}", lib_dir.display());
     };
-    ["GKS"]
-        .into_iter()
-        .for_each(|name| println!("cargo:rustc-link-lib=dylib={name}"));
+    let names = ["GKS"].into_iter();
+    #[cfg(windows)]
+    let names = names.map(|name| String::from("lib") + name);
+    names.for_each(|name| println!("cargo:rustc-link-lib=dylib={name}"));
     #[cfg(feature = "bindgen")]
     {
         use bindgen::callbacks::{IntKind, ParseCallbacks};
