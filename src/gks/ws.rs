@@ -34,16 +34,16 @@ pub enum GksRegenerationFlag {
 }
 
 impl Gks {
-    pub fn open_ws<S: AsRef<CStr>>(
+    pub fn open_ws(
         &self,
         wkid: c_int,
-        conid: Option<S>,
+        conid: Option<&CStr>,
         wtype: Option<NonZeroI32>,
     ) -> Result<GksUnactiveWs, GksOpenWsError> {
         let errno = unsafe {
             gks_open_ws(
                 wkid,
-                conid.map_or(GKS_K_CONID_DEFAULT, |s| s.as_ref().as_ptr() as *mut i8),
+                conid.map_or(GKS_K_CONID_DEFAULT, |s| s.as_ptr() as *mut i8),
                 wtype.map_or(GKS_K_WSTYPE_DEFAULT, Into::into),
             );
             gks_errno
