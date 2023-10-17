@@ -1,10 +1,10 @@
+use super::Gks;
 use crate::ffi::gks::{
     gks_activate_ws, gks_clear_ws, gks_close_ws, gks_configure_ws, gks_deactivate_ws, gks_open_ws,
-    gks_set_ws_viewport, gks_set_ws_window, gks_update_ws, GKS_K_CONID_DEFAULT,
-    GKS_K_WSTYPE_DEFAULT,
+    gks_set_ws_viewport, gks_set_ws_window, gks_update_ws, GKS_K_CONID_DEFAULT, GKS_K_PERFORM_FLAG,
+    GKS_K_POSTPONE_FLAG, GKS_K_WSTYPE_DEFAULT,
 };
 use crate::ffi::gkscore::gks_errno;
-use super::Gks;
 use crate::util::f64range::F64Range;
 use ::core::ffi::{c_int, CStr};
 use ::core::num::NonZeroI32;
@@ -28,9 +28,10 @@ pub enum GksOpenWsError {
 
 #[derive(Debug)]
 pub enum GksRegenerationFlag {
-    Postpone,
-    Perform,
-    WritePage,
+    Postpone = GKS_K_POSTPONE_FLAG as isize,
+    Perform = GKS_K_PERFORM_FLAG as isize,
+    #[cfg(feature = "write_page_gks_regen_flag")]
+    WritePage = crate::ffi::gks::GKS_K_WRITE_PAGE_FLAG as isize,
 }
 
 impl Gks {
@@ -68,18 +69,13 @@ impl Gks {
 }
 
 impl GksWs {
-    pub fn wkid(&self) -> NonZeroI32 {
+    pub fn id(&self) -> NonZeroI32 {
         self.0
     }
 
     pub fn update(&mut self, regfl: GksRegenerationFlag) {
-        let regfl = match regfl {
-            GksRegenerationFlag::Postpone => 0,
-            GksRegenerationFlag::Perform => 1,
-            GksRegenerationFlag::WritePage => 0,
-        };
         let wkid = self.0.into();
-        unsafe { gks_update_ws(wkid, regfl) }
+        unsafe { gks_update_ws(wkid, regfl as c_int) }
     }
 
     pub fn configure(&mut self) {
