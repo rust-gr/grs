@@ -1,74 +1,54 @@
 use std::env;
 use std::path::PathBuf;
 
-mod search {
-    use std::path::PathBuf;
+#[derive(Clone, Debug)]
+pub struct Searcher(Option<PathBuf>);
 
-    pub fn searcher() -> Searcher {
+impl Searcher {
+    pub fn new() -> Searcher {
         println!("Searching GR:");
         Searcher(None)
     }
 
-    #[derive(Clone, Debug)]
-    pub struct Searcher(Option<PathBuf>);
-
-    impl Searcher {
-        #[allow(dead_code)]
-        pub fn consider(self, p: impl Into<PathBuf>) -> Self {
-            self.consider_option(|| Some(p))
-        }
-
-        pub fn consider_option<P: Into<PathBuf>>(mut self, f: impl FnOnce() -> Option<P>) -> Self {
-            if self.0.is_none() {
-                if let Some(p) = f() {
-                    #[cfg(windows)]
-                    const POSSIBLE_EXTENSIONS: [&'static str; 1] = ["lib"];
-                    #[cfg(target_vendor = "apple")]
-                    const POSSIBLE_EXTENSIONS: [&'static str; 2] = ["dylib", "so"];
-                    #[cfg(not(any(windows, target_vendor = "apple")))]
-                    const POSSIBLE_EXTENSIONS: [&'static str; 1] = ["so"];
-                    let mut p = p.into();
-                    p.push("libGR");
-                    self.0 = POSSIBLE_EXTENSIONS
-                        .into_iter()
-                        .find(|ext| {
-                            p.set_extension(ext);
-                            println!("Trying: {}", p.display());
-                            p.is_file()
-                        })
-                        .map(|_| {
-                            p.pop();
-                            p
-                        })
-                }
+    pub fn consider(&mut self, p: impl Into<PathBuf>) -> &mut Self {
+        if self.0.is_none() {
+            const EXTENSION: &'static str =
+                if cfg!(windows) { "lib" }
+                else if cfg!(target_vendor = "apple") { "dylib" }
+                else { "so" };
+            let mut p = p.into();
+            p.push("libGR");
+            p.set_extension(EXTENSION);
+            println!("Trying: {}", p.display());
+            if p.is_file() {
+                p.pop();
+                self.0 = Some(p);
             }
-            self
         }
+        self
+    }
 
-        pub fn result(self) -> Option<PathBuf> {
-            let out = match self.0 {
-                Some(_) => "Found",
-                None => "Failed",
-            };
-            println!("{out}");
-            self.0
-        }
+    pub fn result(self) -> Option<PathBuf> {
+        let out = match self.0 {
+            Some(_) => "Found",
+            None => "Failed",
+        };
+        println!("{out}");
+        self.0
     }
 }
 
 fn main() {
-    let searcher = search::searcher()
-        .consider_option(|| env::var_os("GRLIB"))
-        .consider_option(|| env::var_os("GRDIR").map(|dir| {
-            let mut p = PathBuf::from(dir);
-            p.push("lib");
-            p
-        }));
-    #[cfg(not(windows))]
-    let searcher = searcher
-        .consider("~/gr/lib/")
-        .consider("/usr/local/gr/lib/")
-        .consider("/usr/gr/lib/");
+    let mut searcher = Searcher::new();
+    if let Some(lib_dir) = env::var_os("GRLIB") {
+        searcher.consider(lib_dir);
+    };
+    if !cfg!(windows) {
+        searcher
+            .consider("~/gr/lib/")
+            .consider("/usr/local/gr/lib/")
+            .consider("/usr/gr/lib/");
+    }
     if let Some(mut lib_dir) = searcher.result() {
         println!("cargo:rustc-link-search=native={}", lib_dir.display());
         if cfg!(windows) {
