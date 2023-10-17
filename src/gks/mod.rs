@@ -1,4 +1,3 @@
-pub mod bindings;
 pub mod ctx;
 pub mod ws;
 

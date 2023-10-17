@@ -1,4 +1,4 @@
-use super::bindings::gks::{gks_close_gks, gks_open_gks};
+use crate::ffi::gks::{gks_close_gks, gks_open_gks};
 use ::core::ffi::c_int;
 use ::core::ops::Deref;
 use ::std::sync::{Mutex, MutexGuard, TryLockError};

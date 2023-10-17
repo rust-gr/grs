@@ -1,9 +1,9 @@
-use super::bindings::gks::{
+use crate::ffi::gks::{
     gks_activate_ws, gks_clear_ws, gks_close_ws, gks_configure_ws, gks_deactivate_ws, gks_open_ws,
     gks_set_ws_viewport, gks_set_ws_window, gks_update_ws, GKS_K_CONID_DEFAULT,
     GKS_K_WSTYPE_DEFAULT,
 };
-use super::bindings::gkscore::gks_errno;
+use crate::ffi::gkscore::gks_errno;
 use super::Gks;
 use crate::util::f64range::F64Range;
 use ::core::ffi::{c_int, CStr};

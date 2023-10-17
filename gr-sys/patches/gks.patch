@@ -1,0 +1,28 @@
+diff -u old/gks.h new/gks.h
+--- old/gks.h	2023-10-09 16:02:02
++++ new/gks.h	2023-10-09 16:02:24
+@@ -1,15 +1,7 @@
+ #ifndef _GKS_H_
+ #define _GKS_H_
+ 
+-#include <stdio.h>
+-
+-#ifdef _WIN32
+-
+-#include <windows.h> /* required for all Windows applications */
+-#define DLLEXPORT __declspec(dllexport)
+-#else
+ #define DLLEXPORT
+-#endif
+ 
+ #ifdef __cplusplus
+ extern "C" {
+@@ -259,7 +251,7 @@
+ 
+ /* Simple types */
+ 
+-typedef FILE Gfile;
++typedef void Gfile;
+ typedef char Gchar;
+ typedef char Gconn;
+ typedef double Gfloat;
