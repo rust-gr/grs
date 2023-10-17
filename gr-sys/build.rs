@@ -2,40 +2,11 @@ use std::env;
 use std::path::PathBuf;
 
 mod search {
-    use std::ffi::{OsStr, OsString};
-    use std::path::{Path, PathBuf};
-
-    #[cfg(windows)]
-    const POSSIBLE_EXTENSIONS: [&'static str; 1] = ["dll"];
-    #[cfg(target_vendor = "apple")]
-    const POSSIBLE_EXTENSIONS: [&'static str; 2] = ["dylib", "so"];
-    #[cfg(not(any(windows, target_vendor = "apple")))]
-    const POSSIBLE_EXTENSIONS: [&'static str; 1] = ["so"];
+    use std::path::PathBuf;
 
     pub fn searcher() -> Searcher {
         println!("Searching GR:");
         Searcher(None)
-    }
-
-    fn try_extensions(path: impl Into<PathBuf>) -> Option<PathBuf> {
-        let mut path = path.into();
-        POSSIBLE_EXTENSIONS
-            .into_iter()
-            .find(|ext| {
-                path.set_extension(ext);
-                println!("Trying: {}", path.display());
-                path.is_file()
-            })
-            .map(|_| path)
-    }
-
-    pub fn find_binary(lib_dir: impl Into<PathBuf>, name: impl AsRef<OsStr>) -> Option<PathBuf> {
-        println!("Searching for {}:", Path::new(&name).display());
-        let mut lib = OsString::from("lib");
-        lib.push(name);
-        let mut path = lib_dir.into();
-        path.push(lib);
-        try_extensions(path)
     }
 
     #[derive(Clone, Debug)]
@@ -43,19 +14,32 @@ mod search {
 
     impl Searcher {
         #[allow(dead_code)]
-        pub fn consider(self, p: impl AsRef<Path>) -> Self {
+        pub fn consider(self, p: impl Into<PathBuf>) -> Self {
             self.consider_option(|| Some(p))
         }
 
-        pub fn consider_option<P: AsRef<Path>>(mut self, f: impl FnOnce() -> Option<P>) -> Self {
+        pub fn consider_option<P: Into<PathBuf>>(mut self, f: impl FnOnce() -> Option<P>) -> Self {
             if self.0.is_none() {
                 if let Some(p) = f() {
-                    self.0 = try_extensions(p.as_ref().join("libGR"))
-                        .map(|path| {
-                            let dir = path.parent();
-                            unsafe { dir.unwrap_unchecked() }
-                                .into()
-                        });
+                    #[cfg(windows)]
+                    const POSSIBLE_EXTENSIONS: [&'static str; 1] = ["dll"];
+                    #[cfg(target_vendor = "apple")]
+                    const POSSIBLE_EXTENSIONS: [&'static str; 2] = ["dylib", "so"];
+                    #[cfg(not(any(windows, target_vendor = "apple")))]
+                    const POSSIBLE_EXTENSIONS: [&'static str; 1] = ["so"];
+                    let mut p = p.into();
+                    p.push("libGR");
+                    self.0 = POSSIBLE_EXTENSIONS
+                        .into_iter()
+                        .find(|ext| {
+                            p.set_extension(ext);
+                            println!("Trying: {}", p.display());
+                            p.is_file()
+                        })
+                        .map(|_| {
+                            p.pop();
+                            p
+                        })
                 }
             }
             self
@@ -85,18 +69,14 @@ fn main() {
         .consider("~/gr/lib/")
         .consider("/usr/local/gr/lib/")
         .consider("/usr/gr/lib/");
-    let Some(lib_dir) = searcher.result() else {
-        panic!("missing GR installation");
+    if let Some(lib_dir) = searcher.result() {
+        let lib_dir = lib_dir.display();
+        println!("cargo:lib_dir={lib_dir}");
+        println!("cargo:rustc-link-search=native={lib_dir}");
     };
-    println!("cargo:lib_dir={}", lib_dir.display());
-    println!("cargo:rustc-link-search=native={}", lib_dir.display());
-    for name in ["GKS"] {
-        println!("cargo:rustc-link-lib=dylib={name}");
-        match search::find_binary(&lib_dir, name) {
-            Some(path) => println!("cargo:{name}_path={}", path.display()),
-            None => panic!("missing {name} binary"),
-        }
-    }
+    ["GKS"]
+        .into_iter()
+        .for_each(|name| println!("cargo:rustc-link-lib=dylib={name}"));
     #[cfg(feature = "bindgen")]
     {
         use bindgen::callbacks::{IntKind, ParseCallbacks};
@@ -141,7 +121,9 @@ fn main() {
     }
     if !cfg!(feature = "bindgen") {
         println!("Copying bindings:");
-        let mut out_path = PathBuf::from(env::var_os("OUT_DIR").expect("OUT_DIR not set"));
+        let mut out_path = env::var_os("OUT_DIR")
+            .map(PathBuf::from)
+            .expect("OUT_DIR not set");
         out_path.push("dummy");
         let entries = std::fs::read_dir("bindings").unwrap(); // should never fail
         for bindings in entries {
