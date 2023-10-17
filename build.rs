@@ -9,9 +9,7 @@ fn main() {
     let lib_dir = lib_dir.display();
     println!("cargo:lib_dir={lib_dir}");
     if cfg!(windows) {
-        let path = env::var_os("PATH")
-            .map(PathBuf::from)
-            .unwrap_or_default();
+        let path = env::var_os("PATH").map(PathBuf::from).unwrap_or_default();
         let path = path.display();
         println!("cargo:rustc-env=PATH={lib_dir};{path}");
     } else {
