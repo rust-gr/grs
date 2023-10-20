@@ -1,19 +1,19 @@
+use super::Gks;
 use crate::ffi::gks::{
-    gks_activate_ws, gks_clear_ws, gks_close_ws, gks_configure_ws, gks_deactivate_ws, gks_open_ws,
-    gks_set_ws_viewport, gks_set_ws_window, gks_update_ws, GKS_K_CONID_DEFAULT,
+    gks_activate_ws, gks_clear_ws, gks_close_ws, gks_configure_ws, gks_deactivate_ws, gks_message,
+    gks_open_ws, gks_set_ws_viewport, gks_set_ws_window, gks_update_ws, GKS_K_CONID_DEFAULT,
     GKS_K_WSTYPE_DEFAULT,
 };
 use crate::ffi::gkscore::gks_errno;
-use super::Gks;
 use crate::util::f64range::F64Range;
-use ::core::ffi::{c_int, CStr};
+use ::core::ffi::{c_char, c_int, CStr};
 use ::core::num::NonZeroI32;
 use ::core::ops::{Deref, DerefMut};
 
 #[derive(Debug)]
 pub struct GksWs(NonZeroI32);
-pub struct GksUnactiveWs(GksWs);
-pub struct GksActiveWs<'a>(&'a mut GksUnactiveWs);
+pub struct GksInactiveWs(GksWs);
+pub struct GksActiveWs<'a>(&'a mut GksInactiveWs);
 
 #[derive(Debug)]
 pub enum GksOpenWsError {
@@ -39,18 +39,18 @@ impl Gks {
         wkid: c_int,
         conid: Option<&CStr>,
         wtype: Option<NonZeroI32>,
-    ) -> Result<GksUnactiveWs, GksOpenWsError> {
+    ) -> Result<GksInactiveWs, GksOpenWsError> {
         let errno = unsafe {
             gks_open_ws(
                 wkid,
-                conid.map_or(GKS_K_CONID_DEFAULT, |s| s.as_ptr() as *mut i8),
+                conid.map_or(GKS_K_CONID_DEFAULT, |s| s.as_ptr() as *mut c_char),
                 wtype.map_or(GKS_K_WSTYPE_DEFAULT, Into::into),
             );
             gks_errno
         };
         if errno == 0 {
             let wkid = unsafe { NonZeroI32::new_unchecked(wkid) };
-            return Ok(GksUnactiveWs(GksWs(wkid)));
+            return Ok(GksInactiveWs(GksWs(wkid)));
         }
         unsafe {
             gks_errno = 0;
@@ -105,6 +105,12 @@ impl GksWs {
         let wkid = self.0.into();
         unsafe { gks_set_ws_viewport(wkid, x.min(), x.max(), y.min(), y.max()) }
     }
+
+    pub fn message(&mut self, s: impl AsRef<CStr>) {
+        let wkid = self.0.into();
+        let p = s.as_ref().as_ptr().cast_mut();
+        unsafe { gks_message(wkid, p) }
+    }
 }
 
 impl Drop for GksWs {
@@ -114,7 +120,7 @@ impl Drop for GksWs {
     }
 }
 
-impl GksUnactiveWs {
+impl GksInactiveWs {
     pub fn activate(&mut self) -> GksActiveWs {
         let wkid = self.0 .0.into();
         unsafe { gks_activate_ws(wkid) }
@@ -126,7 +132,7 @@ impl GksUnactiveWs {
     }
 }
 
-impl Deref for GksUnactiveWs {
+impl Deref for GksInactiveWs {
     type Target = GksWs;
 
     fn deref(&self) -> &Self::Target {
@@ -134,15 +140,15 @@ impl Deref for GksUnactiveWs {
     }
 }
 
-impl DerefMut for GksUnactiveWs {
+impl DerefMut for GksInactiveWs {
     fn deref_mut(&mut self) -> &mut Self::Target {
         &mut self.0
     }
 }
 
 impl<'a> GksActiveWs<'a> {
-    pub fn deactivate(self) -> &'a mut GksUnactiveWs {
-        let p = self.0 as *mut GksUnactiveWs;
+    pub fn deactivate(self) -> &'a mut GksInactiveWs {
+        let p = self.0 as *mut GksInactiveWs;
         unsafe { p.as_mut().unwrap_unchecked() }
     }
 }
