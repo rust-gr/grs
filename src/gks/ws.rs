@@ -15,7 +15,7 @@ pub struct GksWs(NonZeroI32);
 pub struct GksUnactiveWs(GksWs);
 pub struct GksActiveWs<'a>(&'a mut GksUnactiveWs);
 
-#[derive(Debug)]
+#[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub enum GksOpenWsError {
     InvalidState,
     InvalidId,
@@ -26,7 +26,7 @@ pub enum GksOpenWsError {
     Unknown,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub enum GksRegenerationFlag {
     Postpone = GKS_K_POSTPONE_FLAG as isize,
     Perform = GKS_K_PERFORM_FLAG as isize,

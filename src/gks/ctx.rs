@@ -1,5 +1,6 @@
 use crate::ffi::gks::{gks_close_gks, gks_open_gks};
 use ::core::ffi::c_int;
+use ::core::fmt;
 use ::core::ops::Deref;
 use ::std::sync::{Mutex, MutexGuard, TryLockError};
 
@@ -8,7 +9,7 @@ static GKS_MUTEX: Mutex<bool> = Mutex::new(false);
 pub struct Gks;
 pub struct GksGuard(MutexGuard<'static, bool>);
 
-#[derive(Debug)]
+#[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub enum GksTryLockError {
     Closed,
     WouldBlock,
@@ -111,5 +112,14 @@ impl Deref for GksGuard {
 
     fn deref(&self) -> &Self::Target {
         &Gks
+    }
+}
+
+impl fmt::Display for GksTryLockError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            GksTryLockError::Closed => f.write_str("locking closed GKS"),
+            GksTryLockError::WouldBlock => TryLockError::<bool>::WouldBlock.fmt(f),
+        }
     }
 }
