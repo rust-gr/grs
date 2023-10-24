@@ -1,5 +1,10 @@
 pub mod ctx;
-pub mod out;
 pub mod ws;
 
-pub use ctx::{scope, Gks};
+use ::core::num::NonZeroI32;
+use ::std::collections::HashMap;
+
+#[derive(Debug)]
+pub struct Gks {
+    workstations: HashMap<NonZeroI32, bool>,
+}
