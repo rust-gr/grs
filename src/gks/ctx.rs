@@ -15,15 +15,11 @@ impl Gks {
     pub fn open(errfil: c_int) -> Option<Self> {
         match mem::replace(lock().deref_mut(), true) {
             true => None,
-            false => unsafe {
-                gks_open_gks(errfil);
-                Some(Self::assume_open())
+            false => {
+                unsafe { gks_open_gks(errfil) }
+                Some(Self)
             }
         }
-    }
-
-    pub unsafe fn assume_open() -> Self {
-        Self { workstations: Default::default() }
     }
 }
 

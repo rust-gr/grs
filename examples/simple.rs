@@ -1,15 +1,19 @@
+use grs::gks::{ws::GksRegenerationFlag, Gks};
 use std::io::{stdin, Read};
-use grs::gks::{self, ws::GksRegenerationFlag};
+
+fn run() -> Option<()> {
+    let wkid = 1.try_into().ok()?;
+    let x = &[0., 1.];
+    let mut gks = Gks::open(0)?;
+    gks.open_ws(wkid, None, None)?;
+    let mut gks = gks.activate(wkid).ok()?;
+    gks.polyline(x.len(), x, x).ok()?;
+    let mut gks = gks.deactivate_all();
+    gks.ws(wkid)?.update(GksRegenerationFlag::Perform);
+    stdin().bytes().next();
+    Some(())
+}
 
 fn main() {
-    gks::scope(0, |gks| {
-        let mut ws = gks.open_ws(1, None, None).unwrap();
-        ws.active_scope(|ws| {
-            let x = &[0., 1.];
-            ws.polyline(x.len(), x, x)
-                .expect("`x.len()` cannot be greater than number of elements in `x`");
-        });
-        ws.update(GksRegenerationFlag::Perform);
-        stdin().bytes().next();
-    });
+    run().unwrap();
 }

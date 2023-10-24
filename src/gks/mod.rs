@@ -1,10 +1,9 @@
 pub mod ctx;
+pub mod out;
 pub mod ws;
 
-use ::core::num::NonZeroI32;
-use ::std::collections::HashMap;
+#[derive(Debug)]
+pub struct Gks;
 
 #[derive(Debug)]
-pub struct Gks {
-    workstations: HashMap<NonZeroI32, bool>,
-}
+pub struct ActiveGks(Gks);

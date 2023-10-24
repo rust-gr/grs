@@ -1,5 +1,5 @@
-use super::ws::GksActiveWs;
-use crate::ffi::gks::{gks_polyline, gks_polymarker, gks_text, gks_fillarea};
+use super::ActiveGks;
+use crate::ffi::gks::{gks_fillarea, gks_polyline, gks_polymarker, gks_text};
 use ::core::ffi::CStr;
 use ::core::fmt;
 use ::core::num::TryFromIntError;
@@ -27,8 +27,8 @@ fn check_that(cond: bool) -> Result {
     }
 }
 
-impl GksActiveWs<'_> {
-    pub fn polyline(&self, n: usize, x: &[f64], y: &[f64]) -> Result {
+impl ActiveGks {
+    pub fn polyline(&mut self, n: usize, x: &[f64], y: &[f64]) -> Result {
         check_that(n <= x.len() && n <= y.len())?;
         let n = n.try_into()?;
         let x = x.as_ptr() as *mut f64;
@@ -36,7 +36,7 @@ impl GksActiveWs<'_> {
         Ok(unsafe { gks_polyline(n, x, y) })
     }
 
-    pub fn polymarker(&self, n: usize, x: &[f64], y: &[f64]) -> Result {
+    pub fn polymarker(&mut self, n: usize, x: &[f64], y: &[f64]) -> Result {
         check_that(n <= x.len() && n <= y.len())?;
         let n = n.try_into()?;
         let x = x.as_ptr() as *mut f64;
@@ -44,12 +44,12 @@ impl GksActiveWs<'_> {
         Ok(unsafe { gks_polymarker(n, x, y) })
     }
 
-    pub fn text(&self, (x, y): (f64, f64), s: impl AsRef<CStr>) {
+    pub fn text(&mut self, (x, y): (f64, f64), s: impl AsRef<CStr>) {
         let p = s.as_ref().as_ptr().cast_mut();
         unsafe { gks_text(x, y, p) }
     }
 
-    pub fn fillarea(n: usize, x: &[f64], y: &[f64]) -> Result {
+    pub fn fillarea(&mut self, n: usize, x: &[f64], y: &[f64]) -> Result {
         let n = n.try_into()?;
         let x = x.as_ptr() as *mut f64;
         let y = y.as_ptr() as *mut f64;
