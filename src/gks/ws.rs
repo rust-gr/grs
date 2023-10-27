@@ -11,7 +11,6 @@ use ::core::ffi::{c_int, CStr};
 use ::core::marker::PhantomData;
 use ::core::num::NonZeroI32;
 use ::core::ops::{Deref, DerefMut};
-use ::core::ptr::addr_of_mut;
 
 struct GksWsData {
     #[allow(dead_code)]
@@ -53,8 +52,7 @@ pub enum GksRegenerationFlag {
 
 fn query_state() -> GksState {
     let mut state = 0;
-    let stateptr = addr_of_mut!(state);
-    unsafe { gks_inq_operating_state(stateptr) }
+    unsafe { gks_inq_operating_state(&mut state) }
     match state {
         GKS_K_GKCL => GksState::Closed,
         GKS_K_WSOP => GksState::Open,
@@ -69,10 +67,7 @@ fn query_ws(id: NonZeroI32) -> Option<GksWsData> {
     let mut errind = 0;
     let mut conid = 0;
     let mut wtype = 0;
-    let errptr = addr_of_mut!(errind);
-    let conptr = addr_of_mut!(conid);
-    let typeptr = addr_of_mut!(wtype);
-    unsafe { gks_inq_ws_conntype(id, errptr, conptr, typeptr) }
+    unsafe { gks_inq_ws_conntype(id, &mut errind, &mut conid, &mut wtype) }
     match errind {
         GKS_K_ERROR => None,
         GKS_K_NO_ERROR => Some(GksWsData { conid, wtype }),
@@ -139,11 +134,8 @@ impl ActiveGks {
         let mut errind = 0;
         let mut remaining = 0;
         let mut wkid = 0;
-        let errptr = addr_of_mut!(errind);
-        let remptr = addr_of_mut!(remaining);
-        let idptr = addr_of_mut!(wkid);
         loop {
-            unsafe { gks_inq_active_ws(1, errptr, remptr, idptr) }
+            unsafe { gks_inq_active_ws(1, &mut errind, &mut remaining, &mut wkid) }
             if remaining == 0 {
                 break self.0;
             }
