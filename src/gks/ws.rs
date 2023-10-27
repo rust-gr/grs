@@ -12,13 +12,6 @@ use ::core::marker::PhantomData;
 use ::core::num::NonZeroI32;
 use ::core::ops::{Deref, DerefMut};
 
-struct GksWsData {
-    #[allow(dead_code)]
-    conid: c_int,
-    #[allow(dead_code)]
-    wtype: c_int,
-}
-
 enum GksState {
     Closed = GKS_K_GKCL as isize,
     Open = GKS_K_WSOP as isize,
@@ -62,15 +55,13 @@ fn query_state() -> GksState {
     }
 }
 
-fn query_ws(id: NonZeroI32) -> Option<GksWsData> {
+fn query_ws_is_open(id: NonZeroI32) -> bool {
     let id = id.into();
     let mut errind = 0;
-    let mut conid = 0;
-    let mut wtype = 0;
-    unsafe { gks_inq_ws_conntype(id, &mut errind, &mut conid, &mut wtype) }
+    unsafe { gks_inq_ws_conntype(id, &mut errind, &mut 0, &mut 0) }
     match errind {
-        GKS_K_ERROR => None,
-        GKS_K_NO_ERROR => Some(GksWsData { conid, wtype }),
+        GKS_K_ERROR => false,
+        GKS_K_NO_ERROR => true,
         _ => unreachable!(),
     }
 }
@@ -94,15 +85,18 @@ impl Gks {
         let id = wkid.into();
         let conid = conid.map_or(GKS_K_CONID_DEFAULT, |s| s.as_ptr().cast_mut());
         let wtype = wtype.map_or(GKS_K_WSTYPE_DEFAULT, Into::into);
-        let None = query_ws(wkid) else {
+        if query_ws_is_open(wkid) {
             return None;
-        };
+        }
         unsafe { gks_open_ws(id, conid, wtype) }
         self.ws(wkid)
     }
 
     pub fn ws(&mut self, wkid: NonZeroI32) -> Option<GksWs> {
-        query_ws(wkid).map(|_| self.new_ws(wkid))
+        match query_ws_is_open(wkid) {
+            true => Some(self.new_ws(wkid)),
+            false => None,
+        }
     }
 
     pub fn activate(self, wkid: NonZeroI32) -> Result<ActiveGks, Gks> {
@@ -131,11 +125,10 @@ impl ActiveGks {
     }
 
     pub fn deactivate_all(self) -> Gks {
-        let mut errind = 0;
         let mut remaining = 0;
         let mut wkid = 0;
         loop {
-            unsafe { gks_inq_active_ws(1, &mut errind, &mut remaining, &mut wkid) }
+            unsafe { gks_inq_active_ws(1, &mut 0, &mut remaining, &mut wkid) }
             if remaining == 0 {
                 break self.0;
             }
