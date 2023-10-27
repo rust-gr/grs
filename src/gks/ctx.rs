@@ -21,6 +21,13 @@ impl Gks {
             }
         }
     }
+
+    pub unsafe fn assume_open() -> Option<Self> {
+        match mem::replace(lock().deref_mut(), true) {
+            true => None,
+            false => Some(Self),
+        }
+    }
 }
 
 impl Drop for Gks {
