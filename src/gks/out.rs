@@ -31,16 +31,16 @@ impl ActiveGks {
     pub fn polyline(&mut self, n: usize, x: &[f64], y: &[f64]) -> Result {
         check_that(n <= x.len() && n <= y.len())?;
         let n = n.try_into()?;
-        let x = x.as_ptr() as *mut f64;
-        let y = y.as_ptr() as *mut f64;
+        let x = x.as_ptr().cast_mut();
+        let y = y.as_ptr().cast_mut();
         Ok(unsafe { gks_polyline(n, x, y) })
     }
 
     pub fn polymarker(&mut self, n: usize, x: &[f64], y: &[f64]) -> Result {
         check_that(n <= x.len() && n <= y.len())?;
         let n = n.try_into()?;
-        let x = x.as_ptr() as *mut f64;
-        let y = y.as_ptr() as *mut f64;
+        let x = x.as_ptr().cast_mut();
+        let y = y.as_ptr().cast_mut();
         Ok(unsafe { gks_polymarker(n, x, y) })
     }
 
@@ -51,8 +51,8 @@ impl ActiveGks {
 
     pub fn fillarea(&mut self, n: usize, x: &[f64], y: &[f64]) -> Result {
         let n = n.try_into()?;
-        let x = x.as_ptr() as *mut f64;
-        let y = y.as_ptr() as *mut f64;
+        let x = x.as_ptr().cast_mut();
+        let y = y.as_ptr().cast_mut();
         Ok(unsafe { gks_fillarea(n, x, y) })
     }
 
