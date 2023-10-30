@@ -14,10 +14,10 @@ use ::core::num::NonZeroI32;
 use ::core::ops::{Deref, DerefMut};
 
 enum GksState {
-    Closed = GKS_K_GKCL as isize,
-    Open = GKS_K_WSOP as isize,
-    Active = GKS_K_WSAC as isize,
-    SegmentOpen = GKS_K_SGOP as isize,
+    Closed = GKS_K_GKCL as _,
+    Open = GKS_K_WSOP as _,
+    Active = GKS_K_WSAC as _,
+    SegmentOpen = GKS_K_SGOP as _,
 }
 
 #[derive(Debug)]
@@ -39,9 +39,9 @@ pub struct ActiveGksWs<'a> {
 
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub enum GksRegenerationFlag {
-    Postpone = GKS_K_POSTPONE_FLAG as isize,
-    Perform = GKS_K_PERFORM_FLAG as isize,
-    WritePage = GKS_K_WRITE_PAGE_FLAG as isize,
+    Postpone = GKS_K_POSTPONE_FLAG as _,
+    Perform = GKS_K_PERFORM_FLAG as _,
+    WritePage = GKS_K_WRITE_PAGE_FLAG as _,
 }
 
 fn query_state() -> GksState {
