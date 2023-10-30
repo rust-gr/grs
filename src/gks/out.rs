@@ -1,5 +1,9 @@
 use super::ActiveGks;
-use crate::ffi::gks::{gks_cellarray, gks_fillarea, gks_polyline, gks_polymarker, gks_text};
+use crate::ffi::gks::{
+    gks_cellarray, gks_fillarea, gks_gdp, gks_polyline, gks_polymarker, gks_text,
+    GKS_K_GDP_DRAW_LINES, GKS_K_GDP_DRAW_MARKERS, GKS_K_GDP_DRAW_PATH, GKS_K_GDP_DRAW_TRIANGLES,
+    GKS_K_GDP_FILL_POLYGONS,
+};
 use crate::ffi::gkscore::MAX_COLOR;
 use ::core::ffi::{c_int, CStr};
 use ::core::fmt;
@@ -7,6 +11,14 @@ use ::core::marker::PhantomData;
 use ::core::num::{NonZeroUsize, TryFromIntError};
 
 pub const MAX_COLOR_INDEX: usize = MAX_COLOR as _;
+
+pub enum GksPrimitive {
+    Path = GKS_K_GDP_DRAW_PATH as _,
+    Lines = GKS_K_GDP_DRAW_LINES as _,
+    Markers = GKS_K_GDP_DRAW_MARKERS as _,
+    Triangles = GKS_K_GDP_DRAW_TRIANGLES as _,
+    Polygons = GKS_K_GDP_FILL_POLYGONS as _,
+}
 
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct GksError;
@@ -49,6 +61,7 @@ impl ActiveGks {
     }
 
     pub fn fillarea(&mut self, n: usize, x: &[f64], y: &[f64]) -> Result<()> {
+        check_that(n <= x.len() && n <= y.len())?;
         let n = n.try_into()?;
         let x = x.as_ptr().cast_mut();
         let y = y.as_ptr().cast_mut();
@@ -71,6 +84,24 @@ impl ActiveGks {
             slice: _,
         } = color_array;
         Ok(unsafe { gks_cellarray(px, py, qx, qy, dx, dy, sx, sy, nx, ny, data) })
+    }
+
+    pub fn gdp(
+        &mut self,
+        n: usize,
+        x: &[f64],
+        y: &[f64],
+        primitive: GksPrimitive,
+        data_records: &[c_int],
+    ) -> Result<()> {
+        check_that(n <= x.len() && n <= y.len())?;
+        let n = n.try_into()?;
+        let x = x.as_ptr().cast_mut();
+        let y = y.as_ptr().cast_mut();
+        let prim = primitive as c_int;
+        let ldr = data_records.len().try_into()?;
+        let dr = data_records.as_ptr().cast_mut();
+        Ok(unsafe { gks_gdp(n, x, y, prim, ldr, dr) })
     }
 }
 
