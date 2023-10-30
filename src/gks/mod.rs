@@ -3,7 +3,7 @@ pub mod out;
 pub mod ws;
 
 #[derive(Debug)]
-pub struct Gks;
+pub struct Gks(());
 
 #[derive(Debug)]
 pub struct ActiveGks(Gks);
