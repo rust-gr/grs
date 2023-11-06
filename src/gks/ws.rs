@@ -2,9 +2,10 @@ use super::{ActiveGks, Gks};
 use crate::ffi::gks::{
     gks_activate_ws, gks_clear_ws, gks_close_ws, gks_configure_ws, gks_deactivate_ws,
     gks_inq_active_ws, gks_inq_operating_state, gks_inq_ws_conntype, gks_message, gks_open_ws,
-    gks_set_ws_viewport, gks_set_ws_window, gks_update_ws, GKS_K_CONID_DEFAULT, GKS_K_ERROR,
-    GKS_K_GKCL, GKS_K_NO_ERROR, GKS_K_PERFORM_FLAG, GKS_K_POSTPONE_FLAG, GKS_K_SGOP,
-    GKS_K_WRITE_PAGE_FLAG, GKS_K_WSAC, GKS_K_WSOP, GKS_K_WSTYPE_DEFAULT,
+    gks_set_ws_viewport, gks_set_ws_window, gks_update_ws, GKS_K_CLEAR_ALWAYS,
+    GKS_K_CLEAR_CONDITIONALLY, GKS_K_CONID_DEFAULT, GKS_K_ERROR, GKS_K_GKCL, GKS_K_NO_ERROR,
+    GKS_K_PERFORM_FLAG, GKS_K_POSTPONE_FLAG, GKS_K_SGOP, GKS_K_WRITE_PAGE_FLAG, GKS_K_WSAC,
+    GKS_K_WSOP, GKS_K_WSTYPE_DEFAULT,
 };
 use crate::util::f64range::F64Range;
 use ::core::ffi::{c_int, CStr};
@@ -188,9 +189,14 @@ impl ActiveGksWs<'_> {
         unsafe { gks_configure_ws(wkid) }
     }
 
-    pub fn clear(&self, cofl: c_int) {
+    pub fn clear(&self) {
         let wkid = self.id.into();
-        unsafe { gks_clear_ws(wkid, cofl) }
+        unsafe { gks_clear_ws(wkid, GKS_K_CLEAR_ALWAYS) }
+    }
+
+    pub fn clear_conditionally(&self) {
+        let wkid = self.id.into();
+        unsafe { gks_clear_ws(wkid, GKS_K_CLEAR_CONDITIONALLY) }
     }
 
     pub fn set_window(&self, x: F64Range, y: F64Range) {
