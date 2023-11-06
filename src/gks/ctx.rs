@@ -1,5 +1,7 @@
 use super::Gks;
-use crate::ffi::gks::{gks_emergency_close, gks_open_gks, gks_set_viewport, gks_set_window};
+use crate::ffi::gks::{
+    gks_emergency_close, gks_open_gks, gks_set_resize_behaviour, gks_set_viewport, gks_set_window,
+};
 use crate::util::f64range::F64Range;
 use ::core::ffi::c_int;
 use ::core::mem;
@@ -30,16 +32,21 @@ impl Gks {
         }
     }
 
-    pub fn set_window(&self, tnr: c_int, x: F64Range, y: F64Range) {
+    pub fn set_window(&mut self, tnr: c_int, x: F64Range, y: F64Range) {
         let (xmin, xmax) = x.into();
         let (ymin, ymax) = y.into();
         unsafe { gks_set_window(tnr, xmin, xmax, ymin, ymax) }
     }
 
-    pub fn set_viewport(&self, tnr: c_int, x: F64Range, y: F64Range) {
+    pub fn set_viewport(&mut self, tnr: c_int, x: F64Range, y: F64Range) {
         let (xmin, xmax) = x.into();
         let (ymin, ymax) = y.into();
         unsafe { gks_set_viewport(tnr, xmin, xmax, ymin, ymax) }
+    }
+
+    pub fn set_resize_behavior(&mut self, resize: bool) {
+        let flag = resize.into();
+        unsafe { gks_set_resize_behaviour(flag) }
     }
 }
 
