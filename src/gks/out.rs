@@ -115,6 +115,7 @@ fn check_that(cond: bool) -> Result<()> {
 }
 
 impl ActiveGks {
+    #[allow(clippy::unit_arg)]
     pub fn polyline(&mut self, n: usize, x: &[f64], y: &[f64]) -> Result<()> {
         check_that(n <= x.len() && n <= y.len())?;
         let n = n.try_into()?;
@@ -123,6 +124,7 @@ impl ActiveGks {
         Ok(unsafe { gks_polyline(n, x, y) })
     }
 
+    #[allow(clippy::unit_arg)]
     pub fn polymarker(&mut self, n: usize, x: &[f64], y: &[f64]) -> Result<()> {
         check_that(n <= x.len() && n <= y.len())?;
         let n = n.try_into()?;
@@ -136,6 +138,7 @@ impl ActiveGks {
         unsafe { gks_text(x, y, p) }
     }
 
+    #[allow(clippy::unit_arg)]
     pub fn fillarea(&mut self, n: usize, x: &[f64], y: &[f64]) -> Result<()> {
         check_that(n <= x.len() && n <= y.len())?;
         let n = n.try_into()?;
@@ -144,6 +147,7 @@ impl ActiveGks {
         Ok(unsafe { gks_fillarea(n, x, y) })
     }
 
+    #[allow(clippy::unit_arg)]
     pub fn cellarray(
         &mut self,
         ((px, py), start): ((f64, f64), (usize, usize)),
@@ -162,6 +166,7 @@ impl ActiveGks {
         Ok(unsafe { gks_cellarray(px, py, qx, qy, dx, dy, sx, sy, nx, ny, data) })
     }
 
+    #[allow(clippy::unit_arg)]
     pub fn gdp(
         &mut self,
         n: usize,
@@ -182,38 +187,38 @@ impl ActiveGks {
 }
 
 impl Gks {
-    pub fn set_polyline_type(&mut self, ltype: impl TryInto<c_int>) -> Result<()> {
-        let ltype = ltype.try_into().map_err(|_| GksError)?;
-        Ok(unsafe { gks_set_pline_linetype(ltype) })
+    pub fn set_polyline_type(&mut self, ltype: impl Into<c_int>) {
+        let ltype = ltype.into();
+        unsafe { gks_set_pline_linetype(ltype) }
     }
 
     pub fn set_polyline_width(&mut self, width: f64) {
         unsafe { gks_set_pline_linewidth(width) }
     }
 
-    pub fn set_polyline_color_index(&mut self, coli: impl TryInto<c_int>) -> Result<()> {
-        let coli = coli.try_into().map_err(|_| GksError)?;
-        Ok(unsafe { gks_set_pline_color_index(coli) })
+    pub fn set_polyline_color_index(&mut self, coli: impl Into<c_int>) {
+        let coli = coli.into();
+        unsafe { gks_set_pline_color_index(coli) }
     }
 
-    pub fn set_polymark_type(&mut self, mtype: impl TryInto<c_int>) -> Result<()> {
-        let mtype = mtype.try_into().map_err(|_| GksError)?;
-        Ok(unsafe { gks_set_pmark_type(mtype) })
+    pub fn set_polymark_type(&mut self, mtype: impl Into<c_int>) {
+        let mtype = mtype.into();
+        unsafe { gks_set_pmark_type(mtype) }
     }
 
     pub fn set_polymark_size(&mut self, size: f64) {
         unsafe { gks_set_pmark_size(size) }
     }
 
-    pub fn set_polymark_color_index(&mut self, coli: impl TryInto<c_int>) -> Result<()> {
-        let coli = coli.try_into().map_err(|_| GksError)?;
-        Ok(unsafe { gks_set_pmark_color_index(coli) })
+    pub fn set_polymark_color_index(&mut self, coli: impl Into<c_int>) {
+        let coli = coli.into();
+        unsafe { gks_set_pmark_color_index(coli) }
     }
 
-    pub fn set_text_fontprec(&mut self, font: impl TryInto<c_int>, prec: impl TryInto<c_int>) -> Result<()> {
-        let font = font.try_into().map_err(|_| GksError)?;
-        let prec = prec.try_into().map_err(|_| GksError)?;
-        Ok(unsafe { gks_set_text_fontprec(font, prec) })
+    pub fn set_text_fontprec(&mut self, font: impl Into<c_int>, prec: impl Into<c_int>) {
+        let font = font.into();
+        let prec = prec.into();
+        unsafe { gks_set_text_fontprec(font, prec) }
     }
 
     pub fn set_text_expansion_factor(&mut self, expfac: f64) {
@@ -224,9 +229,9 @@ impl Gks {
         unsafe { gks_set_text_spacing(spacing) }
     }
 
-    pub fn set_text_color_index(&mut self, coli: impl TryInto<c_int>) -> Result<()> {
-        let coli = coli.try_into().map_err(|_| GksError)?;
-        Ok(unsafe { gks_set_text_color_index(coli) })
+    pub fn set_text_color_index(&mut self, coli: impl Into<c_int>) {
+        let coli = coli.into();
+        unsafe { gks_set_text_color_index(coli) }
     }
 
     pub fn set_text_height(&mut self, height: f64) {
@@ -247,10 +252,14 @@ impl<'a> GksColorIndexArray<'a> {
         })
     }
 
-    pub unsafe fn new_unchecked(data: *const c_int, columns: c_int, rows: c_int) -> Self {
+    pub unsafe fn new_unchecked(
+        data: *const c_int,
+        columns: impl Into<c_int>,
+        rows: impl Into<c_int>,
+    ) -> Self {
         Self {
             data: data.cast_mut(),
-            dimensions: (columns, rows),
+            dimensions: (columns.into(), rows.into()),
             slice: PhantomData,
         }
     }
@@ -261,6 +270,8 @@ impl fmt::Display for GksError {
         f.write_str("error in GKS")
     }
 }
+
+impl std::error::Error for GksError {}
 
 impl From<TryFromIntError> for GksError {
     fn from(_value: TryFromIntError) -> Self {
