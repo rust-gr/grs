@@ -14,12 +14,13 @@ use ::core::num::NonZeroI32;
 use ::core::ops::{Deref, DerefMut};
 
 enum GksState {
-    Closed = GKS_K_GKCL as isize,
-    Open = GKS_K_WSOP as isize,
-    Active = GKS_K_WSAC as isize,
-    SegmentOpen = GKS_K_SGOP as isize,
+    Closed = GKS_K_GKCL as _,
+    Open = GKS_K_WSOP as _,
+    Active = GKS_K_WSAC as _,
+    SegmentOpen = GKS_K_SGOP as _,
 }
 
+#[must_use]
 #[derive(Debug)]
 pub enum MaybeActive {
     Active(ActiveGks),
@@ -39,9 +40,9 @@ pub struct ActiveGksWs<'a> {
 
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub enum GksRegenerationFlag {
-    Postpone = GKS_K_POSTPONE_FLAG as isize,
-    Perform = GKS_K_PERFORM_FLAG as isize,
-    WritePage = GKS_K_WRITE_PAGE_FLAG as isize,
+    Postpone = GKS_K_POSTPONE_FLAG as _,
+    Perform = GKS_K_PERFORM_FLAG as _,
+    WritePage = GKS_K_WRITE_PAGE_FLAG as _,
 }
 
 fn query_state() -> GksState {
@@ -56,8 +57,7 @@ fn query_state() -> GksState {
     }
 }
 
-fn query_ws_is_open(id: NonZeroI32) -> bool {
-    let id = id.into();
+fn query_ws_is_open(id: c_int) -> bool {
     let mut errind = 0;
     unsafe { gks_inq_ws_conntype(id, &mut errind, &mut 0, &mut 0) }
     match errind {
@@ -79,30 +79,34 @@ impl Gks {
 
     pub fn open_ws(
         &mut self,
-        wkid: NonZeroI32,
+        wkid: impl Into<c_int>,
         conid: Option<&CStr>,
-        wtype: Option<NonZeroI32>,
+        wtype: Option<c_int>,
     ) -> Option<GksWs> {
-        let id = wkid.into();
+        let wkid = wkid.into();
         let conid = conid.map_or(GKS_K_CONID_DEFAULT, |s| s.as_ptr().cast_mut());
-        let wtype = wtype.map_or(GKS_K_WSTYPE_DEFAULT, Into::into);
+        let wtype = wtype.unwrap_or(GKS_K_WSTYPE_DEFAULT);
         if query_ws_is_open(wkid) {
             return None;
         }
-        unsafe { gks_open_ws(id, conid, wtype) }
+        unsafe { gks_open_ws(wkid, conid, wtype) }
         self.ws(wkid)
     }
 
-    pub fn ws(&mut self, wkid: NonZeroI32) -> Option<GksWs> {
+    pub fn ws(&mut self, wkid: impl Into<c_int>) -> Option<GksWs> {
+        let wkid = wkid.into();
         match query_ws_is_open(wkid) {
-            true => Some(self.new_ws(wkid)),
+            true => {
+                let nzid = wkid.try_into();
+                Some(self.new_ws(unsafe { nzid.unwrap_unchecked() }))
+            }
             false => None,
         }
     }
 
-    pub fn activate(self, wkid: NonZeroI32) -> Result<ActiveGks, Gks> {
-        let id = wkid.into();
-        unsafe { gks_activate_ws(id) }
+    pub fn activate(self, wkid: impl Into<c_int>) -> Result<ActiveGks, Gks> {
+        let wkid = wkid.into();
+        unsafe { gks_activate_ws(wkid) }
         match query_state() {
             GksState::Active => Ok(ActiveGks(self)),
             _ => Err(self),

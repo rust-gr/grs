@@ -32,13 +32,15 @@ impl Gks {
         }
     }
 
-    pub fn set_window(&mut self, tnr: c_int, x: F64Range, y: F64Range) {
+    pub fn set_window(&mut self, tnr: impl Into<c_int>, x: F64Range, y: F64Range) {
+        let tnr = tnr.into();
         let (xmin, xmax) = x.into();
         let (ymin, ymax) = y.into();
         unsafe { gks_set_window(tnr, xmin, xmax, ymin, ymax) }
     }
 
-    pub fn set_viewport(&mut self, tnr: c_int, x: F64Range, y: F64Range) {
+    pub fn set_viewport(&mut self, tnr: impl Into<c_int>, x: F64Range, y: F64Range) {
+        let tnr = tnr.into();
         let (xmin, xmax) = x.into();
         let (ymin, ymax) = y.into();
         unsafe { gks_set_viewport(tnr, xmin, xmax, ymin, ymax) }
