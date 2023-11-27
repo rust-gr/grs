@@ -1,4 +1,4 @@
-use super::{ActiveGks, Gks};
+use super::{ActiveGks, Gks, SegmentGks};
 use crate::ffi::gks::{
     gks_activate_ws, gks_clear_ws, gks_close_ws, gks_configure_ws, gks_deactivate_ws,
     gks_inq_active_ws, gks_inq_operating_state, gks_inq_ws_conntype, gks_message, gks_open_ws,
@@ -34,6 +34,11 @@ pub struct GksWs<'a> {
 
 #[derive(Debug)]
 pub struct ActiveGksWs<'a> {
+    inner: SegmentGksWs<'a>,
+}
+
+#[derive(Debug)]
+pub struct SegmentGksWs<'a> {
     gks: PhantomData<&'a mut Gks>,
     id: NonZeroI32,
 }
@@ -71,8 +76,10 @@ impl Gks {
     fn new_ws(&mut self, id: NonZeroI32) -> GksWs {
         GksWs {
             inner: ActiveGksWs {
-                gks: Default::default(),
-                id,
+                inner: SegmentGksWs {
+                    gks: Default::default(),
+                    id,
+                }
             },
         }
     }
@@ -115,12 +122,25 @@ impl Gks {
 }
 
 impl ActiveGks {
-    pub fn activate(&mut self, wkid: NonZeroI32) {
+    pub fn open_ws(
+        &mut self,
+        wkid: impl Into<c_int>,
+        conid: Option<&CStr>,
+        wtype: Option<c_int>,
+    ) -> Option<ActiveGksWs> {
+        self.0.open_ws(wkid, conid, wtype).map(|ws| ws.inner)
+    }
+
+    pub fn ws(&mut self, wkid: impl Into<c_int>) -> Option<ActiveGksWs> {
+        self.0.ws(wkid).map(|ws| ws.inner)
+    }
+
+    pub fn activate(&mut self, wkid: impl Into<c_int>) {
         let id = wkid.into();
         unsafe { gks_activate_ws(id) }
     }
 
-    pub fn deactivate(self, wkid: NonZeroI32) -> MaybeActive {
+    pub fn deactivate(self, wkid: impl Into<c_int>) -> MaybeActive {
         let id = wkid.into();
         unsafe { gks_deactivate_ws(id) }
         match query_state() {
@@ -142,17 +162,18 @@ impl ActiveGks {
     }
 }
 
-impl Deref for ActiveGks {
-    type Target = Gks;
-
-    fn deref(&self) -> &Self::Target {
-        &self.0
+impl SegmentGks {
+    pub fn open_ws(
+        &mut self,
+        wkid: impl Into<c_int>,
+        conid: Option<&CStr>,
+        wtype: Option<c_int>,
+    ) -> Option<SegmentGksWs> {
+        self.0.open_ws(wkid, conid, wtype).map(|ws| ws.inner)
     }
-}
 
-impl DerefMut for ActiveGks {
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        &mut self.0
+    pub fn ws(&mut self, wkid: impl Into<c_int>) -> Option<SegmentGksWs> {
+        self.0.ws(wkid).map(|ws| ws.inner)
     }
 }
 
@@ -171,13 +192,39 @@ impl<'a> Deref for GksWs<'a> {
     }
 }
 
-impl<'a> DerefMut for GksWs<'a> {
+impl DerefMut for GksWs<'_> {
     fn deref_mut(&mut self) -> &mut Self::Target {
         &mut self.inner
     }
 }
 
 impl ActiveGksWs<'_> {
+    pub fn clear(&self) {
+        let wkid = self.id.into();
+        unsafe { gks_clear_ws(wkid, GKS_K_CLEAR_ALWAYS) }
+    }
+
+    pub fn clear_conditionally(&self) {
+        let wkid = self.id.into();
+        unsafe { gks_clear_ws(wkid, GKS_K_CLEAR_CONDITIONALLY) }
+    }
+}
+
+impl<'a> Deref for ActiveGksWs<'a> {
+    type Target = SegmentGksWs<'a>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.inner
+    }
+}
+
+impl DerefMut for ActiveGksWs<'_> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.inner
+    }
+}
+
+impl SegmentGksWs<'_> {
     pub fn id(&self) -> NonZeroI32 {
         self.id
     }
@@ -191,16 +238,6 @@ impl ActiveGksWs<'_> {
     pub fn configure(&self) {
         let wkid = self.id.into();
         unsafe { gks_configure_ws(wkid) }
-    }
-
-    pub fn clear(&self) {
-        let wkid = self.id.into();
-        unsafe { gks_clear_ws(wkid, GKS_K_CLEAR_ALWAYS) }
-    }
-
-    pub fn clear_conditionally(&self) {
-        let wkid = self.id.into();
-        unsafe { gks_clear_ws(wkid, GKS_K_CLEAR_CONDITIONALLY) }
     }
 
     pub fn set_window(&self, x: F64Range, y: F64Range) {
