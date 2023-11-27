@@ -1,22 +1,24 @@
-use super::{ActiveGks, Gks};
+use super::macros::impl_each;
+use super::{ActiveGks, Gks, SegmentGks};
 use crate::ffi::gks::{
     gks_cellarray, gks_fillarea, gks_gdp, gks_polyline, gks_polymarker, gks_set_pline_color_index,
     gks_set_pline_linetype, gks_set_pline_linewidth, gks_set_pmark_color_index, gks_set_pmark_size,
-    gks_set_pmark_type, gks_set_text_color_index, gks_set_text_expfac, gks_set_text_fontprec,
-    gks_set_text_height, gks_set_text_spacing, gks_text, GKS_K_GDP_DRAW_LINES,
-    GKS_K_GDP_DRAW_MARKERS, GKS_K_GDP_DRAW_PATH, GKS_K_GDP_DRAW_TRIANGLES, GKS_K_GDP_FILL_POLYGONS,
-    GKS_K_LINETYPE_DASHED, GKS_K_LINETYPE_DASHED_DOTTED, GKS_K_LINETYPE_DASH_2_DOT,
-    GKS_K_LINETYPE_DASH_3_DOT, GKS_K_LINETYPE_DOTTED, GKS_K_LINETYPE_DOUBLE_DOT,
-    GKS_K_LINETYPE_LONG_DASH, GKS_K_LINETYPE_LONG_SHORT_DASH, GKS_K_LINETYPE_SOLID,
-    GKS_K_LINETYPE_SPACED_DASH, GKS_K_LINETYPE_SPACED_DOT, GKS_K_LINETYPE_TRIPLE_DOT,
-    GKS_K_MARKERTYPE_ASTERISK, GKS_K_MARKERTYPE_BOWTIE, GKS_K_MARKERTYPE_CIRCLE,
-    GKS_K_MARKERTYPE_DIAGONAL_CROSS, GKS_K_MARKERTYPE_DIAMOND, GKS_K_MARKERTYPE_DOT,
-    GKS_K_MARKERTYPE_HEPTAGON, GKS_K_MARKERTYPE_HEXAGON, GKS_K_MARKERTYPE_HLINE,
-    GKS_K_MARKERTYPE_HOLLOW_PLUS, GKS_K_MARKERTYPE_HOURGLASS, GKS_K_MARKERTYPE_OCTAGON,
-    GKS_K_MARKERTYPE_OMARK, GKS_K_MARKERTYPE_PENTAGON, GKS_K_MARKERTYPE_PLUS,
-    GKS_K_MARKERTYPE_SOLID_BOWTIE, GKS_K_MARKERTYPE_SOLID_CIRCLE, GKS_K_MARKERTYPE_SOLID_DIAMOND,
-    GKS_K_MARKERTYPE_SOLID_HGLASS, GKS_K_MARKERTYPE_SOLID_PLUS, GKS_K_MARKERTYPE_SOLID_SQUARE,
-    GKS_K_MARKERTYPE_SOLID_STAR, GKS_K_MARKERTYPE_SOLID_TRI_DOWN, GKS_K_MARKERTYPE_SOLID_TRI_LEFT,
+    gks_set_pmark_type, gks_set_resize_behaviour, gks_set_text_color_index, gks_set_text_expfac,
+    gks_set_text_fontprec, gks_set_text_height, gks_set_text_spacing, gks_set_viewport,
+    gks_set_window, gks_text, GKS_K_GDP_DRAW_LINES, GKS_K_GDP_DRAW_MARKERS, GKS_K_GDP_DRAW_PATH,
+    GKS_K_GDP_DRAW_TRIANGLES, GKS_K_GDP_FILL_POLYGONS, GKS_K_LINETYPE_DASHED,
+    GKS_K_LINETYPE_DASHED_DOTTED, GKS_K_LINETYPE_DASH_2_DOT, GKS_K_LINETYPE_DASH_3_DOT,
+    GKS_K_LINETYPE_DOTTED, GKS_K_LINETYPE_DOUBLE_DOT, GKS_K_LINETYPE_LONG_DASH,
+    GKS_K_LINETYPE_LONG_SHORT_DASH, GKS_K_LINETYPE_SOLID, GKS_K_LINETYPE_SPACED_DASH,
+    GKS_K_LINETYPE_SPACED_DOT, GKS_K_LINETYPE_TRIPLE_DOT, GKS_K_MARKERTYPE_ASTERISK,
+    GKS_K_MARKERTYPE_BOWTIE, GKS_K_MARKERTYPE_CIRCLE, GKS_K_MARKERTYPE_DIAGONAL_CROSS,
+    GKS_K_MARKERTYPE_DIAMOND, GKS_K_MARKERTYPE_DOT, GKS_K_MARKERTYPE_HEPTAGON,
+    GKS_K_MARKERTYPE_HEXAGON, GKS_K_MARKERTYPE_HLINE, GKS_K_MARKERTYPE_HOLLOW_PLUS,
+    GKS_K_MARKERTYPE_HOURGLASS, GKS_K_MARKERTYPE_OCTAGON, GKS_K_MARKERTYPE_OMARK,
+    GKS_K_MARKERTYPE_PENTAGON, GKS_K_MARKERTYPE_PLUS, GKS_K_MARKERTYPE_SOLID_BOWTIE,
+    GKS_K_MARKERTYPE_SOLID_CIRCLE, GKS_K_MARKERTYPE_SOLID_DIAMOND, GKS_K_MARKERTYPE_SOLID_HGLASS,
+    GKS_K_MARKERTYPE_SOLID_PLUS, GKS_K_MARKERTYPE_SOLID_SQUARE, GKS_K_MARKERTYPE_SOLID_STAR,
+    GKS_K_MARKERTYPE_SOLID_TRI_DOWN, GKS_K_MARKERTYPE_SOLID_TRI_LEFT,
     GKS_K_MARKERTYPE_SOLID_TRI_RIGHT, GKS_K_MARKERTYPE_SOLID_TRI_UP, GKS_K_MARKERTYPE_SQUARE,
     GKS_K_MARKERTYPE_STAR, GKS_K_MARKERTYPE_STAR_4, GKS_K_MARKERTYPE_STAR_5,
     GKS_K_MARKERTYPE_STAR_6, GKS_K_MARKERTYPE_STAR_7, GKS_K_MARKERTYPE_STAR_8,
@@ -24,6 +26,7 @@ use crate::ffi::gks::{
     GKS_K_MARKERTYPE_VLINE,
 };
 use crate::ffi::gkscore::MAX_COLOR;
+use crate::util::f64range::F64Range;
 use ::core::ffi::{c_int, CStr};
 use ::core::fmt;
 use ::core::marker::PhantomData;
@@ -114,7 +117,79 @@ fn check_that(cond: bool) -> Result<()> {
     }
 }
 
-impl ActiveGks {
+impl_each! {(Gks, ActiveGks, SegmentGks) {
+    pub fn set_window(&mut self, tnr: impl Into<c_int>, x: F64Range, y: F64Range) {
+        let tnr = tnr.into();
+        let (xmin, xmax) = x.into();
+        let (ymin, ymax) = y.into();
+        unsafe { gks_set_window(tnr, xmin, xmax, ymin, ymax) }
+    }
+
+    pub fn set_viewport(&mut self, tnr: impl Into<c_int>, x: F64Range, y: F64Range) {
+        let tnr = tnr.into();
+        let (xmin, xmax) = x.into();
+        let (ymin, ymax) = y.into();
+        unsafe { gks_set_viewport(tnr, xmin, xmax, ymin, ymax) }
+    }
+
+    pub fn set_resize_behavior(&mut self, resize: bool) {
+        let flag = resize.into();
+        unsafe { gks_set_resize_behaviour(flag) }
+    }
+
+    pub fn set_polyline_type(&mut self, ltype: impl Into<c_int>) {
+        let ltype = ltype.into();
+        unsafe { gks_set_pline_linetype(ltype) }
+    }
+
+    pub fn set_polyline_width(&mut self, width: f64) {
+        unsafe { gks_set_pline_linewidth(width) }
+    }
+
+    pub fn set_polyline_color_index(&mut self, coli: impl Into<c_int>) {
+        let coli = coli.into();
+        unsafe { gks_set_pline_color_index(coli) }
+    }
+
+    pub fn set_polymark_type(&mut self, mtype: impl Into<c_int>) {
+        let mtype = mtype.into();
+        unsafe { gks_set_pmark_type(mtype) }
+    }
+
+    pub fn set_polymark_size(&mut self, size: f64) {
+        unsafe { gks_set_pmark_size(size) }
+    }
+
+    pub fn set_polymark_color_index(&mut self, coli: impl Into<c_int>) {
+        let coli = coli.into();
+        unsafe { gks_set_pmark_color_index(coli) }
+    }
+
+    pub fn set_text_fontprec(&mut self, font: impl Into<c_int>, prec: impl Into<c_int>) {
+        let font = font.into();
+        let prec = prec.into();
+        unsafe { gks_set_text_fontprec(font, prec) }
+    }
+
+    pub fn set_text_expansion_factor(&mut self, expfac: f64) {
+        unsafe { gks_set_text_expfac(expfac) }
+    }
+
+    pub fn set_text_spacing(&mut self, spacing: f64) {
+        unsafe { gks_set_text_spacing(spacing) }
+    }
+
+    pub fn set_text_color_index(&mut self, coli: impl Into<c_int>) {
+        let coli = coli.into();
+        unsafe { gks_set_text_color_index(coli) }
+    }
+
+    pub fn set_text_height(&mut self, height: f64) {
+        unsafe { gks_set_text_height(height) }
+    }
+}}
+
+impl_each! {(ActiveGks, SegmentGks) {
     #[allow(clippy::unit_arg)]
     pub fn polyline(&mut self, n: usize, x: &[f64], y: &[f64]) -> Result<()> {
         check_that(n <= x.len() && n <= y.len())?;
@@ -184,60 +259,7 @@ impl ActiveGks {
         let dr = data_records.as_ptr().cast_mut();
         Ok(unsafe { gks_gdp(n, x, y, prim, ldr, dr) })
     }
-}
-
-impl Gks {
-    pub fn set_polyline_type(&mut self, ltype: impl Into<c_int>) {
-        let ltype = ltype.into();
-        unsafe { gks_set_pline_linetype(ltype) }
-    }
-
-    pub fn set_polyline_width(&mut self, width: f64) {
-        unsafe { gks_set_pline_linewidth(width) }
-    }
-
-    pub fn set_polyline_color_index(&mut self, coli: impl Into<c_int>) {
-        let coli = coli.into();
-        unsafe { gks_set_pline_color_index(coli) }
-    }
-
-    pub fn set_polymark_type(&mut self, mtype: impl Into<c_int>) {
-        let mtype = mtype.into();
-        unsafe { gks_set_pmark_type(mtype) }
-    }
-
-    pub fn set_polymark_size(&mut self, size: f64) {
-        unsafe { gks_set_pmark_size(size) }
-    }
-
-    pub fn set_polymark_color_index(&mut self, coli: impl Into<c_int>) {
-        let coli = coli.into();
-        unsafe { gks_set_pmark_color_index(coli) }
-    }
-
-    pub fn set_text_fontprec(&mut self, font: impl Into<c_int>, prec: impl Into<c_int>) {
-        let font = font.into();
-        let prec = prec.into();
-        unsafe { gks_set_text_fontprec(font, prec) }
-    }
-
-    pub fn set_text_expansion_factor(&mut self, expfac: f64) {
-        unsafe { gks_set_text_expfac(expfac) }
-    }
-
-    pub fn set_text_spacing(&mut self, spacing: f64) {
-        unsafe { gks_set_text_spacing(spacing) }
-    }
-
-    pub fn set_text_color_index(&mut self, coli: impl Into<c_int>) {
-        let coli = coli.into();
-        unsafe { gks_set_text_color_index(coli) }
-    }
-
-    pub fn set_text_height(&mut self, height: f64) {
-        unsafe { gks_set_text_height(height) }
-    }
-}
+}}
 
 impl<'a> GksColorIndexArray<'a> {
     pub fn with_stride(data: &'a [c_int], stride: NonZeroUsize) -> Result<Self> {
