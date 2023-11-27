@@ -1,24 +1,17 @@
 use super::{ActiveGks, Gks, SegmentGks};
+use super::util::{query_state, GksState};
 use crate::ffi::gks::{
     gks_activate_ws, gks_clear_ws, gks_close_ws, gks_configure_ws, gks_deactivate_ws,
-    gks_inq_active_ws, gks_inq_operating_state, gks_inq_ws_conntype, gks_message, gks_open_ws,
-    gks_set_ws_viewport, gks_set_ws_window, gks_update_ws, GKS_K_CLEAR_ALWAYS,
-    GKS_K_CLEAR_CONDITIONALLY, GKS_K_CONID_DEFAULT, GKS_K_ERROR, GKS_K_GKCL, GKS_K_NO_ERROR,
-    GKS_K_PERFORM_FLAG, GKS_K_POSTPONE_FLAG, GKS_K_SGOP, GKS_K_WRITE_PAGE_FLAG, GKS_K_WSAC,
-    GKS_K_WSOP, GKS_K_WSTYPE_DEFAULT,
+    gks_inq_active_ws, gks_inq_ws_conntype, gks_message, gks_open_ws, gks_set_ws_viewport,
+    gks_set_ws_window, gks_update_ws, GKS_K_CLEAR_ALWAYS, GKS_K_CLEAR_CONDITIONALLY,
+    GKS_K_CONID_DEFAULT, GKS_K_ERROR, GKS_K_NO_ERROR, GKS_K_PERFORM_FLAG, GKS_K_POSTPONE_FLAG,
+    GKS_K_WRITE_PAGE_FLAG, GKS_K_WSTYPE_DEFAULT,
 };
 use crate::util::f64range::F64Range;
-use ::core::ffi::{c_int, CStr};
-use ::core::marker::PhantomData;
-use ::core::num::NonZeroI32;
-use ::core::ops::{Deref, DerefMut};
-
-enum GksState {
-    Closed = GKS_K_GKCL as _,
-    Open = GKS_K_WSOP as _,
-    Active = GKS_K_WSAC as _,
-    SegmentOpen = GKS_K_SGOP as _,
-}
+use core::ffi::{c_int, CStr};
+use core::marker::PhantomData;
+use core::num::NonZeroI32;
+use core::ops::{Deref, DerefMut};
 
 #[must_use]
 #[derive(Debug)]
@@ -50,18 +43,6 @@ pub enum GksRegenerationFlag {
     WritePage = GKS_K_WRITE_PAGE_FLAG as _,
 }
 
-fn query_state() -> GksState {
-    let mut state = 0;
-    unsafe { gks_inq_operating_state(&mut state) }
-    match state {
-        GKS_K_GKCL => GksState::Closed,
-        GKS_K_WSOP => GksState::Open,
-        GKS_K_WSAC => GksState::Active,
-        GKS_K_SGOP => GksState::SegmentOpen,
-        _ => unreachable!(),
-    }
-}
-
 fn query_ws_is_open(id: c_int) -> bool {
     let mut errind = 0;
     unsafe { gks_inq_ws_conntype(id, &mut errind, &mut 0, &mut 0) }
@@ -79,7 +60,7 @@ impl Gks {
                 inner: SegmentGksWs {
                     gks: Default::default(),
                     id,
-                }
+                },
             },
         }
     }
