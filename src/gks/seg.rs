@@ -1,8 +1,8 @@
 use super::{ActiveGks, Gks, SegmentGks};
-use super::util::{query_state, GksState, impl_each};
+use super::util::{impl_each, query_state, GksState};
 use crate::ffi::gks::{
     gks_assoc_seg_with_ws, gks_close_seg, gks_copy_seg_to_ws, gks_create_seg, gks_delete_seg,
-    gks_set_seg_xform,
+    gks_redraw_seg_on_ws, gks_set_seg_xform,
 };
 use ::core::ffi::c_int;
 
@@ -59,5 +59,10 @@ impl_each! {(ActiveGks, Gks, SegmentGks) {
             let mat = mat.as_ptr().cast_mut().cast();
             unsafe { gks_set_seg_xform(segn, mat) }
         }
+    }
+
+    pub fn redraw_seg_on_ws(&mut self, wkid: impl Into<c_int>) {
+        let wkid = wkid.into();
+        unsafe { gks_redraw_seg_on_ws(wkid) }
     }
 }}
