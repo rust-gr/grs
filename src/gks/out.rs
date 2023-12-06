@@ -1,29 +1,29 @@
 use super::{ActiveGks, Gks, SegmentGks};
 use super::util::impl_each;
 use crate::ffi::gks::{
-    gks_cellarray, gks_fillarea, gks_gdp, gks_polyline, gks_polymarker, gks_set_pline_color_index,
-    gks_set_pline_linetype, gks_set_pline_linewidth, gks_set_pmark_color_index, gks_set_pmark_size,
-    gks_set_pmark_type, gks_set_resize_behaviour, gks_set_text_color_index, gks_set_text_expfac,
-    gks_set_text_fontprec, gks_set_text_height, gks_set_text_spacing, gks_set_viewport,
-    gks_set_window, gks_text, GKS_K_GDP_DRAW_LINES, GKS_K_GDP_DRAW_MARKERS, GKS_K_GDP_DRAW_PATH,
-    GKS_K_GDP_DRAW_TRIANGLES, GKS_K_GDP_FILL_POLYGONS, GKS_K_LINETYPE_DASHED,
-    GKS_K_LINETYPE_DASHED_DOTTED, GKS_K_LINETYPE_DASH_2_DOT, GKS_K_LINETYPE_DASH_3_DOT,
-    GKS_K_LINETYPE_DOTTED, GKS_K_LINETYPE_DOUBLE_DOT, GKS_K_LINETYPE_LONG_DASH,
-    GKS_K_LINETYPE_LONG_SHORT_DASH, GKS_K_LINETYPE_SOLID, GKS_K_LINETYPE_SPACED_DASH,
-    GKS_K_LINETYPE_SPACED_DOT, GKS_K_LINETYPE_TRIPLE_DOT, GKS_K_MARKERTYPE_ASTERISK,
-    GKS_K_MARKERTYPE_BOWTIE, GKS_K_MARKERTYPE_CIRCLE, GKS_K_MARKERTYPE_DIAGONAL_CROSS,
-    GKS_K_MARKERTYPE_DIAMOND, GKS_K_MARKERTYPE_DOT, GKS_K_MARKERTYPE_HEPTAGON,
-    GKS_K_MARKERTYPE_HEXAGON, GKS_K_MARKERTYPE_HLINE, GKS_K_MARKERTYPE_HOLLOW_PLUS,
-    GKS_K_MARKERTYPE_HOURGLASS, GKS_K_MARKERTYPE_OCTAGON, GKS_K_MARKERTYPE_OMARK,
-    GKS_K_MARKERTYPE_PENTAGON, GKS_K_MARKERTYPE_PLUS, GKS_K_MARKERTYPE_SOLID_BOWTIE,
-    GKS_K_MARKERTYPE_SOLID_CIRCLE, GKS_K_MARKERTYPE_SOLID_DIAMOND, GKS_K_MARKERTYPE_SOLID_HGLASS,
-    GKS_K_MARKERTYPE_SOLID_PLUS, GKS_K_MARKERTYPE_SOLID_SQUARE, GKS_K_MARKERTYPE_SOLID_STAR,
-    GKS_K_MARKERTYPE_SOLID_TRI_DOWN, GKS_K_MARKERTYPE_SOLID_TRI_LEFT,
-    GKS_K_MARKERTYPE_SOLID_TRI_RIGHT, GKS_K_MARKERTYPE_SOLID_TRI_UP, GKS_K_MARKERTYPE_SQUARE,
-    GKS_K_MARKERTYPE_STAR, GKS_K_MARKERTYPE_STAR_4, GKS_K_MARKERTYPE_STAR_5,
-    GKS_K_MARKERTYPE_STAR_6, GKS_K_MARKERTYPE_STAR_7, GKS_K_MARKERTYPE_STAR_8,
-    GKS_K_MARKERTYPE_TRIANGLE_DOWN, GKS_K_MARKERTYPE_TRIANGLE_UP, GKS_K_MARKERTYPE_TRI_UP_DOWN,
-    GKS_K_MARKERTYPE_VLINE,
+    gks_cellarray, gks_fillarea, gks_ft_gdp, gks_gdp, gks_polyline, gks_polymarker,
+    gks_set_pline_color_index, gks_set_pline_linetype, gks_set_pline_linewidth,
+    gks_set_pmark_color_index, gks_set_pmark_size, gks_set_pmark_type, gks_set_resize_behaviour,
+    gks_set_text_color_index, gks_set_text_expfac, gks_set_text_fontprec, gks_set_text_height,
+    gks_set_text_spacing, gks_set_transparency, gks_set_viewport, gks_set_window, gks_text,
+    GKS_K_GDP_DRAW_LINES, GKS_K_GDP_DRAW_MARKERS, GKS_K_GDP_DRAW_PATH, GKS_K_GDP_DRAW_TRIANGLES,
+    GKS_K_GDP_FILL_POLYGONS, GKS_K_LINETYPE_DASHED, GKS_K_LINETYPE_DASHED_DOTTED,
+    GKS_K_LINETYPE_DASH_2_DOT, GKS_K_LINETYPE_DASH_3_DOT, GKS_K_LINETYPE_DOTTED,
+    GKS_K_LINETYPE_DOUBLE_DOT, GKS_K_LINETYPE_LONG_DASH, GKS_K_LINETYPE_LONG_SHORT_DASH,
+    GKS_K_LINETYPE_SOLID, GKS_K_LINETYPE_SPACED_DASH, GKS_K_LINETYPE_SPACED_DOT,
+    GKS_K_LINETYPE_TRIPLE_DOT, GKS_K_MARKERTYPE_ASTERISK, GKS_K_MARKERTYPE_BOWTIE,
+    GKS_K_MARKERTYPE_CIRCLE, GKS_K_MARKERTYPE_DIAGONAL_CROSS, GKS_K_MARKERTYPE_DIAMOND,
+    GKS_K_MARKERTYPE_DOT, GKS_K_MARKERTYPE_HEPTAGON, GKS_K_MARKERTYPE_HEXAGON,
+    GKS_K_MARKERTYPE_HLINE, GKS_K_MARKERTYPE_HOLLOW_PLUS, GKS_K_MARKERTYPE_HOURGLASS,
+    GKS_K_MARKERTYPE_OCTAGON, GKS_K_MARKERTYPE_OMARK, GKS_K_MARKERTYPE_PENTAGON,
+    GKS_K_MARKERTYPE_PLUS, GKS_K_MARKERTYPE_SOLID_BOWTIE, GKS_K_MARKERTYPE_SOLID_CIRCLE,
+    GKS_K_MARKERTYPE_SOLID_DIAMOND, GKS_K_MARKERTYPE_SOLID_HGLASS, GKS_K_MARKERTYPE_SOLID_PLUS,
+    GKS_K_MARKERTYPE_SOLID_SQUARE, GKS_K_MARKERTYPE_SOLID_STAR, GKS_K_MARKERTYPE_SOLID_TRI_DOWN,
+    GKS_K_MARKERTYPE_SOLID_TRI_LEFT, GKS_K_MARKERTYPE_SOLID_TRI_RIGHT,
+    GKS_K_MARKERTYPE_SOLID_TRI_UP, GKS_K_MARKERTYPE_SQUARE, GKS_K_MARKERTYPE_STAR,
+    GKS_K_MARKERTYPE_STAR_4, GKS_K_MARKERTYPE_STAR_5, GKS_K_MARKERTYPE_STAR_6,
+    GKS_K_MARKERTYPE_STAR_7, GKS_K_MARKERTYPE_STAR_8, GKS_K_MARKERTYPE_TRIANGLE_DOWN,
+    GKS_K_MARKERTYPE_TRIANGLE_UP, GKS_K_MARKERTYPE_TRI_UP_DOWN, GKS_K_MARKERTYPE_VLINE,
 };
 use crate::ffi::gkscore::MAX_COLOR;
 use crate::util::f64range::F64Range;
@@ -118,6 +118,10 @@ fn check_that(cond: bool) -> Result<()> {
 }
 
 impl_each! {(Gks, ActiveGks, SegmentGks) {
+    pub fn set_transparency(alpha: f64) {
+        unsafe { gks_set_transparency(alpha) }
+    }
+
     pub fn set_window(&mut self, tnr: impl Into<c_int>, x: F64Range, y: F64Range) {
         let tnr = tnr.into();
         let (xmin, xmax) = x.into();
@@ -240,25 +244,34 @@ impl_each! {(ActiveGks, SegmentGks) {
         } = color_array;
         Ok(unsafe { gks_cellarray(px, py, qx, qy, dx, dy, sx, sy, nx, ny, data) })
     }
+}}
 
-    #[allow(clippy::unit_arg)]
-    pub fn gdp(
-        &mut self,
-        n: usize,
-        x: &[f64],
-        y: &[f64],
-        primitive: GksPrimitive,
-        data_records: &[c_int],
-    ) -> Result<()> {
-        check_that(n <= x.len() && n <= y.len())?;
-        let n = n.try_into()?;
-        let x = x.as_ptr().cast_mut();
-        let y = y.as_ptr().cast_mut();
-        let prim = primitive as c_int;
-        let ldr = data_records.len().try_into()?;
-        let dr = data_records.as_ptr().cast_mut();
-        Ok(unsafe { gks_gdp(n, x, y, prim, ldr, dr) })
-    }
+macro_rules! impl_gdp {
+    ($f:ident, $cf:ident) => {
+        #[allow(clippy::unit_arg)]
+        pub fn $f(
+            &mut self,
+            n: usize,
+            x: &[f64],
+            y: &[f64],
+            primitive: GksPrimitive,
+            data_records: &[c_int],
+        ) -> Result<()> {
+            check_that(n <= x.len() && n <= y.len())?;
+            let n = n.try_into()?;
+            let x = x.as_ptr().cast_mut();
+            let y = y.as_ptr().cast_mut();
+            let prim = primitive as c_int;
+            let ldr = data_records.len().try_into()?;
+            let dr = data_records.as_ptr().cast_mut();
+            Ok(unsafe { $cf(n, x, y, prim, ldr, dr) })
+        }
+    };
+}
+
+impl_each! {(ActiveGks, SegmentGks) {
+    impl_gdp! { gdp, gks_gdp }
+    impl_gdp! { ft_gdp, gks_ft_gdp }
 }}
 
 impl<'a> GksColorIndexArray<'a> {
