@@ -944,9 +944,9 @@ extern "C" {
     pub fn gks_resize_selection(kind: ::core::ffi::c_int, x: f64, y: f64);
 }
 extern "C" {
-    pub fn gks_begin_grm_selection(
-        index: ::core::ffi::c_int,
-        fun: ::core::option::Option<
+    pub fn gks_set_bbox_callback(
+        id: ::core::ffi::c_int,
+        callback: ::core::option::Option<
             unsafe extern "C" fn(
                 arg1: ::core::ffi::c_int,
                 arg2: f64,
@@ -958,7 +958,7 @@ extern "C" {
     );
 }
 extern "C" {
-    pub fn gks_end_grm_selection();
+    pub fn gks_cancel_bbox_callback();
 }
 extern "C" {
     pub fn gks_inq_bbox(

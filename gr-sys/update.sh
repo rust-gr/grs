@@ -1,5 +1,5 @@
 #!/bin/bash
-for h in gks/gks.h gks/gkscore.h
+for h in gks/gks.h gks/gkscore.h gr/gr.h
 do
 	base=${h##*/}
 	name=${base%.h}
