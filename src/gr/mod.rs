@@ -34,18 +34,28 @@ pub fn inqdspsize() -> DisplaySize {
     let mut mheight = MaybeUninit::uninit();
     let mut  width  = MaybeUninit::uninit();
     let mut  height = MaybeUninit::uninit();
-    unsafe { gr_inqdspsize(mwidth.as_mut_ptr(), mheight.as_mut_ptr(), width.as_mut_ptr(), height.as_mut_ptr()) }
+    unsafe {
+        gr_inqdspsize(
+             mwidth.as_mut_ptr(),
+            mheight.as_mut_ptr(),
+              width.as_mut_ptr(),
+             height.as_mut_ptr()
+        )
+    }
     DisplaySize {
         meters: (unsafe { mwidth.assume_init() }     , unsafe { mheight.assume_init() }),
         pixels: (unsafe {  width.assume_init() } as _, unsafe {  height.assume_init() } as _),
     }
 }
 
-pub fn openws(wkid: impl Into<c_int>, connection: Option<&CStr>, wstype: impl Into<c_int>) {
-    #[rustfmt::skip]
+#[rustfmt::skip]
+pub fn openws(
+    wkid: impl Into<c_int>,
+    connection: Option<&CStr>,
+    wstype: impl Into<c_int>
+) {
     let   wkid =   wkid.into();
     let wstype = wstype.into();
-    #[rustfmt::skip]
     let   conn = connection.unwrap_or(c"").as_ptr().cast_mut();
     unsafe { gr_openws(wkid, conn, wstype) }
 }
