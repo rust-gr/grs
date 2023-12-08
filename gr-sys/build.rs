@@ -12,10 +12,13 @@ impl Searcher {
 
     pub fn consider(&mut self, p: impl Into<PathBuf>) -> &mut Self {
         if self.0.is_none() {
-            const EXTENSION: &'static str =
-                if cfg!(windows) { "lib" }
-                else if cfg!(target_vendor = "apple") { "dylib" }
-                else { "so" };
+            const EXTENSION: &'static str = if cfg!(windows) {
+                "lib"
+            } else if cfg!(target_vendor = "apple") {
+                "dylib"
+            } else {
+                "so"
+            };
             let mut p = p.into();
             p.push("libGR");
             p.set_extension(EXTENSION);
