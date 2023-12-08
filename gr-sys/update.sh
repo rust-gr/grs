@@ -11,3 +11,8 @@ do
 		patch $header < $patch
 	fi
 done
+cargo clean
+cargo b --features bindgen
+rm -rf bindings
+mkdir bindings
+cp target/debug/build/gr-sys-*/out/* bindings
