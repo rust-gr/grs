@@ -1,5 +1,5 @@
-use super::{ActiveGks, Gks, SegmentGks};
 use super::util::{query_state, GksState};
+use super::{ActiveGks, Gks, SegmentGks};
 use crate::ffi::gks::{
     gks_activate_ws, gks_clear_ws, gks_close_ws, gks_configure_ws, gks_deactivate_ws,
     gks_inq_active_ws, gks_inq_ws_conntype, gks_message, gks_open_ws, gks_set_ws_viewport,
@@ -8,10 +8,10 @@ use crate::ffi::gks::{
     GKS_K_WRITE_PAGE_FLAG, GKS_K_WSTYPE_DEFAULT,
 };
 use crate::util::f64range::F64Range;
-use core::ffi::{c_int, CStr};
-use core::marker::PhantomData;
-use core::num::NonZeroI32;
-use core::ops::{Deref, DerefMut};
+use ::core::ffi::{c_int, CStr};
+use ::core::marker::PhantomData;
+use ::core::num::NonZeroI32;
+use ::core::ops::{Deref, DerefMut};
 
 #[must_use]
 #[derive(Debug)]

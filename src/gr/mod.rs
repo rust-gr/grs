@@ -62,7 +62,14 @@ pub fn inqdspsize() -> DisplaySize {
     let mut mheight = MaybeUninit::uninit();
     let mut  width  = MaybeUninit::uninit();
     let mut  height = MaybeUninit::uninit();
-    unsafe { gr_inqdspsize(mwidth.as_mut_ptr(), mheight.as_mut_ptr(), width.as_mut_ptr(), height.as_mut_ptr()) }
+    unsafe {
+        gr_inqdspsize(
+             mwidth.as_mut_ptr(),
+            mheight.as_mut_ptr(),
+              width.as_mut_ptr(),
+             height.as_mut_ptr()
+        )
+    }
     DisplaySize {
         meters: (unsafe { mwidth.assume_init() }, unsafe { mheight.assume_init() }),
         pixels: (unsafe {  width.assume_init() }, unsafe {  height.assume_init() }),

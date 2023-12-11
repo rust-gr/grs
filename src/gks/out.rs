@@ -1,5 +1,5 @@
-use super::{ActiveGks, Gks, SegmentGks};
 use super::util::impl_each;
+use super::{ActiveGks, Gks, SegmentGks};
 use crate::ffi::gks::{
     gks_cellarray, gks_fillarea, gks_ft_gdp, gks_gdp, gks_polyline, gks_polymarker,
     gks_set_pline_color_index, gks_set_pline_linetype, gks_set_pline_linewidth,

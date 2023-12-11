@@ -1,5 +1,5 @@
-use super::{ActiveGks, Gks, SegmentGks};
 use super::util::{impl_each, query_state, GksState};
+use super::{ActiveGks, Gks, SegmentGks};
 use crate::ffi::gks::{
     gks_assoc_seg_with_ws, gks_close_seg, gks_copy_seg_to_ws, gks_create_seg, gks_delete_seg,
     gks_redraw_seg_on_ws, gks_set_seg_xform,
