@@ -4,9 +4,9 @@ use ::core::mem::MaybeUninit;
 use ::std::num::TryFromIntError;
 
 use crate::ffi::gr::{
-    gr_activatews, gr_clearws, gr_closegks, gr_closews, gr_configurews, gr_deactivatews, gr_debug,
-    gr_initgr, gr_inqdspsize, gr_opengks, gr_openws, gr_polyline, gr_polymarker, gr_text, gr_textx,
-    gr_updatews, GR_TEXT_ENABLE_INLINE_MATH, GR_TEXT_USE_WC,
+    gr_activatews, gr_cellarray, gr_clearws, gr_closegks, gr_closews, gr_configurews,
+    gr_deactivatews, gr_debug, gr_initgr, gr_inqdspsize, gr_opengks, gr_openws, gr_polyline,
+    gr_polymarker, gr_text, gr_textx, gr_updatews, GR_TEXT_ENABLE_INLINE_MATH, GR_TEXT_USE_WC,
 };
 
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -26,6 +26,8 @@ impl From<TryFromIntError> for GrError {
         GrError
     }
 }
+
+pub type GrColorIndexArray<'a> = super::gks::out::GksColorIndexArray<'a>;
 
 fn check_that(x: bool) -> Result<()> {
     match x {
@@ -143,4 +145,31 @@ pub fn textx((x, y): (f64, f64), s: impl AsRef<CStr>, world_cooridnates: bool, i
         (false, false) => 0,
     };
     unsafe { gr_textx(x, y, p, f) }
+}
+
+#[allow(clippy::unit_arg)]
+pub fn fillarea(n: usize, x: &[f64], y: &[f64]) -> Result<()> {
+    check_that(n <= x.len() && n <= y.len())?;
+    let n = n.try_into()?;
+    let x = x.as_ptr().cast_mut();
+    let y = y.as_ptr().cast_mut();
+    Ok(unsafe { gr_polymarker(n, x, y) })
+}
+
+#[allow(clippy::unit_arg)]
+pub fn cellarray(
+    ((px, py), start): ((f64, f64), (usize, usize)),
+    ((qx, qy), end): ((f64, f64), (usize, usize)),
+    color_array: GrColorIndexArray,
+) -> Result<()> {
+    let sx = (start.0 + 1).try_into()?;
+    let sy = (start.1 + 1).try_into()?;
+    let nx = (end.0 - start.0).try_into()?;
+    let ny = (end.1 - start.1).try_into()?;
+    let GrColorIndexArray {
+        data,
+        dimensions: (dx, dy),
+        slice: _,
+    } = color_array;
+    Ok(unsafe { gr_cellarray(px, py, qx, qy, dx, dy, sx, sy, nx, ny, data) })
 }
