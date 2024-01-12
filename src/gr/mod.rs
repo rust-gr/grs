@@ -5,8 +5,9 @@ use ::std::num::TryFromIntError;
 
 use crate::ffi::gr::{
     gr_activatews, gr_cellarray, gr_clearws, gr_closegks, gr_closews, gr_configurews,
-    gr_deactivatews, gr_debug, gr_initgr, gr_inqdspsize, gr_opengks, gr_openws, gr_polyline,
-    gr_polymarker, gr_text, gr_textx, gr_updatews, GR_TEXT_ENABLE_INLINE_MATH, GR_TEXT_USE_WC,
+    gr_deactivatews, gr_debug, gr_initgr, gr_inqdspsize, gr_nonuniformcellarray, gr_opengks,
+    gr_openws, gr_polyline, gr_polymarker, gr_text, gr_textx, gr_updatews,
+    GR_TEXT_ENABLE_INLINE_MATH, GR_TEXT_USE_WC,
 };
 
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -172,4 +173,33 @@ pub fn cellarray(
         slice: _,
     } = color_array;
     Ok(unsafe { gr_cellarray(px, py, qx, qy, dx, dy, sx, sy, nx, ny, data) })
+}
+
+#[allow(clippy::unit_arg)]
+pub fn nonuniformcellarray(
+    (x, edges_x): (&[f64], bool),
+    (y, edges_y): (&[f64], bool),
+    start: (usize, usize),
+    end: (usize, usize),
+    color_array: GrColorIndexArray,
+) -> Result<()> {
+    let nx = end.0 - start.0;
+    let ny = end.1 - start.1;
+    check_that(
+        (x.len() > nx || !edges_x && x.len() == nx) && (y.len() > ny || !edges_y && y.len() == ny),
+    )?;
+    let sx = (start.0 + 1).try_into()?;
+    let sy = (start.1 + 1).try_into()?;
+    let nx = nx.try_into()?;
+    let ny = ny.try_into()?;
+    let x = x.as_ptr().cast_mut();
+    let y = y.as_ptr().cast_mut();
+    let GrColorIndexArray {
+        data,
+        dimensions: (dx, dy),
+        slice: _,
+    } = color_array;
+    let dx = if edges_x { dx } else { -dx };
+    let dy = if edges_y { dy } else { -dy };
+    Ok(unsafe { gr_nonuniformcellarray(x, y, dx, dy, sx, sy, nx, ny, data) })
 }
