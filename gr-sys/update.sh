@@ -1,4 +1,5 @@
 #!/bin/bash
+rm header/*
 echo -e "#![allow(warnings)]\n" > src/lib.rs
 for h in gks/gks.h gks/gkscore.h gr/gr.h
 do

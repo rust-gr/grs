@@ -551,6 +551,13 @@ extern "C" {
     );
 }
 extern "C" {
+    pub fn gr_settitles3d(
+        arg1: *mut ::core::ffi::c_char,
+        arg2: *mut ::core::ffi::c_char,
+        arg3: *mut ::core::ffi::c_char,
+    );
+}
+extern "C" {
     pub fn gr_surface(
         arg1: ::core::ffi::c_int,
         arg2: ::core::ffi::c_int,
@@ -1065,6 +1072,15 @@ extern "C" {
 }
 extern "C" {
     pub fn gr_setspace3d(arg1: f64, arg2: f64, arg3: f64, arg4: f64);
+}
+extern "C" {
+    pub fn gr_inqspace3d(
+        arg1: *mut ::core::ffi::c_int,
+        arg2: *mut f64,
+        arg3: *mut f64,
+        arg4: *mut f64,
+        arg5: *mut f64,
+    );
 }
 extern "C" {
     pub fn gr_text3d(
