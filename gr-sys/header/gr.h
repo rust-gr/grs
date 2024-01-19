@@ -19,6 +19,8 @@
 
 #define GR_MAX_CONTEXT 8192
 
+#define GR_DEFAULT_MATH_FONT 232
+
 typedef struct
 {
   double x, y;
@@ -294,3 +296,5 @@ DLLEXPORT void gr_volume_interp_gauss_init(double, double *);
 DLLEXPORT double gr_volume_interp_tri_linear(const data_point3d_t *, const void *, const point3d_t *,
                                              const point3d_t *);
 DLLEXPORT double gr_volume_interp_gauss(const data_point3d_t *, const void *, const point3d_t *, const point3d_t *);
+DLLEXPORT void gr_setmathfont(int font);
+DLLEXPORT void gr_inqmathfont(int *font);

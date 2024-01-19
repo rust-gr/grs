@@ -13,6 +13,7 @@ pub const GR_TEXT_ENABLE_INLINE_MATH: ::core::ffi::c_int = 2;
 pub const GR_2PASS_CLEANUP: ::core::ffi::c_int = 1;
 pub const GR_2PASS_RENDER: ::core::ffi::c_int = 2;
 pub const GR_MAX_CONTEXT: ::core::ffi::c_int = 8192;
+pub const GR_DEFAULT_MATH_FONT: ::core::ffi::c_int = 232;
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct vertex_t {
@@ -1229,4 +1230,10 @@ extern "C" {
         arg3: *const point3d_t,
         arg4: *const point3d_t,
     ) -> f64;
+}
+extern "C" {
+    pub fn gr_setmathfont(font: ::core::ffi::c_int);
+}
+extern "C" {
+    pub fn gr_inqmathfont(font: *mut ::core::ffi::c_int);
 }

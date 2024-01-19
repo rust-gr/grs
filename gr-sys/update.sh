@@ -7,7 +7,7 @@ do
 	name=${base%.h}
 	header=header/$base
 	patch=patches/$name.patch
-	curl -o $header https://raw.githubusercontent.com/sciapp/gr/master/lib/$h
+	curl -o $header https://raw.githubusercontent.com/sciapp/gr/develop/lib/$h
 	if [ -f $patch ]
 	then
 		patch $header < $patch
