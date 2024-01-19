@@ -13,6 +13,7 @@ pub const GR_TEXT_ENABLE_INLINE_MATH: ::core::ffi::c_int = 2;
 pub const GR_2PASS_CLEANUP: ::core::ffi::c_int = 1;
 pub const GR_2PASS_RENDER: ::core::ffi::c_int = 2;
 pub const GR_MAX_CONTEXT: ::core::ffi::c_int = 8192;
+pub const GR_DEFAULT_MATH_FONT: ::core::ffi::c_int = 232;
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct vertex_t {
@@ -551,6 +552,13 @@ extern "C" {
     );
 }
 extern "C" {
+    pub fn gr_settitles3d(
+        arg1: *mut ::core::ffi::c_char,
+        arg2: *mut ::core::ffi::c_char,
+        arg3: *mut ::core::ffi::c_char,
+    );
+}
+extern "C" {
     pub fn gr_surface(
         arg1: ::core::ffi::c_int,
         arg2: ::core::ffi::c_int,
@@ -1067,6 +1075,15 @@ extern "C" {
     pub fn gr_setspace3d(arg1: f64, arg2: f64, arg3: f64, arg4: f64);
 }
 extern "C" {
+    pub fn gr_inqspace3d(
+        arg1: *mut ::core::ffi::c_int,
+        arg2: *mut f64,
+        arg3: *mut f64,
+        arg4: *mut f64,
+        arg5: *mut f64,
+    );
+}
+extern "C" {
     pub fn gr_text3d(
         arg1: f64,
         arg2: f64,
@@ -1213,4 +1230,10 @@ extern "C" {
         arg3: *const point3d_t,
         arg4: *const point3d_t,
     ) -> f64;
+}
+extern "C" {
+    pub fn gr_setmathfont(font: ::core::ffi::c_int);
+}
+extern "C" {
+    pub fn gr_inqmathfont(font: *mut ::core::ffi::c_int);
 }
