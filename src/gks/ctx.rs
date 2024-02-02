@@ -1,9 +1,9 @@
 use super::Gks;
 use crate::ffi::gks::{gks_emergency_close, gks_open_gks};
-use ::core::ffi::c_int;
-use ::core::mem;
-use ::core::ops::DerefMut;
-use ::std::sync::{Mutex, MutexGuard};
+use core::ffi::c_int;
+use core::mem;
+use core::ops::DerefMut;
+use std::sync::{Mutex, MutexGuard};
 
 fn lock() -> MutexGuard<'static, bool> {
     static GKS_MUTEX: Mutex<bool> = Mutex::new(false);

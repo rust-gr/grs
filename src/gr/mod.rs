@@ -1,10 +1,9 @@
-use ::core::ffi::{c_int, CStr};
-use ::core::mem::MaybeUninit;
-
 use crate::ffi::gr::{
     gr_activatews, gr_clearws, gr_closegks, gr_closews, gr_configurews, gr_deactivatews, gr_debug,
     gr_initgr, gr_inqdspsize, gr_opengks, gr_openws, gr_updatews,
 };
+use core::ffi::{c_int, CStr};
+use core::mem::MaybeUninit;
 
 pub fn initgr() {
     unsafe { gr_initgr() }
@@ -56,8 +55,8 @@ pub fn openws(
 ) {
     let   wkid =   wkid.into();
     let wstype = wstype.into();
-    let   conn = connection.unwrap_or(c"").as_ptr().cast_mut();
-    unsafe { gr_openws(wkid, conn, wstype) }
+    // let   conn = connection.unwrap_or(c"").as_ptr().cast_mut();
+    // unsafe { gr_openws(wkid, conn, wstype) }
 }
 
 pub fn closews(wkid: impl Into<c_int>) {
