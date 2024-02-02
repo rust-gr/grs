@@ -4,7 +4,7 @@ use crate::ffi::gks::{
     gks_assoc_seg_with_ws, gks_close_seg, gks_copy_seg_to_ws, gks_create_seg, gks_delete_seg,
     gks_redraw_seg_on_ws, gks_set_seg_xform,
 };
-use ::core::ffi::c_int;
+use core::ffi::c_int;
 
 impl ActiveGks {
     pub fn create_segment(self, segn: impl Into<c_int>) -> Result<SegmentGks, ActiveGks> {

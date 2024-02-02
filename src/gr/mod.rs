@@ -1,14 +1,13 @@
-use ::core::ffi::{c_int, CStr};
-use ::core::fmt;
-use ::core::mem::MaybeUninit;
-use ::std::num::TryFromIntError;
-
 use crate::ffi::gr::{
     gr_activatews, gr_cellarray, gr_clearws, gr_closegks, gr_closews, gr_configurews,
     gr_deactivatews, gr_debug, gr_initgr, gr_inqdspsize, gr_nonuniformcellarray, gr_opengks,
     gr_openws, gr_polyline, gr_polymarker, gr_text, gr_textx, gr_updatews,
     GR_TEXT_ENABLE_INLINE_MATH, GR_TEXT_USE_WC,
 };
+use core::ffi::{c_int, CStr};
+use core::fmt;
+use core::mem::MaybeUninit;
+use core::num::TryFromIntError;
 
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct GrError;
@@ -80,10 +79,10 @@ pub fn inqdspsize() -> DisplaySize {
 }
 
 pub fn openws(wkid: impl Into<c_int>, connection: Option<&CStr>, wstype: impl Into<c_int>) {
-    let conn = connection.unwrap_or(c"").as_ptr().cast_mut();
     #[rustfmt::skip]
     let   wkid =   wkid.into();
     let wstype = wstype.into();
+    let conn = connection.unwrap_or(c"").as_ptr().cast_mut();
     unsafe { gr_openws(wkid, conn, wstype) }
 }
 

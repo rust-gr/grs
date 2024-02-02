@@ -1,5 +1,5 @@
-use ::core::cmp::Ordering;
-use ::core::fmt;
+use core::cmp::Ordering;
+use core::fmt;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct F64Range {
