@@ -27,10 +27,10 @@ use crate::ffi::gks::{
 };
 use crate::ffi::gkscore::MAX_COLOR;
 use crate::util::f64range::F64Range;
-use ::core::ffi::{c_int, CStr};
-use ::core::fmt;
-use ::core::marker::PhantomData;
-use ::core::num::{NonZeroUsize, TryFromIntError};
+use core::ffi::{c_int, CStr};
+use core::fmt;
+use core::marker::PhantomData;
+use core::num::{NonZeroUsize, TryFromIntError};
 
 pub const MAX_COLOR_INDEX: usize = MAX_COLOR as _;
 

@@ -8,10 +8,10 @@ use crate::ffi::gks::{
     GKS_K_WRITE_PAGE_FLAG, GKS_K_WSTYPE_DEFAULT,
 };
 use crate::util::f64range::F64Range;
-use ::core::ffi::{c_int, CStr};
-use ::core::marker::PhantomData;
-use ::core::num::NonZeroI32;
-use ::core::ops::{Deref, DerefMut};
+use core::ffi::{c_int, CStr};
+use core::marker::PhantomData;
+use core::num::NonZeroI32;
+use core::ops::{Deref, DerefMut};
 
 #[must_use]
 #[derive(Debug)]
