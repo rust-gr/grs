@@ -37,6 +37,8 @@ pub const GKS_K_CLEAR_CONDITIONALLY: ::core::ffi::c_int = 0;
 pub const GKS_K_CLEAR_ALWAYS: ::core::ffi::c_int = 1;
 pub const GKS_K_NOCLIP: ::core::ffi::c_int = 0;
 pub const GKS_K_CLIP: ::core::ffi::c_int = 1;
+pub const GKS_K_REGION_RECTANGLE: ::core::ffi::c_int = 0;
+pub const GKS_K_REGION_ELLIPSE: ::core::ffi::c_int = 1;
 pub const GKS_K_COORDINATES_WC: ::core::ffi::c_int = 0;
 pub const GKS_K_COORDINATES_NDC: ::core::ffi::c_int = 1;
 pub const GKS_K_METERS: ::core::ffi::c_int = 0;
@@ -1023,6 +1025,12 @@ extern "C" {
 }
 extern "C" {
     pub fn gks_inq_resize_behaviour(flag: *mut ::core::ffi::c_int);
+}
+extern "C" {
+    pub fn gks_set_clip_region(region: ::core::ffi::c_int);
+}
+extern "C" {
+    pub fn gks_inq_clip_region(errind: *mut ::core::ffi::c_int, region: *mut ::core::ffi::c_int);
 }
 extern "C" {
     pub fn gopengks(arg1: *mut Gfile, arg2: Glong) -> ::core::ffi::c_int;

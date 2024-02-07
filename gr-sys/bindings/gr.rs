@@ -1237,3 +1237,9 @@ extern "C" {
 extern "C" {
     pub fn gr_inqmathfont(font: *mut ::core::ffi::c_int);
 }
+extern "C" {
+    pub fn gr_setclipregion(region: ::core::ffi::c_int);
+}
+extern "C" {
+    pub fn gr_inqclipregion(region: *mut ::core::ffi::c_int);
+}
