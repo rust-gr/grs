@@ -776,6 +776,28 @@ extern "C" {
     );
 }
 extern "C" {
+    pub fn gr_mathtex3d(
+        arg1: f64,
+        arg2: f64,
+        arg3: f64,
+        arg4: *mut ::core::ffi::c_char,
+        arg5: ::core::ffi::c_int,
+    );
+}
+extern "C" {
+    pub fn gr_inqmathtex3d(
+        arg1: f64,
+        arg2: f64,
+        arg3: f64,
+        arg4: *mut ::core::ffi::c_char,
+        arg5: ::core::ffi::c_int,
+        arg6: *mut f64,
+        arg7: *mut f64,
+        arg8: *mut f64,
+        arg9: *mut f64,
+    );
+}
+extern "C" {
     pub fn gr_beginselection(arg1: ::core::ffi::c_int, arg2: ::core::ffi::c_int);
 }
 extern "C" {
