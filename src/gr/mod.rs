@@ -1,9 +1,10 @@
 use crate::ffi::gr::{
     gr_activatews, gr_cellarray, gr_clearws, gr_closegks, gr_closews, gr_configurews,
-    gr_deactivatews, gr_debug, gr_initgr, gr_inqdspsize, gr_nonuniformcellarray, gr_opengks,
-    gr_openws, gr_polyline, gr_polymarker, gr_text, gr_textx, gr_updatews,
-    GR_TEXT_ENABLE_INLINE_MATH, GR_TEXT_USE_WC,
+    gr_deactivatews, gr_debug, gr_initgr, gr_inqdspsize, gr_nonuniformcellarray,
+    gr_nonuniformpolarcellarray, gr_opengks, gr_openws, gr_polarcellarray, gr_polyline,
+    gr_polymarker, gr_text, gr_textx, gr_updatews, GR_TEXT_ENABLE_INLINE_MATH, GR_TEXT_USE_WC,
 };
+use crate::util::f64range::F64Range;
 use core::ffi::{c_int, CStr};
 use core::fmt;
 use core::mem::MaybeUninit;
@@ -201,4 +202,63 @@ pub fn nonuniformcellarray(
     let dx = if edges_x { dx } else { -dx };
     let dy = if edges_y { dy } else { -dy };
     Ok(unsafe { gr_nonuniformcellarray(x, y, dx, dy, sx, sy, nx, ny, data) })
+}
+
+#[allow(clippy::unit_arg)]
+pub fn polarcellarray(
+    (x_org, y_org): (f64, f64),
+    angle_range: F64Range,
+    radius_range: F64Range,
+    start: (usize, usize),
+    end: (usize, usize),
+    color_array: GrColorIndexArray,
+) -> Result<()> {
+    let sx = (start.0 + 1).try_into()?;
+    let sy = (start.1 + 1).try_into()?;
+    let nx = (end.0 - start.0).try_into()?;
+    let ny = (end.1 - start.1).try_into()?;
+    let (phimin, phimax) = angle_range.into();
+    let (rmin, rmax) = radius_range.into();
+    let GrColorIndexArray {
+        data,
+        dimensions: (dx, dy),
+        slice: _,
+    } = color_array;
+    Ok(unsafe {
+        gr_polarcellarray(
+            x_org, y_org, phimin, phimax, rmin, rmax, dx, dy, sx, sy, nx, ny, data,
+        )
+    })
+}
+
+#[allow(clippy::unit_arg)]
+pub fn nonuniformpolarcellarray(
+    (x_org, y_org): (f64, f64),
+    (angles, edges_angles): (&[f64], bool),
+    (radii, edges_radii): (&[f64], bool),
+    start: (usize, usize),
+    end: (usize, usize),
+    color_array: GrColorIndexArray,
+) -> Result<()> {
+    let (x, y) = (angles, radii);
+    let nx = end.0 - start.0;
+    let ny = end.1 - start.1;
+    check_that(
+        (x.len() > nx || !edges_angles && x.len() == nx)
+            && (y.len() > ny || !edges_radii && y.len() == ny),
+    )?;
+    let sx = (start.0 + 1).try_into()?;
+    let sy = (start.1 + 1).try_into()?;
+    let nx = nx.try_into()?;
+    let ny = ny.try_into()?;
+    let x = x.as_ptr().cast_mut();
+    let y = y.as_ptr().cast_mut();
+    let GrColorIndexArray {
+        data,
+        dimensions: (dx, dy),
+        slice: _,
+    } = color_array;
+    let dx = if edges_angles { dx } else { -dx };
+    let dy = if edges_angles { dy } else { -dy };
+    Ok(unsafe { gr_nonuniformpolarcellarray(x_org, y_org, x, y, dx, dy, sx, sy, nx, ny, data) })
 }
