@@ -1,3 +1,5 @@
+use gr_sys::gr::gr_spline;
+
 use crate::ffi::gr::{
     gr_activatews, gr_cellarray, gr_clearws, gr_closegks, gr_closews, gr_configurews,
     gr_deactivatews, gr_debug, gr_gdp, gr_initgr, gr_inqdspsize, gr_nonuniformcellarray,
@@ -244,10 +246,8 @@ pub fn nonuniformpolarcellarray(
     let (x, y) = (angles, radii);
     let nx = end.0 - start.0;
     let ny = end.1 - start.1;
-    check_that(
-        (x.len() > nx || !edges_angles && x.len() == nx)
-            && (y.len() > ny || !edges_radii && y.len() == ny),
-    )?;
+    check_that(x.len() > nx || !edges_angles && x.len() == nx)?;
+    check_that(y.len() > ny || !edges_radii && y.len() == ny)?;
     let sx = (start.0 + 1).try_into()?;
     let sy = (start.1 + 1).try_into()?;
     let nx = nx.try_into()?;
@@ -279,4 +279,14 @@ pub fn gdp(
     let ldr = data_records.len().try_into()?;
     let dr = data_records.as_ptr().cast_mut();
     Ok(unsafe { gr_gdp(n, x, y, prim, ldr, dr) })
+}
+
+#[allow(clippy::unit_arg)]
+pub fn spline(n: usize, x: &[f64], y: &[f64], m: usize, method: c_int) -> Result<()> {
+    check_that(n <= x.len() && n <= y.len())?;
+    let n: c_int = n.try_into()?;
+    let x = x.as_ptr().cast_mut();
+    let y = y.as_ptr().cast_mut();
+    let m = m.try_into()?;
+    Ok(unsafe { gr_spline(n, x, y, m, method) })
 }
