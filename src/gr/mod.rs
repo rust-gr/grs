@@ -1,6 +1,6 @@
 use crate::ffi::gr::{
     gr_activatews, gr_cellarray, gr_clearws, gr_closegks, gr_closews, gr_configurews,
-    gr_deactivatews, gr_debug, gr_initgr, gr_inqdspsize, gr_nonuniformcellarray,
+    gr_deactivatews, gr_debug, gr_gdp, gr_initgr, gr_inqdspsize, gr_nonuniformcellarray,
     gr_nonuniformpolarcellarray, gr_opengks, gr_openws, gr_polarcellarray, gr_polyline,
     gr_polymarker, gr_text, gr_textx, gr_updatews, GR_TEXT_ENABLE_INLINE_MATH, GR_TEXT_USE_WC,
 };
@@ -29,6 +29,7 @@ impl From<TryFromIntError> for GrError {
 }
 
 pub type GrColorIndexArray<'a> = super::gks::out::GksColorIndexArray<'a>;
+pub type GrPrimitive = super::gks::out::GksPrimitive;
 
 fn check_that(x: bool) -> Result<()> {
     match x {
@@ -261,4 +262,21 @@ pub fn nonuniformpolarcellarray(
     let dx = if edges_angles { dx } else { -dx };
     let dy = if edges_angles { dy } else { -dy };
     Ok(unsafe { gr_nonuniformpolarcellarray(x_org, y_org, x, y, dx, dy, sx, sy, nx, ny, data) })
+}
+
+pub fn gdp(
+    n: usize,
+    x: &[f64],
+    y: &[f64],
+    primitive: GrPrimitive,
+    data_records: &[c_int],
+) -> Result<()> {
+    check_that(n <= x.len() && n <= y.len())?;
+    let n = n.try_into()?;
+    let x = x.as_ptr().cast_mut();
+    let y = y.as_ptr().cast_mut();
+    let prim = primitive as c_int;
+    let ldr = data_records.len().try_into()?;
+    let dr = data_records.as_ptr().cast_mut();
+    Ok(unsafe { gr_gdp(n, x, y, prim, ldr, dr) })
 }
