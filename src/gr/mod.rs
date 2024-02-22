@@ -1,10 +1,9 @@
-use gr_sys::gr::gr_spline;
-
 use crate::ffi::gr::{
     gr_activatews, gr_cellarray, gr_clearws, gr_closegks, gr_closews, gr_configurews,
-    gr_deactivatews, gr_debug, gr_gdp, gr_initgr, gr_inqdspsize, gr_nonuniformcellarray,
+    gr_deactivatews, gr_debug, gr_gdp, gr_gridit, gr_initgr, gr_inqdspsize, gr_nonuniformcellarray,
     gr_nonuniformpolarcellarray, gr_opengks, gr_openws, gr_polarcellarray, gr_polyline,
-    gr_polymarker, gr_text, gr_textx, gr_updatews, GR_TEXT_ENABLE_INLINE_MATH, GR_TEXT_USE_WC,
+    gr_polymarker, gr_spline, gr_text, gr_textx, gr_updatews, GR_TEXT_ENABLE_INLINE_MATH,
+    GR_TEXT_USE_WC,
 };
 use crate::util::f64range::F64Range;
 use core::ffi::{c_int, CStr};
@@ -289,4 +288,29 @@ pub fn spline(n: usize, x: &[f64], y: &[f64], m: usize, method: c_int) -> Result
     let y = y.as_ptr().cast_mut();
     let m = m.try_into()?;
     Ok(unsafe { gr_spline(n, x, y, m, method) })
+}
+
+pub fn gridit(
+    nd: usize,
+    xd: &[f64],
+    yd: &[f64],
+    zd: &[f64],
+    nx: usize,
+    ny: usize,
+    x: &mut [f64],
+    y: &mut [f64],
+    z: &mut [f64],
+) -> Result<()> {
+    check_that(nd <= xd.len() && nd <= yd.len() && nd <= zd.len())?;
+    check_that(nx <= x.len() && ny <= y.len() && nx * ny <= z.len())?;
+    let nd = nd.try_into()?;
+    let nx = nx.try_into()?;
+    let ny = ny.try_into()?;
+    let xd = xd.as_ptr().cast_mut();
+    let yd = yd.as_ptr().cast_mut();
+    let zd = zd.as_ptr().cast_mut();
+    let x = x.as_mut_ptr();
+    let y = y.as_mut_ptr();
+    let z = z.as_mut_ptr();
+    Ok(unsafe { gr_gridit(nd, xd, yd, zd, nx, ny, x, y, z) })
 }
