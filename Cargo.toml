@@ -7,3 +7,4 @@ edition = "2021"
 
 [dependencies]
 gr-sys = { path = "gr-sys" }
+paste = "1.0.14"
