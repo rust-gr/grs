@@ -1,16 +1,16 @@
-use crate::ffi::gr::{
-    gr_activatews, gr_cellarray, gr_clearws, gr_closegks, gr_closews, gr_configurews,
-    gr_deactivatews, gr_debug, gr_gdp, gr_gridit, gr_initgr, gr_inqdspsize, gr_nonuniformcellarray,
-    gr_nonuniformpolarcellarray, gr_opengks, gr_openws, gr_polarcellarray, gr_polyline,
-    gr_polymarker, gr_spline, gr_text, gr_textx, gr_updatews, GR_TEXT_ENABLE_INLINE_MATH,
-    GR_TEXT_USE_WC,
-};
 use crate::gks::out::{GksColorIndexArray, GksPrimitive};
 use crate::util::f64range::F64Range;
 use core::ffi::{c_int, CStr};
 use core::fmt;
 use core::mem::MaybeUninit;
 use core::num::TryFromIntError;
+use gr_sys::gr::{
+    gr_activatews, gr_cellarray, gr_clearws, gr_closegks, gr_closews, gr_configurews,
+    gr_deactivatews, gr_debug, gr_gdp, gr_gridit, gr_initgr, gr_inqdspsize, gr_nonuniformcellarray,
+    gr_nonuniformpolarcellarray, gr_opengks, gr_openws, gr_polarcellarray, gr_polyline,
+    gr_polymarker, gr_spline, gr_text, gr_textx, gr_updatews, GR_TEXT_ENABLE_INLINE_MATH,
+    GR_TEXT_USE_WC,
+};
 
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct GrError;

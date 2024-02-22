@@ -1,4 +1,4 @@
-use crate::ffi::gks::{gks_inq_operating_state, GKS_K_GKCL, GKS_K_SGOP, GKS_K_WSAC, GKS_K_WSOP};
+use gr_sys::gks::{gks_inq_operating_state, GKS_K_GKCL, GKS_K_SGOP, GKS_K_WSAC, GKS_K_WSOP};
 
 pub(super) enum GksState {
     Closed = GKS_K_GKCL as _,

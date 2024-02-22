@@ -12,13 +12,14 @@ main() {
 		header=header/${base}
 		url=https://raw.githubusercontent.com/sciapp/gr/develop/lib/$h
 		patch=patches/${name}.patch
-		curl -o ${header} ${url} &&
-		if [ -f ${patch} ]
+		curl -o "${header}" "${url}" || { echo downloading ${url} failed; return; }
+		if [[ -f ${patch} ]]
 		then
 			# patch can successfully execute with exit-code 0 even though the patch file is faulty
 			# it generates a .orig file so that's how you can tell
-			patch ${header} < ${patch} && ! { ls header | grep -q '.orig' && echo not quite right; }
-		fi || return
+			patch "${header}" < "${patch}" || return
+			ls header | grep -q "\.orig" && { echo not quite right; return; }
+		fi
 		echo -e "pub mod ${name} { include!(concat!(env!(\"OUT_DIR\"), \"/${name}.rs\")); }\n" >> src/lib.rs
 	done
 	cargo fmt
@@ -29,4 +30,4 @@ main() {
 	cp target/release/build/gr-sys-*/out/* bindings
 }
 
-main $@
+main "$@"
