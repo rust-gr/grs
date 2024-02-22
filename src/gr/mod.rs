@@ -263,6 +263,7 @@ pub fn nonuniformpolarcellarray(
     Ok(unsafe { gr_nonuniformpolarcellarray(x_org, y_org, x, y, dx, dy, sx, sy, nx, ny, data) })
 }
 
+#[allow(clippy::unit_arg)]
 pub fn gdp(
     n: usize,
     x: &[f64],
@@ -290,6 +291,7 @@ pub fn spline(n: usize, x: &[f64], y: &[f64], m: usize, method: c_int) -> Result
     Ok(unsafe { gr_spline(n, x, y, m, method) })
 }
 
+#[allow(clippy::unit_arg, clippy::too_many_arguments)]
 pub fn gridit(
     nd: usize,
     xd: &[f64],
