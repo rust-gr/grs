@@ -1,6 +1,12 @@
 use super::util::impl_each;
 use super::{ActiveGks, Gks, SegmentGks};
-use crate::ffi::gks::{
+use crate::ffi::gkscore::MAX_COLOR;
+use crate::util::f64range::F64Range;
+use core::ffi::{c_int, CStr};
+use core::fmt;
+use core::marker::PhantomData;
+use core::num::{NonZeroUsize, TryFromIntError};
+use gr_sys::gks::{
     gks_cellarray, gks_fillarea, gks_ft_gdp, gks_gdp, gks_polyline, gks_polymarker,
     gks_set_pline_color_index, gks_set_pline_linetype, gks_set_pline_linewidth,
     gks_set_pmark_color_index, gks_set_pmark_size, gks_set_pmark_type, gks_set_resize_behaviour,
@@ -25,12 +31,6 @@ use crate::ffi::gks::{
     GKS_K_MARKERTYPE_STAR_7, GKS_K_MARKERTYPE_STAR_8, GKS_K_MARKERTYPE_TRIANGLE_DOWN,
     GKS_K_MARKERTYPE_TRIANGLE_UP, GKS_K_MARKERTYPE_TRI_UP_DOWN, GKS_K_MARKERTYPE_VLINE,
 };
-use crate::ffi::gkscore::MAX_COLOR;
-use crate::util::f64range::F64Range;
-use core::ffi::{c_int, CStr};
-use core::fmt;
-use core::marker::PhantomData;
-use core::num::{NonZeroUsize, TryFromIntError};
 
 pub const MAX_COLOR_INDEX: usize = MAX_COLOR as _;
 
