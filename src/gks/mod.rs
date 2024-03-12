@@ -1,8 +1,11 @@
-pub mod ctx;
-pub mod out;
-pub mod ws;
-pub mod seg;
+mod ctx;
+mod out;
+mod ws;
+mod seg;
 mod util;
+
+pub use out::*;
+pub use ws::*;
 
 #[derive(Debug)]
 pub struct Gks(());
