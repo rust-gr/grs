@@ -8,9 +8,10 @@ use gr_sys::gr::{
     gr_activatews, gr_cellarray, gr_clearws, gr_closegks, gr_closews, gr_configurews,
     gr_deactivatews, gr_debug, gr_gdp, gr_gridit, gr_initgr, gr_inqdspsize, gr_nonuniformcellarray,
     gr_nonuniformpolarcellarray, gr_opengks, gr_openws, gr_polarcellarray, gr_polyline,
-    gr_polymarker, gr_spline, gr_text, gr_textx, gr_updatews, GR_TEXT_ENABLE_INLINE_MATH,
-    GR_TEXT_USE_WC,
+    gr_polymarker, gr_spline, gr_text, gr_textx, gr_updatews,
 };
+
+use super::textx_opts;
 
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct GrError;
@@ -142,12 +143,7 @@ pub fn text((x, y): (f64, f64), s: impl AsRef<CStr>) {
 
 pub fn textx((x, y): (f64, f64), s: impl AsRef<CStr>, world_cooridnates: bool, inline_math: bool) {
     let p = s.as_ref().as_ptr().cast_mut();
-    let f = match (world_cooridnates, inline_math) {
-        (true, true) => GR_TEXT_USE_WC | GR_TEXT_ENABLE_INLINE_MATH,
-        (true, false) => GR_TEXT_USE_WC,
-        (false, true) => GR_TEXT_ENABLE_INLINE_MATH,
-        (false, false) => 0,
-    };
+    let f = textx_opts(world_cooridnates, inline_math);
     unsafe { gr_textx(x, y, p, f) }
 }
 
