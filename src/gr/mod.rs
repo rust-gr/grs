@@ -1,2 +1,5 @@
-pub mod attributes;
-pub mod out;
+mod attributes;
+mod out;
+
+pub use attributes::*;
+pub use out::*;
