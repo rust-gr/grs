@@ -1,25 +1,40 @@
-use core::ffi::c_int;
+use core::ffi::{c_int, c_uint};
 use core::mem::MaybeUninit;
 use gr_sys::gr::*;
 use paste::paste;
 use std::ffi::CStr;
 
-macro_rules! impl_primitive_set_inq {
+macro_rules! impl_primitive_set {
     ($name:ident, $type:ty) => {
         paste! {
-            pub fn [<set$name>](val: impl Into<$type>) {
+            pub fn [<$name>](val: impl Into<$type>) {
                 let val = val.into();
-                unsafe { [<gr_set$name>](val) };
+                unsafe { [<gr_$name>](val) }
             }
+        }
+    };
+}
 
-            pub fn [<inq$name>]() -> $type {
+macro_rules! impl_primitive_inq {
+    ($name:ident, $type:ty) => {
+        paste! {
+            pub fn [<$name>]() -> $type {
                 let mut val = MaybeUninit::uninit();
                 let p = val.as_mut_ptr();
                 unsafe {
-                    [<gr_inq$name>](p);
+                    [<gr_$name>](p);
                     val.assume_init()
                 }
             }
+        }
+    };
+}
+
+macro_rules! impl_primitive_set_inq {
+    ($name:ident, $type:ty) => {
+        paste! {
+            impl_primitive_set! { [<set$name>], $type }
+            impl_primitive_inq! { [<inq$name>], $type }
         }
     };
 }
@@ -63,10 +78,52 @@ pub fn inqtextx(
     }
 }
 
+pub fn settextfontprec(font: impl Into<c_int>, prec: impl Into<c_int>) {
+    let font = font.into();
+    let prec = prec.into();
+    unsafe { gr_settextfontprec(font, prec) }
+}
+
+pub fn setscale(val: impl Into<c_int>) -> Result<(), GrError> {
+    let val = val.into();
+    let result = unsafe { gr_setscale(val) };
+    match result {
+        0 => Ok(()),
+        _ => Err(GrError),
+    }
+}
+
+pub fn inqregenflags() -> c_int {
+    unsafe { gr_inqregenflags() }
+}
+
 pub use crate::gks::out::GksLinetype as GrLinetype;
+
+use super::GrError;
 impl_primitive_set_inq! { linetype, c_int }
 impl_primitive_set_inq! { linewidth, f64 }
 impl_primitive_set_inq! { linecolorind, c_int }
 impl_primitive_set_inq! { markertype, c_int }
 impl_primitive_set_inq! { markersize, f64 }
 impl_primitive_set_inq! { markercolorind, c_int }
+impl_primitive_set_inq! { textcolorind, c_int }
+impl_primitive_set_inq! { fillintstyle, c_int }
+impl_primitive_set_inq! { fillstyle, c_int }
+impl_primitive_set_inq! { fillcolorind, c_int }
+impl_primitive_set_inq! { resizebehaviour, c_int }
+impl_primitive_set_inq! { colormap, c_int }
+impl_primitive_set_inq! { resamplemethod, c_uint }
+impl_primitive_set_inq! { borderwidth, f64 }
+impl_primitive_set_inq! { bordercolorind, c_int }
+impl_primitive_set_inq! { projectiontype, c_int }
+impl_primitive_set_inq! { textencoding, c_int }
+impl_primitive_set_inq! { charheight, f64 }
+impl_primitive_set! { selectclipxform, c_int }
+impl_primitive_inq! { inqclipxform, c_int }
+impl_primitive_set! { setregenflags, c_int }
+impl_primitive_set! { setcharexpan, f64 }
+impl_primitive_set! { setcharspace, f64 }
+impl_primitive_set! { settextpath, c_int }
+impl_primitive_set! { selntran, c_int }
+impl_primitive_set! { setclip, c_int }
+impl_primitive_inq! { inqscale, c_int }
