@@ -5,11 +5,16 @@ use paste::paste;
 use std::ffi::CStr;
 
 macro_rules! impl_primitive_set {
-    ($name:ident, $type:ty) => {
+    ($name:ident, $t:ty)                         => { impl_primitive_set! { @impl $name, {val, $t} } };
+    ($name:ident, $t:ty, $t2:ty)                 => { impl_primitive_set! { @impl $name, {val, $t}, {val2, $t2} } };
+    ($name:ident, $t:ty, $t2:ty, $t3:ty)         => { impl_primitive_set! { @impl $name, {val, $t}, {val2, $t2}, {val3, $t3} } };
+    ($name:ident, $t:ty, $t2:ty, $t3:ty, $t4:ty) => { impl_primitive_set! { @impl $name, {val, $t}, {val2, $t2}, {val3, $t3}, {val4, $t4} } };
+
+    (@impl $name:ident, $({$n:ident, $t:ty}),+) => {
         paste! {
-            pub fn [<$name>](val: impl Into<$type>) {
-                let val = val.into();
-                unsafe { [<gr_$name>](val) }
+            pub fn [<$name>]($($n: impl Into<$t>),+) {
+                $(let $n = $n.into();)+
+                unsafe { [<gr_$name>]($($n),+) }
             }
         }
     };
@@ -78,12 +83,6 @@ pub fn inqtextx(
     }
 }
 
-pub fn settextfontprec(font: impl Into<c_int>, prec: impl Into<c_int>) {
-    let font = font.into();
-    let prec = prec.into();
-    unsafe { gr_settextfontprec(font, prec) }
-}
-
 pub fn setscale(val: impl Into<c_int>) -> Result<(), GrError> {
     let val = val.into();
     let result = unsafe { gr_setscale(val) };
@@ -118,6 +117,7 @@ impl_primitive_set_inq! { bordercolorind, c_int }
 impl_primitive_set_inq! { projectiontype, c_int }
 impl_primitive_set_inq! { textencoding, c_int }
 impl_primitive_set_inq! { charheight, f64 }
+impl_primitive_set! { settextfontprec, c_int, c_int }
 impl_primitive_set! { selectclipxform, c_int }
 impl_primitive_inq! { inqclipxform, c_int }
 impl_primitive_set! { setregenflags, c_int }
