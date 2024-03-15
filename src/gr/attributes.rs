@@ -11,25 +11,21 @@ macro_rules! impl_primitive_set {
     ($name:ident, $t:ty, $t2:ty, $t3:ty, $t4:ty) => { impl_primitive_set! { @impl $name, {val, $t}, {val2, $t2}, {val3, $t3}, {val4, $t4} } };
 
     (@impl $name:ident, $({$n:ident, $t:ty}),+) => {
-        paste! {
-            pub fn [<$name>]($($n: impl Into<$t>),+) {
-                $(let $n = $n.into();)+
-                unsafe { [<gr_$name>]($($n),+) }
-            }
+        pub fn $name($($n: impl Into<$t>),+) {
+            $(let $n = $n.into();)+
+            unsafe { paste!([<gr_$name>])($($n),+) }
         }
     };
 }
 
 macro_rules! impl_primitive_inq {
     ($name:ident, $type:ty) => {
-        paste! {
-            pub fn [<$name>]() -> $type {
-                let mut val = MaybeUninit::uninit();
-                let p = val.as_mut_ptr();
-                unsafe {
-                    [<gr_$name>](p);
-                    val.assume_init()
-                }
+        pub fn $name() -> $type {
+            let mut val = MaybeUninit::uninit();
+            let p = val.as_mut_ptr();
+            unsafe {
+                paste!([<gr_$name>])(p);
+                val.assume_init()
             }
         }
     };
