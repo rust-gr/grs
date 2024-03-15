@@ -1,4 +1,5 @@
 use crate::gks::out::{GksColorIndexArray, GksPrimitive};
+use crate::gr::util::textx_opts;
 use crate::util::f64range::F64Range;
 use core::ffi::{c_int, CStr};
 use core::fmt;
@@ -10,8 +11,6 @@ use gr_sys::gr::{
     gr_nonuniformpolarcellarray, gr_opengks, gr_openws, gr_polarcellarray, gr_polyline,
     gr_polymarker, gr_spline, gr_text, gr_textx, gr_updatews,
 };
-
-use super::textx_opts;
 
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct GrError;

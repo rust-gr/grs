@@ -1,3 +1,5 @@
+use super::util::{impl_primitive_function, textx_opts};
+use super::GrError;
 use core::ffi::{c_int, c_uint};
 use core::mem::MaybeUninit;
 use gr_sys::gr::*;
@@ -5,17 +7,10 @@ use paste::paste;
 use std::ffi::CStr;
 
 macro_rules! impl_primitive_set {
-    ($name:ident, $t:ty)                         => { impl_primitive_set! { @impl $name, {val, $t} } };
-    ($name:ident, $t:ty, $t2:ty)                 => { impl_primitive_set! { @impl $name, {val, $t}, {val2, $t2} } };
-    ($name:ident, $t:ty, $t2:ty, $t3:ty)         => { impl_primitive_set! { @impl $name, {val, $t}, {val2, $t2}, {val3, $t3} } };
-    ($name:ident, $t:ty, $t2:ty, $t3:ty, $t4:ty) => { impl_primitive_set! { @impl $name, {val, $t}, {val2, $t2}, {val3, $t3}, {val4, $t4} } };
-
-    (@impl $name:ident, $({$n:ident, $t:ty}),+) => {
-        pub fn $name($($n: impl Into<$t>),+) {
-            $(let $n = $n.into();)+
-            unsafe { paste!([<gr_$name>])($($n),+) }
-        }
-    };
+    ($name:ident, $t:ty)                         => { impl_primitive_function! { $name, () {val, $t} } };
+    ($name:ident, $t:ty, $t2:ty)                 => { impl_primitive_function! { $name, () {val, $t}, {val2, $t2} } };
+    ($name:ident, $t:ty, $t2:ty, $t3:ty)         => { impl_primitive_function! { $name, () {val, $t}, {val2, $t2}, {val3, $t3} } };
+    ($name:ident, $t:ty, $t2:ty, $t3:ty, $t4:ty) => { impl_primitive_function! { $name, () {val, $t}, {val2, $t2}, {val3, $t3}, {val4, $t4} } };
 }
 
 macro_rules! impl_primitive_inq {
@@ -40,6 +35,14 @@ macro_rules! impl_primitive_set_inq {
     };
 }
 
+// TODO move to appropriate location
+pub fn startlistener() -> Result<(), GrError> {
+    match unsafe { gr_startlistener() } {
+        -1 => Err(GrError),
+        _ => Ok(()),
+    }
+}
+
 pub fn inqtext((x, y): (f64, f64), s: impl AsRef<CStr>) -> (f64, f64) {
     let s = s.as_ref().as_ptr().cast_mut();
     let mut tbx = MaybeUninit::uninit();
@@ -49,15 +52,6 @@ pub fn inqtext((x, y): (f64, f64), s: impl AsRef<CStr>) -> (f64, f64) {
     unsafe {
         gr_inqtext(x, y, s, tbx_ptr, tby_ptr);
         (tbx.assume_init(), tby.assume_init())
-    }
-}
-
-pub(super) fn textx_opts(world_cooridnates: bool, inline_math: bool) -> c_int {
-    match (world_cooridnates, inline_math) {
-        (true, true) => GR_TEXT_USE_WC | GR_TEXT_ENABLE_INLINE_MATH,
-        (true, false) => GR_TEXT_USE_WC,
-        (false, true) => GR_TEXT_ENABLE_INLINE_MATH,
-        (false, false) => 0,
     }
 }
 
@@ -88,13 +82,8 @@ pub fn setscale(val: impl Into<c_int>) -> Result<(), GrError> {
     }
 }
 
-pub fn inqregenflags() -> c_int {
-    unsafe { gr_inqregenflags() }
-}
-
 pub use crate::gks::out::GksLinetype as GrLinetype;
 
-use super::GrError;
 impl_primitive_set_inq! { linetype, c_int }
 impl_primitive_set_inq! { linewidth, f64 }
 impl_primitive_set_inq! { linecolorind, c_int }
@@ -113,13 +102,19 @@ impl_primitive_set_inq! { bordercolorind, c_int }
 impl_primitive_set_inq! { projectiontype, c_int }
 impl_primitive_set_inq! { textencoding, c_int }
 impl_primitive_set_inq! { charheight, f64 }
-impl_primitive_set! { settextfontprec, c_int, c_int }
+impl_primitive_set_inq! { transparency, f64 }
 impl_primitive_set! { selectclipxform, c_int }
 impl_primitive_inq! { inqclipxform, c_int }
+impl_primitive_set! { settextfontprec, c_int, c_int }
 impl_primitive_set! { setregenflags, c_int }
 impl_primitive_set! { setcharexpan, f64 }
 impl_primitive_set! { setcharspace, f64 }
 impl_primitive_set! { settextpath, c_int }
 impl_primitive_set! { selntran, c_int }
 impl_primitive_set! { setclip, c_int }
+impl_primitive_set! { setarrowstyle, c_int }
+impl_primitive_set! { setarrowsize, f64 }
 impl_primitive_inq! { inqscale, c_int }
+impl_primitive_function! { inqregenflags, c_int }
+impl_primitive_function! { precision, f64 }
+impl_primitive_function! { text_maxsize, c_int }
