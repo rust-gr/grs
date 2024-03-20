@@ -9,10 +9,10 @@ use std::ffi::CStr;
 
 #[rustfmt::skip]
 macro_rules! impl_primitive_set {
-    ($name:ident, $t:ty)                         => { impl_primitive_function! { $name, () {val, $t} } };
-    ($name:ident, $t:ty, $t2:ty)                 => { impl_primitive_function! { $name, () {val, $t}, {val2, $t2} } };
-    ($name:ident, $t:ty, $t2:ty, $t3:ty)         => { impl_primitive_function! { $name, () {val, $t}, {val2, $t2}, {val3, $t3} } };
-    ($name:ident, $t:ty, $t2:ty, $t3:ty, $t4:ty) => { impl_primitive_function! { $name, () {val, $t}, {val2, $t2}, {val3, $t3}, {val4, $t4} } };
+    ($name:ident, $t:ty)                         => { impl_primitive_function! { $name(val: $t) } };
+    ($name:ident, $t:ty, $t2:ty)                 => { impl_primitive_function! { $name(val: $t, val2: $t2) } };
+    ($name:ident, $t:ty, $t2:ty, $t3:ty)         => { impl_primitive_function! { $name(val: $t, val2: $t2, val3: $t3) } };
+    ($name:ident, $t:ty, $t2:ty, $t3:ty, $t4:ty) => { impl_primitive_function! { $name(val: $t, val2: $t2, val3: $t3, val4: $t4) } };
 }
 
 macro_rules! impl_primitive_inq {
@@ -160,6 +160,6 @@ impl_primitive_set! { setwscharheight, f64, f64 }
 impl_primitive_set! { setcharup, f64, f64 }
 impl_primitive_set! { setcolorrep, c_int, f64, f64, f64 }
 impl_primitive_inq! { inqscale, c_int }
-impl_primitive_function! { inqregenflags, c_int }
-impl_primitive_function! { precision, f64 }
-impl_primitive_function! { text_maxsize, c_int }
+impl_primitive_function! { inqregenflags() -> c_int }
+impl_primitive_function! { precision() -> f64 }
+impl_primitive_function! { text_maxsize() -> c_int }

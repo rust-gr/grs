@@ -11,8 +11,8 @@ pub(super) fn textx_opts(world_cooridnates: bool, inline_math: bool) -> c_int {
 }
 
 macro_rules! impl_primitive_function {
-    ($name:ident, $rt:ty $({$n:ident, $t:ty}),*) => {
-        pub fn $name($($n: impl Into<$t>),*) -> $rt {
+    ($name:ident($($n:ident: $t:ty),*) $(-> $rt:ty)?) => {
+        pub fn $name($($n: impl Into<$t>),*) $(-> $rt)? {
             $(let $n = $n.into();)*
             unsafe { paste!([<gr_$name>])($($n),*) }
         }
