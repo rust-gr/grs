@@ -1,11 +1,13 @@
 use super::util::{impl_primitive_function, textx_opts};
 use super::GrError;
+use crate::util::f64range::F64Range;
 use core::ffi::{c_int, c_uint};
 use core::mem::MaybeUninit;
 use gr_sys::gr::*;
 use paste::paste;
 use std::ffi::CStr;
 
+#[rustfmt::skip]
 macro_rules! impl_primitive_set {
     ($name:ident, $t:ty)                         => { impl_primitive_function! { $name, () {val, $t} } };
     ($name:ident, $t:ty, $t2:ty)                 => { impl_primitive_function! { $name, () {val, $t}, {val2, $t2} } };
@@ -82,6 +84,46 @@ pub fn setscale(val: impl Into<c_int>) -> Result<(), GrError> {
     }
 }
 
+macro_rules! impl_set_size {
+    ($name:ident) => {
+        pub fn $name(x: F64Range, y: F64Range) {
+            let (xmin, xmax) = x.into();
+            let (ymin, ymax) = y.into();
+            unsafe { paste!([<gr_$name>])(xmin, xmax, ymin, ymax) }
+        }
+    };
+
+    ($($n:ident),+ $(,)?) => {
+        $(impl_set_size! { $n })+
+    };
+}
+
+macro_rules! impl_inq_size {
+    ($name:ident) => {
+        pub fn $name() -> (F64Range, F64Range) {
+            let mut xmin = MaybeUninit::uninit();
+            let mut xmax = MaybeUninit::uninit();
+            let mut ymin = MaybeUninit::uninit();
+            let mut ymax = MaybeUninit::uninit();
+            let xmin_ptr = xmin.as_mut_ptr();
+            let xmax_ptr = xmax.as_mut_ptr();
+            let ymin_ptr = ymin.as_mut_ptr();
+            let ymax_ptr = ymax.as_mut_ptr();
+            unsafe { paste!([<gr_$name>])(xmin_ptr, xmax_ptr, ymin_ptr, ymax_ptr) }
+            let x = unsafe { F64Range::new_unchecked(xmin.assume_init(), xmax.assume_init()) };
+            let y = unsafe { F64Range::new_unchecked(ymin.assume_init(), ymax.assume_init()) };
+            (x, y)
+        }
+    };
+
+    ($($n:ident),+ $(,)?) => {
+        $(impl_inq_size! { $n })+
+    };
+}
+
+impl_set_size! { setwindow, setviewport, setwswindow, setwsviewport }
+impl_inq_size! { inqwindow, inqviewport, }
+
 pub use crate::gks::out::GksLinetype as GrLinetype;
 
 impl_primitive_set_inq! { linetype, c_int }
@@ -114,6 +156,9 @@ impl_primitive_set! { selntran, c_int }
 impl_primitive_set! { setclip, c_int }
 impl_primitive_set! { setarrowstyle, c_int }
 impl_primitive_set! { setarrowsize, f64 }
+impl_primitive_set! { setwscharheight, f64, f64 }
+impl_primitive_set! { setcharup, f64, f64 }
+impl_primitive_set! { setcolorrep, c_int, f64, f64, f64 }
 impl_primitive_inq! { inqscale, c_int }
 impl_primitive_function! { inqregenflags, c_int }
 impl_primitive_function! { precision, f64 }
