@@ -84,6 +84,62 @@ pub fn setscale(val: impl Into<c_int>) -> Result<(), GrError> {
     }
 }
 
+pub fn setspace(z: F64Range, rotation: c_int, tilt: c_int) -> Result<(), GrError> {
+    let (zmin, zmax) = z.into();
+    let err = unsafe { gr_setspace(zmin, zmax, rotation, tilt) };
+    match err {
+        0 => Ok(()),
+        -1 => Err(GrError),
+        _ => unreachable!(),
+    }
+}
+
+pub fn inqspace() -> (F64Range, c_int, c_int) {
+    let mut zmin = MaybeUninit::uninit();
+    let mut zmax = MaybeUninit::uninit();
+    let mut rotation = MaybeUninit::uninit();
+    let mut tilt = MaybeUninit::uninit();
+    let zmin_ptr = zmin.as_mut_ptr();
+    let zmax_ptr = zmax.as_mut_ptr();
+    let rotation_ptr = rotation.as_mut_ptr();
+    let tilt_ptr = tilt.as_mut_ptr();
+    unsafe {
+        gr_inqspace(zmin_ptr, zmax_ptr, rotation_ptr, tilt_ptr);
+        (
+            F64Range::new_unchecked(zmin.assume_init(), zmax.assume_init()),
+            rotation.assume_init(),
+            tilt.assume_init(),
+        )
+    }
+}
+
+pub fn inqspace3d() -> Option<(f64, f64, f64, f64)> {
+    let mut used = MaybeUninit::uninit();
+    let mut azimuth = MaybeUninit::uninit();
+    let mut polar = MaybeUninit::uninit();
+    let mut fov = MaybeUninit::uninit();
+    let mut cam = MaybeUninit::uninit();
+    let used_ptr = used.as_mut_ptr();
+    let azimuth_ptr = azimuth.as_mut_ptr();
+    let polar_ptr = polar.as_mut_ptr();
+    let fov_ptr = fov.as_mut_ptr();
+    let cam_ptr = cam.as_mut_ptr();
+    unsafe { gr_inqspace3d(used_ptr, azimuth_ptr, polar_ptr, fov_ptr, cam_ptr) }
+    let used = unsafe { used.assume_init() };
+    match used {
+        1 => Some(unsafe {
+            (
+                azimuth.assume_init(),
+                polar.assume_init(),
+                fov.assume_init(),
+                cam.assume_init(),
+            )
+        }),
+        0 => None,
+        _ => unreachable!(),
+    }
+}
+
 macro_rules! impl_set_size {
     ($name:ident) => {
         pub fn $name(x: F64Range, y: F64Range) {
@@ -163,3 +219,4 @@ impl_primitive_inq! { inqscale, c_int }
 impl_primitive_function! { inqregenflags() -> c_int }
 impl_primitive_function! { precision() -> f64 }
 impl_primitive_function! { text_maxsize() -> c_int }
+impl_primitive_function! { setspace3d(azimuth: f64, polar: f64, fov: f64, cam: f64) }
