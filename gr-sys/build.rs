@@ -11,22 +11,23 @@ impl Searcher {
     }
 
     pub fn consider(&mut self, p: impl Into<PathBuf>) -> &mut Self {
-        if self.0.is_none() {
-            const EXTENSION: &'static str = if cfg!(windows) {
-                "lib"
-            } else if cfg!(target_vendor = "apple") {
-                "dylib"
-            } else {
-                "so"
-            };
-            let mut p = p.into();
-            p.push("libGR");
-            p.set_extension(EXTENSION);
-            println!("Trying: {}", p.display());
-            if p.is_file() {
-                p.pop();
-                self.0 = Some(p);
-            }
+        let None = &self.0 else {
+            return self;
+        };
+        const EXTENSION: &'static str = if cfg!(windows) {
+            "lib"
+        } else if cfg!(target_vendor = "apple") {
+            "dylib"
+        } else {
+            "so"
+        };
+        let mut p = p.into();
+        p.push("libGR");
+        p.set_extension(EXTENSION);
+        println!("Trying: {}", p.display());
+        if p.is_file() {
+            p.pop();
+            self.0 = Some(p);
         }
         self
     }
@@ -60,7 +61,7 @@ fn main() {
         }
         println!("cargo:lib_dir={}", lib_dir.display());
     };
-    let names = ["GKS"].into_iter();
+    let names = ["GKS", "GR"].into_iter();
     #[cfg(windows)]
     let names = names.map(|name| String::from("lib") + name);
     names.for_each(|name| println!("cargo:rustc-link-lib=dylib={name}"));
