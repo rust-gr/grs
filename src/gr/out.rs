@@ -1,4 +1,4 @@
-use crate::gks::out::{GksColorIndexArray, GksPrimitive};
+use crate::gks::{GksColorIndexArray, GksPrimitive};
 use crate::gr::util::textx_opts;
 use crate::util::f64range::F64Range;
 use core::ffi::{c_int, CStr};

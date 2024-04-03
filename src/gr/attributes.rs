@@ -180,7 +180,7 @@ macro_rules! impl_inq_size {
 impl_set_size! { setwindow, setviewport, setwswindow, setwsviewport }
 impl_inq_size! { inqwindow, inqviewport, }
 
-pub use crate::gks::out::GksLinetype as GrLinetype;
+pub use crate::gks::GksLinetype as GrLinetype;
 
 impl_primitive_set_inq! { linetype, c_int }
 impl_primitive_set_inq! { linewidth, f64 }
