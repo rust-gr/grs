@@ -3,6 +3,8 @@ use core::mem;
 use gr_sys::gr::gr_axeslbl;
 use std::sync::{Mutex, PoisonError};
 
+use super::GrError;
+
 pub type AxesFunction<'a> = &'a mut dyn FnMut((f64, f64), &CStr, f64);
 
 // functions don't really have lifetime 'static!
@@ -24,6 +26,7 @@ macro_rules! impl_axes_fn {
 impl_axes_fn! {c_fpx, FPX}
 impl_axes_fn! {c_fpy, FPY}
 
+#[allow(clippy::unit_arg)]
 pub fn axeslbl(
     tick_interval: (f64, f64),
     origin: (f64, f64),
@@ -31,7 +34,7 @@ pub fn axeslbl(
     tick_size: f64,
     fpx: Option<AxesFunction>,
     fpy: Option<AxesFunction>,
-) {
+) -> Result<(), GrError> {
     struct DropGuard;
     impl Drop for DropGuard {
         fn drop(&mut self) {
@@ -43,8 +46,8 @@ pub fn axeslbl(
     }
     let (x_tick, y_tick) = tick_interval;
     let (x_org, y_org) = origin;
-    let major_x = major.0.map_or(-1, |m| m as _);
-    let major_y = major.1.map_or(-1, |m| m as _);
+    let major_x = major.0.map_or(Ok(-1), TryInto::try_into)?;
+    let major_y = major.1.map_or(Ok(-1), TryInto::try_into)?;
     let (fpx, c_fpx) = fpx
         .map(|f| (unsafe { mem::transmute(f) }, c_fpx as _))
         .unzip();
@@ -53,11 +56,11 @@ pub fn axeslbl(
         .unzip();
     let _guard = AXES_MUTEX.lock().unwrap_or_else(PoisonError::into_inner);
     let _drop_guard = DropGuard;
-    unsafe {
+    Ok(unsafe {
         FPX = fpx;
         FPY = fpy;
         gr_axeslbl(
             x_tick, y_tick, x_org, y_org, major_x, major_y, tick_size, c_fpx, c_fpy,
         )
-    }
+    })
 }

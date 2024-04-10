@@ -322,15 +322,16 @@ pub fn gridit(
     Ok(unsafe { gr_gridit(nd, xd, yd, zd, nx, ny, x, y, z) })
 }
 
+#[allow(clippy::unit_arg)]
 pub fn axes(
     tick_interval: (f64, f64),
     origin: (f64, f64),
     major: (Option<c_uint>, Option<c_uint>),
     size: f64,
-) {
+) -> Result<()> {
     let (x_tick, y_tick) = tick_interval;
     let (x, y) = origin;
-    let major_x = major.0.map_or(-1, |m| m as _);
-    let major_y = major.1.map_or(-1, |m| m as _);
-    unsafe { gr_axes(x_tick, y_tick, x, y, major_x, major_y, size) }
+    let major_x = major.0.map_or(Ok(-1), TryInto::try_into)?;
+    let major_y = major.1.map_or(Ok(-1), TryInto::try_into)?;
+    Ok(unsafe { gr_axes(x_tick, y_tick, x, y, major_x, major_y, size) })
 }

@@ -31,6 +31,6 @@ fn main() {
         0.02,
         Some(&mut |p, s, v| ticker.callback(p, s, v)),
         None,
-    );
+    ).unwrap();
     stdin().bytes().next();
 }
