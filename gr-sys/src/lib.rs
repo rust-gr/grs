@@ -11,3 +11,7 @@ pub mod gkscore {
 pub mod gr {
     include!(concat!(env!("OUT_DIR"), "/gr.rs"));
 }
+
+pub mod strlib {
+    include!(concat!(env!("OUT_DIR"), "/strlib.rs"));
+}

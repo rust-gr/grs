@@ -4,7 +4,7 @@ main() {
 	rm header/*
 	echo -e "#![allow(warnings)]\n" > src/lib.rs
 	local h
-	for h in gks/gks.h gks/gkscore.h gr/gr.h
+	for h in gks/gks.h gks/gkscore.h gr/gr.h gr/strlib.h
 	do
 		local base name header url patch
 		base=${h##*/}
