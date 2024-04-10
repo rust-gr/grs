@@ -4,6 +4,7 @@ use crate::util::f64range::F64Range;
 use core::ffi::{c_int, c_uint};
 use core::mem::MaybeUninit;
 use gr_sys::gr::*;
+use gr_sys::strlib::*;
 use paste::paste;
 use std::ffi::CStr;
 
@@ -73,6 +74,29 @@ pub fn inqtextx(
         gr_inqtextx(x, y, s, f, tbx_ptr, tby_ptr);
         (tbx.assume_init(), tby.assume_init())
     }
+}
+
+pub fn inqtextext((x, y): (f64, f64), s: impl AsRef<CStr>) -> (f64, f64) {
+    let s = s.as_ref().as_ptr().cast_mut();
+    let mut tbx = MaybeUninit::uninit();
+    let mut tby = MaybeUninit::uninit();
+    let tbx_ptr = tbx.as_mut_ptr();
+    let tby_ptr = tby.as_mut_ptr();
+    unsafe {
+        gr_inqtextext(x, y, s, tbx_ptr, tby_ptr);
+        (tbx.assume_init(), tby.assume_init())
+    }
+}
+
+pub enum ScientificFormatOption {
+    E = SCIENTIFIC_FORMAT_OPTION_E as _,
+    TexTex = SCIENTIFIC_FORMAT_OPTION_TEXTEX as _,
+    MathTex = SCIENTIFIC_FORMAT_OPTION_MATHTEX as _,
+}
+
+pub fn setscientificformat(opt: ScientificFormatOption) {
+    let opt = opt as _;
+    unsafe { gr_setscientificformat(opt) };
 }
 
 pub fn setscale(val: impl Into<c_int>) -> Result<(), GrError> {

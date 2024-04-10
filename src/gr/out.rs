@@ -9,7 +9,7 @@ use gr_sys::gr::{
     gr_activatews, gr_cellarray, gr_clearws, gr_closegks, gr_closews, gr_configurews,
     gr_deactivatews, gr_debug, gr_gdp, gr_gridit, gr_initgr, gr_inqdspsize, gr_nonuniformcellarray,
     gr_nonuniformpolarcellarray, gr_opengks, gr_openws, gr_polarcellarray, gr_polyline,
-    gr_polymarker, gr_spline, gr_text, gr_textx, gr_updatews,
+    gr_polymarker, gr_spline, gr_text, gr_textext, gr_textx, gr_updatews,
 };
 
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -144,6 +144,15 @@ pub fn textx((x, y): (f64, f64), s: impl AsRef<CStr>, world_cooridnates: bool, i
     let p = s.as_ref().as_ptr().cast_mut();
     let f = textx_opts(world_cooridnates, inline_math);
     unsafe { gr_textx(x, y, p, f) }
+}
+
+pub fn textext((x, y): (f64, f64), s: impl AsRef<CStr>) -> Result<()> {
+    let p = s.as_ref().as_ptr().cast_mut();
+    let r = unsafe { gr_textext(x, y, p) };
+    match r {
+        0 => Err(GrError),
+        _ => Ok(()),
+    }
 }
 
 #[allow(clippy::unit_arg)]
