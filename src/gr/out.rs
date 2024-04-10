@@ -1,12 +1,12 @@
 use crate::gks::{GksColorIndexArray, GksPrimitive};
 use crate::gr::util::textx_opts;
 use crate::util::f64range::F64Range;
-use core::ffi::{c_int, CStr};
+use core::ffi::{c_int, c_uint, CStr};
 use core::fmt;
 use core::mem::MaybeUninit;
 use core::num::TryFromIntError;
 use gr_sys::gr::{
-    gr_activatews, gr_cellarray, gr_clearws, gr_closegks, gr_closews, gr_configurews,
+    gr_activatews, gr_axes, gr_cellarray, gr_clearws, gr_closegks, gr_closews, gr_configurews,
     gr_deactivatews, gr_debug, gr_gdp, gr_gridit, gr_initgr, gr_inqdspsize, gr_nonuniformcellarray,
     gr_nonuniformpolarcellarray, gr_opengks, gr_openws, gr_polarcellarray, gr_polyline,
     gr_polymarker, gr_spline, gr_text, gr_textext, gr_textx, gr_updatews,
@@ -320,4 +320,17 @@ pub fn gridit(
     let y = y.as_mut_ptr();
     let z = z.as_mut_ptr();
     Ok(unsafe { gr_gridit(nd, xd, yd, zd, nx, ny, x, y, z) })
+}
+
+pub fn axes(
+    tick_interval: (f64, f64),
+    origin: (f64, f64),
+    major: (Option<c_uint>, Option<c_uint>),
+    size: f64,
+) {
+    let (x_tick, y_tick) = tick_interval;
+    let (x, y) = origin;
+    let major_x = major.0.map_or(-1, |m| m as _);
+    let major_y = major.1.map_or(-1, |m| m as _);
+    unsafe { gr_axes(x_tick, y_tick, x, y, major_x, major_y, size) }
 }
