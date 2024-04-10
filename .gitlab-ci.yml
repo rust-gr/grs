@@ -6,4 +6,5 @@ build:
     - apt-get install -y build-essential curl
     - curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain nightly
     - export PATH=~/.cargo/bin:"${PATH}"
+    - export RUSTFLAGS="-D warnings"
     - cargo build -vv
