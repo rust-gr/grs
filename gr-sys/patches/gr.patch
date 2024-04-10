@@ -18,10 +18,10 @@
 -extern "C" {
 -#endif
 -
- #define GR_PROJECTION_DEFAULT 0
- #define GR_PROJECTION_ORTHOGRAPHIC 1
- #define GR_PROJECTION_PERSPECTIVE 2
-@@ -315,11 +300,5 @@
+ typedef enum
+ {
+   GR_PROJECTION_DEFAULT,
+@@ -374,11 +359,5 @@
  DLLEXPORT double gr_volume_interp_gauss(const data_point3d_t *, const void *, const point3d_t *, const point3d_t *);
  DLLEXPORT void gr_setmathfont(int font);
  DLLEXPORT void gr_inqmathfont(int *font);
