@@ -7,9 +7,10 @@ use core::mem::MaybeUninit;
 use core::num::TryFromIntError;
 use gr_sys::gr::{
     gr_activatews, gr_axes, gr_cellarray, gr_clearws, gr_closegks, gr_closews, gr_configurews,
-    gr_deactivatews, gr_debug, gr_gdp, gr_grid, gr_grid3d, gr_gridit, gr_initgr, gr_inqdspsize,
-    gr_nonuniformcellarray, gr_nonuniformpolarcellarray, gr_opengks, gr_openws, gr_polarcellarray,
-    gr_polyline, gr_polymarker, gr_spline, gr_text, gr_textext, gr_textx, gr_updatews,
+    gr_deactivatews, gr_debug, gr_gdp, gr_grid, gr_grid3d, gr_gridit, gr_herrorbars, gr_initgr,
+    gr_inqdspsize, gr_nonuniformcellarray, gr_nonuniformpolarcellarray, gr_opengks, gr_openws,
+    gr_polarcellarray, gr_polyline, gr_polymarker, gr_spline, gr_text, gr_textext, gr_textx,
+    gr_updatews, gr_verrorbars,
 };
 
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -357,4 +358,30 @@ pub fn grid3d(
     let major_y = major.1.try_into()?;
     let major_z = major.2.try_into()?;
     Ok(unsafe { gr_grid3d(x_tick, y_tick, z_tick, x, y, z, major_x, major_y, major_z) })
+}
+
+#[allow(clippy::unit_arg)]
+pub fn verrorbars(n: usize, x: &[f64], y: &[f64], lo: &[f64], hi: &[f64]) -> Result<()> {
+    #[rustfmt::skip]
+    check_that(n <=  x.len() && n <=  y.len())?;
+    check_that(n <= lo.len() && n <= hi.len())?;
+    let n = n.try_into()?;
+    let x = x.as_ptr().cast_mut();
+    let y = y.as_ptr().cast_mut();
+    let lo = lo.as_ptr().cast_mut();
+    let hi = hi.as_ptr().cast_mut();
+    Ok(unsafe { gr_verrorbars(n, x, y, lo, hi) })
+}
+
+#[allow(clippy::unit_arg)]
+pub fn herrorbars(n: usize, x: &[f64], y: &[f64], lo: &[f64], hi: &[f64]) -> Result<()> {
+    #[rustfmt::skip]
+    check_that(n <=  x.len() && n <=  y.len())?;
+    check_that(n <= lo.len() && n <= hi.len())?;
+    let n = n.try_into()?;
+    let x = x.as_ptr().cast_mut();
+    let y = y.as_ptr().cast_mut();
+    let lo = lo.as_ptr().cast_mut();
+    let hi = hi.as_ptr().cast_mut();
+    Ok(unsafe { gr_herrorbars(n, x, y, lo, hi) })
 }
