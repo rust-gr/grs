@@ -6,11 +6,12 @@ use core::fmt;
 use core::mem::MaybeUninit;
 use core::num::TryFromIntError;
 use gr_sys::gr::{
-    gr_activatews, gr_axes, gr_cellarray, gr_clearws, gr_closegks, gr_closews, gr_configurews,
-    gr_deactivatews, gr_debug, gr_gdp, gr_grid, gr_grid3d, gr_gridit, gr_herrorbars, gr_initgr,
-    gr_inqdspsize, gr_nonuniformcellarray, gr_nonuniformpolarcellarray, gr_opengks, gr_openws,
-    gr_polarcellarray, gr_polyline, gr_polymarker, gr_spline, gr_text, gr_textext, gr_textx,
-    gr_updatews, gr_verrorbars,
+    gr_activatews, gr_axes, gr_axes3d, gr_cellarray, gr_clearws, gr_closegks, gr_closews,
+    gr_configurews, gr_deactivatews, gr_debug, gr_gdp, gr_grid, gr_grid3d, gr_gridit,
+    gr_herrorbars, gr_initgr, gr_inqdspsize, gr_nonuniformcellarray, gr_nonuniformpolarcellarray,
+    gr_opengks, gr_openws, gr_polarcellarray, gr_polyline, gr_polyline3d, gr_polymarker,
+    gr_polymarker3d, gr_spline, gr_text, gr_textext, gr_textx, gr_titles3d, gr_updatews,
+    gr_verrorbars,
 };
 
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -384,4 +385,51 @@ pub fn herrorbars(n: usize, x: &[f64], y: &[f64], lo: &[f64], hi: &[f64]) -> Res
     let lo = lo.as_ptr().cast_mut();
     let hi = hi.as_ptr().cast_mut();
     Ok(unsafe { gr_herrorbars(n, x, y, lo, hi) })
+}
+
+#[allow(clippy::unit_arg)]
+pub fn polyline3d(n: usize, x: &[f64], y: &[f64], z: &[f64]) -> Result<()> {
+    check_that(n <= x.len() && n <= y.len() && n <= z.len())?;
+    let n = n.try_into()?;
+    let x = x.as_ptr().cast_mut();
+    let y = y.as_ptr().cast_mut();
+    let z = z.as_ptr().cast_mut();
+    Ok(unsafe { gr_polyline3d(n, x, y, z) })
+}
+
+#[allow(clippy::unit_arg)]
+pub fn polymarker3d(n: usize, x: &[f64], y: &[f64], z: &[f64]) -> Result<()> {
+    check_that(n <= x.len() && n <= y.len() && n <= z.len())?;
+    let n = n.try_into()?;
+    let x = x.as_ptr().cast_mut();
+    let y = y.as_ptr().cast_mut();
+    let z = z.as_ptr().cast_mut();
+    Ok(unsafe { gr_polymarker3d(n, x, y, z) })
+}
+
+#[allow(clippy::unit_arg)]
+pub fn axes3d(
+    tick_interval: (f64, f64, f64),
+    origin: (f64, f64, f64),
+    major: (c_uint, c_uint, c_uint),
+    size: f64,
+) -> Result<()> {
+    let (x_tick, y_tick, z_tick) = tick_interval;
+    let (x, y, z) = origin;
+    let major_x = major.0.try_into()?;
+    let major_y = major.1.try_into()?;
+    let major_z = major.2.try_into()?;
+    Ok(unsafe {
+        gr_axes3d(
+            x_tick, y_tick, z_tick, x, y, z, major_x, major_y, major_z, size,
+        )
+    })
+}
+
+#[allow(clippy::unit_arg)]
+pub fn titles3d(x: impl AsRef<CStr>, y: impl AsRef<CStr>, z: impl AsRef<CStr>) {
+    let x = x.as_ref().as_ptr().cast_mut();
+    let y = y.as_ref().as_ptr().cast_mut();
+    let z = z.as_ref().as_ptr().cast_mut();
+    unsafe { gr_titles3d(x, y, z) }
 }
