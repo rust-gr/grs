@@ -5,14 +5,7 @@ use core::ffi::{c_int, c_uint, CStr};
 use core::fmt;
 use core::mem::MaybeUninit;
 use core::num::TryFromIntError;
-use gr_sys::gr::{
-    gr_activatews, gr_axes, gr_axes3d, gr_cellarray, gr_clearws, gr_closegks, gr_closews,
-    gr_configurews, gr_deactivatews, gr_debug, gr_gdp, gr_grid, gr_grid3d, gr_gridit,
-    gr_herrorbars, gr_initgr, gr_inqdspsize, gr_nonuniformcellarray, gr_nonuniformpolarcellarray,
-    gr_opengks, gr_openws, gr_polarcellarray, gr_polyline, gr_polyline3d, gr_polymarker,
-    gr_polymarker3d, gr_spline, gr_text, gr_textext, gr_textx, gr_titles3d, gr_updatews,
-    gr_verrorbars,
-};
+use gr_sys::gr::*;
 
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct GrError;
@@ -34,6 +27,17 @@ impl From<TryFromIntError> for GrError {
 
 pub type GrColorIndexArray<'a> = GksColorIndexArray<'a>;
 pub type GrPrimitive = GksPrimitive;
+
+pub enum GrSurfaceOption {
+    Lines = surface_option_t_GR_OPTION_LINES as _,
+    Mesh = surface_option_t_GR_OPTION_MESH as _,
+    FilledMesh = surface_option_t_GR_OPTION_FILLED_MESH as _,
+    ZShadedMesh = surface_option_t_GR_OPTION_Z_SHADED_MESH as _,
+    ColoredMesh = surface_option_t_GR_OPTION_COLORED_MESH as _,
+    CellArray = surface_option_t_GR_OPTION_CELL_ARRAY as _,
+    ShadedMesh = surface_option_t_GR_OPTION_SHADED_MESH as _,
+    Mesh3D = surface_option_t_GR_OPTION_3D_MESH as _,
+}
 
 fn check_that(x: bool) -> Result<()> {
     match x {
@@ -432,4 +436,16 @@ pub fn titles3d(x: impl AsRef<CStr>, y: impl AsRef<CStr>, z: impl AsRef<CStr>) {
     let y = y.as_ref().as_ptr().cast_mut();
     let z = z.as_ref().as_ptr().cast_mut();
     unsafe { gr_titles3d(x, y, z) }
+}
+
+#[allow(clippy::unit_arg)]
+pub fn surface(x: &[f64], y: &[f64], z: &[f64], option: GrSurfaceOption) -> Result<()> {
+    check_that(x.len() * y.len() <= z.len())?;
+    let nx = x.len().try_into()?;
+    let ny = y.len().try_into()?;
+    let x = x.as_ref().as_ptr().cast_mut();
+    let y = y.as_ref().as_ptr().cast_mut();
+    let z = z.as_ref().as_ptr().cast_mut();
+    let opt = option as _;
+    Ok(unsafe { gr_surface(nx, ny, x, y, z, opt) })
 }
