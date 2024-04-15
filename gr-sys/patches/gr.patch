@@ -21,12 +21,12 @@
  typedef enum
  {
    GR_PROJECTION_DEFAULT,
-@@ -374,11 +359,5 @@
- DLLEXPORT double gr_volume_interp_gauss(const data_point3d_t *, const void *, const point3d_t *, const point3d_t *);
+@@ -375,11 +360,5 @@
  DLLEXPORT void gr_setmathfont(int font);
  DLLEXPORT void gr_inqmathfont(int *font);
  DLLEXPORT void gr_setclipregion(int region);
  DLLEXPORT void gr_inqclipregion(int *region);
+ DLLEXPORT void gr_settextoffset(double xoff, double yoff);
 -
 -#ifdef __cplusplus
 -}
