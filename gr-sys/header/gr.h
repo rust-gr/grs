@@ -361,3 +361,4 @@ DLLEXPORT void gr_setmathfont(int font);
 DLLEXPORT void gr_inqmathfont(int *font);
 DLLEXPORT void gr_setclipregion(int region);
 DLLEXPORT void gr_inqclipregion(int *region);
+DLLEXPORT void gr_settextoffset(double xoff, double yoff);

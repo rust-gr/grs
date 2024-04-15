@@ -1299,3 +1299,6 @@ extern "C" {
 extern "C" {
     pub fn gr_inqclipregion(region: *mut ::core::ffi::c_int);
 }
+extern "C" {
+    pub fn gr_settextoffset(xoff: f64, yoff: f64);
+}
