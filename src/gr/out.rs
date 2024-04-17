@@ -5,6 +5,7 @@ use core::ffi::{c_int, c_uint, CStr};
 use core::fmt;
 use core::mem::MaybeUninit;
 use core::num::TryFromIntError;
+use core::ptr;
 use gr_sys::gr::*;
 
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -443,9 +444,67 @@ pub fn surface(x: &[f64], y: &[f64], z: &[f64], option: GrSurfaceOption) -> Resu
     check_that(x.len() * y.len() <= z.len())?;
     let nx = x.len().try_into()?;
     let ny = y.len().try_into()?;
-    let x = x.as_ref().as_ptr().cast_mut();
-    let y = y.as_ref().as_ptr().cast_mut();
-    let z = z.as_ref().as_ptr().cast_mut();
+    let x = x.as_ptr().cast_mut();
+    let y = y.as_ptr().cast_mut();
+    let z = z.as_ptr().cast_mut();
     let opt = option as _;
     Ok(unsafe { gr_surface(nx, ny, x, y, z, opt) })
+}
+
+#[allow(clippy::unit_arg)]
+pub fn contour(
+    x: &[f64],
+    y: &[f64],
+    h: Option<&[f64]>,
+    z: &[f64],
+    major_h: usize,
+    color: bool,
+) -> Result<()> {
+    check_that(x.len() * y.len() <= z.len())?;
+    check_that(major_h < 1000)?;
+    let nx = x.len().try_into()?;
+    let ny = y.len().try_into()?;
+    let nh = h
+        .map(|h| h.len().try_into())
+        .transpose()?
+        .unwrap_or_default();
+    let x = x.as_ptr().cast_mut();
+    let y = y.as_ptr().cast_mut();
+    let h = h.map(|h| h.as_ptr()).unwrap_or(ptr::null()).cast_mut();
+    let z = z.as_ptr().cast_mut();
+    let major_h = major_h.try_into()?; // optimizer, pls see the check above ;)
+    let major_h = if color { major_h + 1000 } else { major_h };
+    Ok(unsafe { gr_contour(nx, ny, nh, x, y, h, z, major_h) })
+}
+
+pub enum GrContourHeights<'a> {
+    Default,
+    N(usize),
+    Custom(&'a [f64]),
+}
+
+#[allow(clippy::unit_arg)]
+pub fn contourf(
+    x: &[f64],
+    y: &[f64],
+    h: GrContourHeights,
+    z: &[f64],
+    major_h: Option<usize>,
+    color: bool, // doesn't actually do anything
+) -> Result<()> {
+    check_that(x.len() * y.len() <= z.len())?;
+    let nx = x.len().try_into()?;
+    let ny = y.len().try_into()?;
+    let x = x.as_ptr().cast_mut();
+    let y = y.as_ptr().cast_mut();
+    let z = z.as_ptr().cast_mut();
+    let (nh, h) = match h {
+        GrContourHeights::Default => (0, ptr::null_mut()),
+        GrContourHeights::N(nh) => (nh.try_into()?, ptr::null_mut()),
+        GrContourHeights::Custom(h) => (h.len().try_into()?, h.as_ptr().cast_mut()),
+    };
+    let major_h = major_h.map(TryInto::try_into).transpose()?.unwrap_or(-1);
+    check_that(major_h < 1000)?;
+    let major_h = if color { major_h + 1000 } else { major_h };
+    Ok(unsafe { gr_contourf(nx, ny, nh, x, y, h, z, major_h) })
 }
