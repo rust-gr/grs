@@ -40,6 +40,12 @@ pub enum GrSurfaceOption {
     Mesh3D = surface_option_t_GR_OPTION_3D_MESH as _,
 }
 
+pub enum GrContourHeights<'a> {
+    Default,
+    N(usize),
+    Custom(&'a [f64]),
+}
+
 fn check_that(x: bool) -> Result<()> {
     match x {
         true => Ok(()),
@@ -470,17 +476,11 @@ pub fn contour(
         .unwrap_or_default();
     let x = x.as_ptr().cast_mut();
     let y = y.as_ptr().cast_mut();
-    let h = h.map(|h| h.as_ptr()).unwrap_or(ptr::null()).cast_mut();
+    let h = h.map_or(ptr::null(), |h| h.as_ptr()).cast_mut();
     let z = z.as_ptr().cast_mut();
     let major_h = major_h.try_into()?; // optimizer, pls see the check above ;)
     let major_h = if color { major_h + 1000 } else { major_h };
     Ok(unsafe { gr_contour(nx, ny, nh, x, y, h, z, major_h) })
-}
-
-pub enum GrContourHeights<'a> {
-    Default,
-    N(usize),
-    Custom(&'a [f64]),
 }
 
 #[allow(clippy::unit_arg)]
@@ -507,4 +507,29 @@ pub fn contourf(
     check_that(major_h < 1000)?;
     let major_h = if color { major_h + 1000 } else { major_h };
     Ok(unsafe { gr_contourf(nx, ny, nh, x, y, h, z, major_h) })
+}
+
+#[allow(clippy::unit_arg)]
+pub fn tricontour(n: usize, x: &[f64], y: &[f64], z: &[f64], levels: &[f64]) -> Result<()> {
+    check_that(n <= x.len() && n <= y.len() && n <= z.len())?;
+    let n = n.try_into()?;
+    let ln = levels.len().try_into()?;
+    let x = x.as_ptr().cast_mut();
+    let y = y.as_ptr().cast_mut();
+    let z = z.as_ptr().cast_mut();
+    let l = levels.as_ptr().cast_mut();
+    Ok(unsafe { gr_tricontour(n, x, y, z, ln, l) })
+}
+
+pub fn hexbin(n: usize, x: &[f64], y: &[f64], nbins: usize) -> Result<c_int> {
+    check_that(n <= x.len() && n <= y.len())?;
+    let n = n.try_into()?;
+    let x = x.as_ptr().cast_mut();
+    let y = y.as_ptr().cast_mut();
+    let nbins = nbins.try_into()?;
+    Ok(unsafe { gr_hexbin(n, x, y, nbins) })
+}
+
+pub fn colorbar() {
+    unsafe { gr_colorbar() }
 }
