@@ -7,6 +7,7 @@ use gr_sys::gr::*;
 use gr_sys::strlib::*;
 use paste::paste;
 use std::ffi::CStr;
+use std::ptr;
 
 #[rustfmt::skip]
 macro_rules! impl_primitive_set {
@@ -162,6 +163,24 @@ pub fn inqspace3d() -> Option<(f64, f64, f64, f64)> {
         0 => None,
         _ => unreachable!(),
     }
+}
+
+pub fn setcolormapfromrgb(
+    n: usize,
+    r: &[f64],
+    g: &[f64],
+    b: &[f64],
+    x: Option<&[f64]>,
+) -> Result<(), GrError> {
+    if n > r.len() || n > g.len() || n > b.len() || x.map_or(false, |x| n > x.len()) {
+        return Err(GrError);
+    }
+    let n = n.try_into()?;
+    let r = r.as_ptr().cast_mut();
+    let g = g.as_ptr().cast_mut();
+    let b = b.as_ptr().cast_mut();
+    let x = x.map_or(ptr::null(), |x| x.as_ptr()).cast_mut();
+    Ok(unsafe { gr_setcolormapfromrgb(n, r, g, b, x) })
 }
 
 macro_rules! impl_set_size {
