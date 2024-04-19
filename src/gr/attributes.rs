@@ -3,6 +3,7 @@ use super::GrError;
 use crate::util::f64range::F64Range;
 use core::ffi::{c_int, c_uint};
 use core::mem::MaybeUninit;
+use gr_sys::gkscore::MAX_COLOR;
 use gr_sys::gr::*;
 use gr_sys::strlib::*;
 use paste::paste;
@@ -181,6 +182,35 @@ pub fn setcolormapfromrgb(
     let b = b.as_ptr().cast_mut();
     let x = x.map_or(ptr::null(), |x| x.as_ptr()).cast_mut();
     Ok(unsafe { gr_setcolormapfromrgb(n, r, g, b, x) })
+}
+
+pub fn inqcolor(n: usize) -> Result<c_int, GrError> {
+    match n.try_into() {
+        Ok(n) if n < MAX_COLOR => {
+            let mut col = MaybeUninit::uninit();
+            let cp = col.as_mut_ptr();
+            Ok(unsafe {
+                gr_inqcolor(n, cp);
+                col.assume_init()
+            })
+        }
+        _ => Err(GrError),
+    }
+}
+
+pub fn inqcolormapinds() -> (c_int, c_int) {
+    let mut fst = MaybeUninit::uninit();
+    let mut snd = MaybeUninit::uninit();
+    let fp = fst.as_mut_ptr();
+    let sp = snd.as_mut_ptr();
+    unsafe {
+        gr_inqcolormapinds(fp, sp);
+        (fst.assume_init(), snd.assume_init())
+    }
+}
+
+pub fn inqcolorfromrgb(r: f64, g: f64, b: f64) -> c_int {
+    unsafe { gr_inqcolorfromrgb(r, g, b) }
 }
 
 macro_rules! impl_set_size {
