@@ -213,6 +213,102 @@ pub fn inqcolorfromrgb(r: f64, g: f64, b: f64) -> c_int {
     unsafe { gr_inqcolorfromrgb(r, g, b) }
 }
 
+pub fn hsvtorgb(h: f64, s: f64, v: f64) -> (f64, f64, f64) {
+    let mut r = MaybeUninit::uninit();
+    let mut g = MaybeUninit::uninit();
+    let mut b = MaybeUninit::uninit();
+    let rp = r.as_mut_ptr();
+    let gp = g.as_mut_ptr();
+    let bp = b.as_mut_ptr();
+    unsafe {
+        gr_hsvtorgb(h, s, v, rp, gp, bp);
+        (r.assume_init(), g.assume_init(), b.assume_init())
+    }
+}
+
+pub fn tick(range: F64Range) -> f64 {
+    let (min, max) = range.into();
+    unsafe { gr_tick(min, max) }
+}
+
+pub fn validaterange(min: f64, max: f64) -> bool {
+    0 != unsafe { gr_validaterange(min, max) }
+}
+
+pub fn adjustlimits(limits: F64Range) -> F64Range {
+    let (mut min, mut max) = limits.into();
+    unsafe {
+        gr_adjustrange(&mut min, &mut max);
+        F64Range::new_unchecked(min, max)
+    }
+}
+
+pub fn adjustrange(mut min: f64, mut max: f64) -> (f64, f64) {
+    unsafe { gr_adjustrange(&mut min, &mut max) }
+    (min, max)
+}
+
+pub fn version() -> &'static CStr {
+    unsafe { CStr::from_ptr(gr_version()) }
+}
+
+pub fn beginprint(pathname: impl AsRef<CStr>) {
+    let p = pathname.as_ref().as_ptr().cast_mut();
+    unsafe { gr_beginprint(p) }
+}
+
+pub enum GrColorMode {
+    GrayScale,
+    Color,
+}
+
+pub enum GrOrientation {
+    Landscape,
+    Portrait,
+}
+
+pub fn beginprintext(
+    pathname: impl AsRef<CStr>,
+    mode: GrColorMode,
+    format: impl AsRef<CStr>,
+    orientation: GrOrientation,
+) {
+    let p = pathname.as_ref().as_ptr().cast_mut();
+    let m = match mode {
+        GrColorMode::GrayScale => c"GrayScale",
+        GrColorMode::Color => c"Color",
+    }
+    .as_ptr()
+    .cast_mut();
+    let f = format.as_ref().as_ptr().cast_mut();
+    let o = match orientation {
+        GrOrientation::Landscape => c"Landscape",
+        GrOrientation::Portrait => c"Portrait",
+    }
+    .as_ptr()
+    .cast_mut();
+    unsafe { gr_beginprintext(p, m, f, o) }
+}
+
+pub fn endprint() {
+    unsafe { gr_endprint() }
+}
+
+pub fn ndctowc(mut x: f64, mut y: f64) -> (f64, f64) {
+    unsafe { gr_ndctowc(&mut x, &mut y) }
+    (x, y)
+}
+
+pub fn wctondc(mut x: f64, mut y: f64) -> (f64, f64) {
+    unsafe { gr_wctondc(&mut x, &mut y) }
+    (x, y)
+}
+
+pub fn wc3towc(mut x: f64, mut y: f64, mut z: f64) -> (f64, f64, f64) {
+    unsafe { gr_wc3towc(&mut x, &mut y, &mut z) }
+    (x, y, z)
+}
+
 macro_rules! impl_set_size {
     ($name:ident) => {
         pub fn $name(x: F64Range, y: F64Range) {
