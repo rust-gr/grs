@@ -18,7 +18,7 @@ main() {
 			# patch can successfully execute with exit-code 0 even though the patch file is faulty
 			# it generates a .orig file so that's how you can tell
 			patch "${header}" < "${patch}" || return
-			ls header | grep -q "\.orig" && { echo not quite right; return; }
+			ls header | grep -q "\.orig" && { echo not quite right; return 1; }
 		fi
 		echo -e "pub mod ${name} { include!(concat!(env!(\"OUT_DIR\"), \"/${name}.rs\")); }\n" >> src/lib.rs
 	done

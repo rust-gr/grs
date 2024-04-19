@@ -21,7 +21,7 @@
  typedef enum
  {
    GR_PROJECTION_DEFAULT,
-@@ -375,11 +360,5 @@
+@@ -385,11 +370,5 @@
  DLLEXPORT void gr_setmathfont(int font);
  DLLEXPORT void gr_inqmathfont(int *font);
  DLLEXPORT void gr_setclipregion(int region);
