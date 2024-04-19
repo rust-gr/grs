@@ -1,3 +1,4 @@
+use super::GrColorModel;
 use crate::gks::{GksColorIndexArray, GksPrimitive};
 use crate::gr::util::textx_opts;
 use crate::util::f64range::F64Range;
@@ -548,4 +549,19 @@ pub fn drawarc(x: (f64, f64), y: (f64, f64), angle: (f64, f64)) {
 
 pub fn fillarc(x: (f64, f64), y: (f64, f64), angle: (f64, f64)) {
     unsafe { gr_fillarc(x.0, x.1, y.0, y.1, angle.0, angle.1) }
+}
+
+#[allow(clippy::unit_arg)]
+pub fn drawimage(
+    x: (f64, f64),
+    y: (f64, f64),
+    (width, height, data): (usize, usize, &[c_int]),
+    model: GrColorModel,
+) -> Result<()> {
+    check_that(width * height <= data.len())?;
+    let w = width.try_into()?;
+    let h = height.try_into()?;
+    let d = data.as_ptr().cast_mut();
+    let m = model as _;
+    Ok(unsafe { gr_drawimage(x.0, x.1, y.0, y.1, w, h, d, m) })
 }

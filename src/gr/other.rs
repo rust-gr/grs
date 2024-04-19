@@ -1,7 +1,10 @@
 use super::util::impl_primitive_function;
-use core::ffi::c_int;
-use std::mem::MaybeUninit;
-use gr_sys::gr::*;
+use core::{
+    ffi::{c_int, CStr},
+    mem::MaybeUninit,
+    slice,
+};
+use gr_sys::{gkscore::gks_free, gr::*};
 use paste::paste;
 
 pub fn samplelocator() -> (f64, f64, c_int) {
@@ -14,6 +17,72 @@ pub fn samplelocator() -> (f64, f64, c_int) {
     unsafe {
         gr_samplelocator(xp, yp, bp);
         (x.assume_init(), y.assume_init(), buttons.assume_init())
+    }
+}
+
+#[derive(Debug)]
+pub struct GrImage {
+    width: usize,
+    height: usize,
+    data: *mut c_int,
+}
+
+pub enum GrColorModel {
+    RGB = color_model_t_GR_MODEL_RGB as _,
+    HSV = color_model_t_GR_MODEL_HSV as _,
+}
+
+impl GrImage {
+    pub fn width(&self) -> usize {
+        self.width
+    }
+
+    pub fn height(&self) -> usize {
+        self.height
+    }
+
+    pub fn data(&self) -> &[c_int] {
+        unsafe { slice::from_raw_parts(self.data, self.width * self.height) }
+    }
+
+    pub fn draw(&self, x: (f64, f64), y: (f64, f64), model: GrColorModel) {
+        let &GrImage {
+            width,
+            height,
+            data,
+        } = self;
+        // usize -> c_int cast is safe because of provenance
+        let w = width as _;
+        let h = height as _;
+        let m = model as _;
+        unsafe { gr_drawimage(x.0, x.1, y.0, y.1, w, h, data, m) }
+    }
+}
+
+impl Drop for GrImage {
+    fn drop(&mut self) {
+        let p = self.data.cast();
+        unsafe { gks_free(p) }
+    }
+}
+
+pub fn readimage(path: impl AsRef<CStr>) -> Option<GrImage> {
+    let mut width = MaybeUninit::uninit();
+    let mut height = MaybeUninit::uninit();
+    let mut data = MaybeUninit::uninit();
+    let p = path.as_ref().as_ptr().cast_mut();
+    let w = width.as_mut_ptr();
+    let h = height.as_mut_ptr();
+    let d = data.as_mut_ptr();
+    match unsafe { gr_readimage(p, w, h, d) } {
+        -1 => return None,
+        _ => Some(unsafe {
+            GrImage {
+                width: width.assume_init().try_into().ok()?,
+                height: height.assume_init().try_into().ok()?,
+                data: data.assume_init(),
+            }
+        }),
     }
 }
 
