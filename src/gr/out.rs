@@ -533,3 +533,19 @@ pub fn hexbin(n: usize, x: &[f64], y: &[f64], nbins: usize) -> Result<c_int> {
 pub fn colorbar() {
     unsafe { gr_colorbar() }
 }
+
+pub fn drawrect(x: (f64, f64), y: (f64, f64)) {
+    unsafe { gr_drawrect(x.0, x.1, y.0, y.1) }
+}
+
+pub fn fillrect(x: (f64, f64), y: (f64, f64)) {
+    unsafe { gr_fillrect(x.0, x.1, y.0, y.1) }
+}
+
+pub fn drawarc(x: (f64, f64), y: (f64, f64), angle: (f64, f64)) {
+    unsafe { gr_drawarc(x.0, x.1, y.0, y.1, angle.0, angle.1) }
+}
+
+pub fn fillarc(x: (f64, f64), y: (f64, f64), angle: (f64, f64)) {
+    unsafe { gr_fillarc(x.0, x.1, y.0, y.1, angle.0, angle.1) }
+}
