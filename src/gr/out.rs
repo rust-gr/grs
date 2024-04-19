@@ -590,3 +590,13 @@ pub fn drawimage(
     let m = model as _;
     Ok(unsafe { gr_drawimage(x.0, x.1, y.0, y.1, w, h, d, m) })
 }
+
+pub fn importgraphics(path: impl AsRef<CStr>) -> bool {
+    let p = path.as_ref().as_ptr().cast_mut();
+    -1 != unsafe { gr_importgraphics(p) }
+}
+
+pub fn drawgraphics(xml_string: impl AsRef<CStr>) {
+    let s = xml_string.as_ref().as_ptr().cast_mut();
+    unsafe { gr_drawgraphics(s); }
+}
