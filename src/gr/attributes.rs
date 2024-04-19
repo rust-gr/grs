@@ -90,6 +90,18 @@ pub fn inqtextext((x, y): (f64, f64), s: impl AsRef<CStr>) -> (f64, f64) {
     }
 }
 
+pub fn inqmathtex((x, y): (f64, f64), s: impl AsRef<CStr>) -> (f64, f64) {
+    let s = s.as_ref().as_ptr().cast_mut();
+    let mut tbx = MaybeUninit::uninit();
+    let mut tby = MaybeUninit::uninit();
+    let tbx_ptr = tbx.as_mut_ptr();
+    let tby_ptr = tby.as_mut_ptr();
+    unsafe {
+        gr_inqmathtex(x, y, s, tbx_ptr, tby_ptr);
+        (tbx.assume_init(), tby.assume_init())
+    }
+}
+
 pub enum ScientificFormatOption {
     E = SCIENTIFIC_FORMAT_OPTION_E as _,
     TexTex = SCIENTIFIC_FORMAT_OPTION_TEXTEX as _,
@@ -384,8 +396,11 @@ impl_primitive_set! { setarrowsize, f64 }
 impl_primitive_set! { setwscharheight, f64, f64 }
 impl_primitive_set! { setcharup, f64, f64 }
 impl_primitive_set! { setcolorrep, c_int, f64, f64, f64 }
+impl_primitive_set! { setshadow, f64, f64, f64 }
 impl_primitive_inq! { inqscale, c_int }
 impl_primitive_function! { inqregenflags() -> c_int }
 impl_primitive_function! { precision() -> f64 }
 impl_primitive_function! { text_maxsize() -> c_int }
 impl_primitive_function! { setspace3d(azimuth: f64, polar: f64, fov: f64, cam: f64) }
+impl_primitive_function! { beginselection(index: c_int, type_: c_int) }
+impl_primitive_function! { endselection() }

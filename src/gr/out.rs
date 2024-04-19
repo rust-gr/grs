@@ -8,6 +8,7 @@ use core::mem::MaybeUninit;
 use core::num::TryFromIntError;
 use core::ptr;
 use gr_sys::gr::*;
+use std::ffi::CString;
 
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct GrError;
@@ -178,6 +179,11 @@ pub fn textext((x, y): (f64, f64), s: impl AsRef<CStr>) -> Result<()> {
         0 => Err(GrError),
         _ => Ok(()),
     }
+}
+
+pub fn mathtex((x, y): (f64, f64), s: impl AsRef<CStr>) {
+    let p = s.as_ref().as_ptr().cast_mut();
+    unsafe { gr_mathtex(x, y, p) }
 }
 
 #[allow(clippy::unit_arg)]
@@ -598,5 +604,21 @@ pub fn importgraphics(path: impl AsRef<CStr>) -> bool {
 
 pub fn drawgraphics(xml_string: impl AsRef<CStr>) {
     let s = xml_string.as_ref().as_ptr().cast_mut();
-    unsafe { gr_drawgraphics(s); }
+    unsafe {
+        gr_drawgraphics(s);
+    }
+}
+
+pub fn begingraphics(path: impl AsRef<CStr>) {
+    let p = path.as_ref().as_ptr().cast_mut();
+    unsafe { gr_begingraphics(p) }
+}
+
+pub fn endgraphics() {
+    unsafe { gr_endgraphics() }
+}
+
+pub fn getgraphics() -> CString {
+    // copy cause GR's buffer might be reallocated
+    unsafe { CString::from_raw(gr_getgraphics()) }
 }
