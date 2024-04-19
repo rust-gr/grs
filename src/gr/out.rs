@@ -29,6 +29,7 @@ impl From<TryFromIntError> for GrError {
 
 pub type GrColorIndexArray<'a> = GksColorIndexArray<'a>;
 pub type GrPrimitive = GksPrimitive;
+pub type GrVertex = vertex_t;
 
 pub enum GrSurfaceOption {
     Lines = surface_option_t_GR_OPTION_LINES as _,
@@ -45,6 +46,16 @@ pub enum GrContourHeights<'a> {
     Default,
     N(usize),
     Custom(&'a [f64]),
+}
+
+#[repr(u8)]
+pub enum GrPathCode {
+    Stop = path_code_t_GR_STOP as _,
+    MoveTo = path_code_t_GR_MOVETO as _,
+    LineTo = path_code_t_GR_LINETO as _,
+    Curve3 = path_code_t_GR_CURVE3 as _,
+    Curve4 = path_code_t_GR_CURVE4 as _,
+    ClosePoly = path_code_t_GR_CLOSEPOLY as _,
 }
 
 fn check_that(x: bool) -> Result<()> {
@@ -549,6 +560,20 @@ pub fn drawarc(x: (f64, f64), y: (f64, f64), angle: (f64, f64)) {
 
 pub fn fillarc(x: (f64, f64), y: (f64, f64), angle: (f64, f64)) {
     unsafe { gr_fillarc(x.0, x.1, y.0, y.1, angle.0, angle.1) }
+}
+
+#[allow(clippy::unit_arg)]
+pub fn drawpath(n: usize, verts: &[GrVertex], codes: &[GrPathCode], fill: bool) -> Result<()> {
+    check_that(n <= verts.len() && n <= codes.len())?;
+    let n = n.try_into()?;
+    let v = verts.as_ptr().cast_mut();
+    let c = codes.as_ptr().cast_mut().cast();
+    let f = fill.into();
+    Ok(unsafe { gr_drawpath(n, v, c, f) })
+}
+
+pub fn drawarrow(tail: (f64, f64), head: (f64, f64)) {
+    unsafe { gr_drawarrow(tail.0, tail.1, head.0, head.1) }
 }
 
 #[allow(clippy::unit_arg)]

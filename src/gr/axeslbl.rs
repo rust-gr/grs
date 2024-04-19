@@ -1,9 +1,8 @@
+use super::GrError;
 use core::ffi::{c_char, c_uint, CStr};
 use core::mem;
 use gr_sys::gr::gr_axeslbl;
 use std::sync::{Mutex, PoisonError};
-
-use super::GrError;
 
 pub type AxesFunction<'a> = &'a mut dyn FnMut((f64, f64), &CStr, f64);
 
