@@ -48,6 +48,13 @@ pub type surface_option_t = ::core::ffi::c_uint;
 pub const color_model_t_GR_MODEL_RGB: color_model_t = 0;
 pub const color_model_t_GR_MODEL_HSV: color_model_t = 1;
 pub type color_model_t = ::core::ffi::c_uint;
+pub const path_code_t_GR_STOP: path_code_t = 0;
+pub const path_code_t_GR_MOVETO: path_code_t = 1;
+pub const path_code_t_GR_LINETO: path_code_t = 2;
+pub const path_code_t_GR_CURVE3: path_code_t = 3;
+pub const path_code_t_GR_CURVE4: path_code_t = 4;
+pub const path_code_t_GR_CLOSEPOLY: path_code_t = 79;
+pub type path_code_t = ::core::ffi::c_uint;
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct vertex_t {
