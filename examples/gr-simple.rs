@@ -1,4 +1,4 @@
-use grs::gr;
+use grs::gr::{self, NO_LABEL_FUNCTION};
 use std::{
     ffi::{CStr, CString},
     io::{stdin, Read},
@@ -12,7 +12,7 @@ impl Ticker {
         Ticker { invocations: 0 }
     }
 
-    fn callback<'a, 'b>(&'a mut self, pos: (f64, f64), _s: &'b CStr, v: f64) {
+    fn callback(&mut self, pos: (f64, f64), _s: &CStr, v: f64) {
         self.invocations += 1;
         let s = format!("{v} ({})", self.invocations);
         let s = CString::new(s).unwrap();
@@ -29,8 +29,11 @@ fn main() {
         (0.0, 0.0),
         (Some(5), Some(10)),
         0.02,
-        Some(&mut |p, s, v| ticker.callback(p, s, v)),
-        None,
-    ).unwrap();
+        Some(|p, s, v| ticker.callback(p, s, v)),
+        NO_LABEL_FUNCTION,
+    )
+    .unwrap();
+    assert_eq!(ticker.invocations, 3);
+    gr::updatews();
     stdin().bytes().next();
 }
