@@ -1,5 +1,5 @@
---- old/gr.h	2023-12-08 08:24:03
-+++ new/gr.h	2023-12-08 08:21:57
+--- old/gr.h
++++ new/gr.h
 @@ -1,20 +1,5 @@
 -#ifndef _GR_H_
 -#define _GR_H_
@@ -21,12 +21,7 @@
  typedef enum
  {
    GR_PROJECTION_DEFAULT,
-@@ -385,11 +370,5 @@
- DLLEXPORT void gr_setmathfont(int font);
- DLLEXPORT void gr_inqmathfont(int *font);
- DLLEXPORT void gr_setclipregion(int region);
- DLLEXPORT void gr_inqclipregion(int *region);
- DLLEXPORT void gr_settextoffset(double xoff, double yoff);
+@@ -399,6 +384,0 @@
 -
 -#ifdef __cplusplus
 -}
