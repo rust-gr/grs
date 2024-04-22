@@ -130,6 +130,12 @@ pub struct hexbin_2pass_t {
     pub action: ::core::ffi::c_int,
     pub priv_: *mut hexbin_2pass_priv_t,
 }
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct format_reference_t {
+    pub scientific: ::core::ffi::c_int,
+    pub decimal_digits: ::core::ffi::c_int,
+}
 extern "C" {
     pub fn gr_initgr();
 }
@@ -1308,4 +1314,21 @@ extern "C" {
 }
 extern "C" {
     pub fn gr_settextoffset(xoff: f64, yoff: f64);
+}
+extern "C" {
+    pub fn gr_ftoa(
+        string: *mut ::core::ffi::c_char,
+        value: f64,
+        reference: *mut format_reference_t,
+    ) -> *mut ::core::ffi::c_char;
+}
+extern "C" {
+    pub fn gr_getformat(
+        result: *mut format_reference_t,
+        origin: f64,
+        min: f64,
+        max: f64,
+        tick_width: f64,
+        major: ::core::ffi::c_int,
+    );
 }

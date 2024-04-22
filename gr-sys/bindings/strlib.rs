@@ -5,19 +5,19 @@ pub const SCIENTIFIC_FORMAT_OPTION_TEXTEX: ::core::ffi::c_int = 2;
 pub const SCIENTIFIC_FORMAT_OPTION_MATHTEX: ::core::ffi::c_int = 3;
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
-pub struct format_reference_t {
+pub struct str_format_reference_t {
     pub scientific: ::core::ffi::c_int,
     pub decimal_digits: ::core::ffi::c_int,
 }
 extern "C" {
     pub fn str_get_format_reference(
-        arg1: *mut format_reference_t,
+        arg1: *mut str_format_reference_t,
         arg2: f64,
         arg3: f64,
         arg4: f64,
         arg5: f64,
         arg6: ::core::ffi::c_int,
-    ) -> *mut format_reference_t;
+    ) -> *mut str_format_reference_t;
 }
 extern "C" {
     pub fn str_remove(
@@ -36,7 +36,7 @@ extern "C" {
     pub fn str_ftoa(
         arg1: *mut ::core::ffi::c_char,
         arg2: f64,
-        arg3: *mut format_reference_t,
+        arg3: *mut str_format_reference_t,
         arg4: ::core::ffi::c_int,
     ) -> *mut ::core::ffi::c_char;
 }
