@@ -403,4 +403,12 @@ impl_primitive_function! { precision() -> f64 }
 impl_primitive_function! { text_maxsize() -> c_int }
 impl_primitive_function! { setspace3d(azimuth: f64, polar: f64, fov: f64, cam: f64) }
 impl_primitive_function! { beginselection(index: c_int, type_: c_int) }
+impl_primitive_function! { moveselection(x: f64, y: f64) }
+impl_primitive_function! { resizeselection(type_: c_int, x: f64, y: f64) }
 impl_primitive_function! { endselection() }
+impl_primitive_function! { savestate() }
+impl_primitive_function! { restorestate() }
+impl_primitive_function! { savecontext(context: c_int) }
+impl_primitive_function! { selectcontext(context: c_int) }
+impl_primitive_function! { destroycontext(context: c_int) }
+impl_primitive_function! { unselectcontext() }
