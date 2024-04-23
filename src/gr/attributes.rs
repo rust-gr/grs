@@ -327,6 +327,11 @@ pub fn setbboxcallback(id: impl Into<c_int>, f: unsafe extern "C" fn(c_int, f64,
     unsafe { gr_setbboxcallback(id, f) }
 }
 
+pub fn uselinespec(linespec: impl AsRef<CStr>) -> c_int {
+    let s = linespec.as_ref().as_ptr().cast_mut();
+    unsafe { gr_uselinespec(s) }
+}
+
 macro_rules! impl_set_size {
     ($name:ident) => {
         pub fn $name(x: F64Range, y: F64Range) {
