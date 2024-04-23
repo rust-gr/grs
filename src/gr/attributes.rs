@@ -321,6 +321,12 @@ pub fn wc3towc(mut x: f64, mut y: f64, mut z: f64) -> (f64, f64, f64) {
     (x, y, z)
 }
 
+pub fn setbboxcallback(id: impl Into<c_int>, f: unsafe extern "C" fn(c_int, f64, f64, f64, f64)) {
+    let id = id.into();
+    let f = Some(f);
+    unsafe { gr_setbboxcallback(id, f) }
+}
+
 macro_rules! impl_set_size {
     ($name:ident) => {
         pub fn $name(x: F64Range, y: F64Range) {
@@ -347,9 +353,18 @@ macro_rules! impl_inq_size {
             let ymin_ptr = ymin.as_mut_ptr();
             let ymax_ptr = ymax.as_mut_ptr();
             unsafe { paste!([<gr_$name>])(xmin_ptr, xmax_ptr, ymin_ptr, ymax_ptr) }
-            let x = unsafe { F64Range::new_unchecked(xmin.assume_init(), xmax.assume_init()) };
-            let y = unsafe { F64Range::new_unchecked(ymin.assume_init(), ymax.assume_init()) };
-            (x, y)
+            #[cfg(debug_assertions)]
+            {
+                let x = unsafe { F64Range::new_unchecked(xmin.assume_init(), xmax.assume_init()) };
+                let y = unsafe { F64Range::new_unchecked(ymin.assume_init(), ymax.assume_init()) };
+                (x, y)
+            }
+            #[cfg(not(debug_assertions))]
+            {
+                let x = F64Range::new(unsafe { xmin.assume_init() }, unsafe { xmax.assume_init() }).unwrap();
+                let y = F64Range::new(unsafe { ymin.assume_init() }, unsafe { ymax.assume_init() }).unwrap();
+                (x, y)
+            }
         }
     };
 
@@ -359,7 +374,7 @@ macro_rules! impl_inq_size {
 }
 
 impl_set_size! { setwindow, setviewport, setwswindow, setwsviewport }
-impl_inq_size! { inqwindow, inqviewport, }
+impl_inq_size! { inqwindow, inqviewport, inqbbox }
 
 pub use crate::gks::GksLinetype as GrLinetype;
 
@@ -412,3 +427,4 @@ impl_primitive_function! { savecontext(context: c_int) }
 impl_primitive_function! { selectcontext(context: c_int) }
 impl_primitive_function! { destroycontext(context: c_int) }
 impl_primitive_function! { unselectcontext() }
+impl_primitive_function! { cancelbboxcallback() }
