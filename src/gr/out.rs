@@ -619,6 +619,6 @@ pub fn endgraphics() {
 }
 
 pub fn getgraphics() -> CString {
-    // copy cause GR's buffer might be reallocated
+    // copy cause GR's buffer might get reallocated
     unsafe { CString::from_raw(gr_getgraphics()) }
 }

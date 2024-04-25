@@ -1,4 +1,4 @@
-use super::util::impl_primitive_function;
+use super::{util::impl_primitive_function, GrError};
 use core::{
     ffi::{c_int, CStr},
     mem::MaybeUninit,
@@ -6,6 +6,7 @@ use core::{
 };
 use gr_sys::{gkscore::gks_free, gr::*};
 use paste::paste;
+use std::alloc;
 
 pub fn samplelocator() -> (f64, f64, c_int) {
     let mut x = MaybeUninit::uninit();
@@ -84,6 +85,28 @@ pub fn readimage(path: impl AsRef<CStr>) -> Option<GrImage> {
             }
         }),
     }
+}
+
+pub fn delaunay(n: usize, x: &[f64], y: &[f64]) -> Result<Box<[c_int], alloc::System>, GrError> {
+    let mut ntri = MaybeUninit::uninit();
+    let mut tri = MaybeUninit::uninit();
+    let n = n.try_into()?;
+    let x = x.as_ptr().cast_mut();
+    let y = y.as_ptr().cast_mut();
+    let ntrip = ntri.as_mut_ptr();
+    let trip = tri.as_mut_ptr();
+    unsafe { gr_delaunay(n, x, y, ntrip, trip) }
+    let ntri = unsafe { ntri.assume_init() }.try_into();
+    let ntri = match cfg!(debug_assertions) {
+        true => ntri.unwrap(),
+        false => unsafe { ntri.unwrap_unchecked() },
+    };
+    Ok(unsafe {
+        Box::from_raw_in(
+            slice::from_raw_parts_mut(tri.assume_init(), ntri),
+            alloc::System,
+        )
+    })
 }
 
 // Segments
