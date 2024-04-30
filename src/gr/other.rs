@@ -109,6 +109,25 @@ pub fn delaunay(n: usize, x: &[f64], y: &[f64]) -> Result<Box<[c_int], alloc::Sy
     })
 }
 
+#[allow(clippy::unit_arg)]
+pub fn reducepoints(
+    x: &[f64],
+    y: &[f64],
+    new_x: &mut [f64],
+    new_y: &mut [f64],
+) -> Result<(), GrError> {
+    if x.len() != y.len() || new_x.len() != new_y.len() {
+        return Err(GrError);
+    }
+    let n = x.len().try_into()?;
+    let x = x.as_ptr();
+    let y = y.as_ptr();
+    let points = new_x.len().try_into()?;
+    let new_x = new_x.as_mut_ptr();
+    let new_y = new_y.as_mut_ptr();
+    Ok(unsafe { gr_reducepoints(n, x, y, points, new_x, new_y) })
+}
+
 // Segments
 impl_primitive_function! { createseg(segment: c_int) }
 impl_primitive_function! { copysegws(segment: c_int) }

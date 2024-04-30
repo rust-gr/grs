@@ -622,3 +622,11 @@ pub fn getgraphics() -> CString {
     // copy cause GR's buffer might get reallocated
     unsafe { CString::from_raw(gr_getgraphics()) }
 }
+
+pub fn trisurface(n: usize, x: &[f64], y: &[f64], z: &[f64]) -> Result<()> {
+    let n = n.try_into()?;
+    let x = x.as_ptr().cast_mut();
+    let y = y.as_ptr().cast_mut();
+    let z = z.as_ptr().cast_mut();
+    Ok(unsafe { gr_trisurface(n, x, y, z) })
+}
