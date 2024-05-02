@@ -630,3 +630,16 @@ pub fn trisurface(n: usize, x: &[f64], y: &[f64], z: &[f64]) -> Result<()> {
     let z = z.as_ptr().cast_mut();
     Ok(unsafe { gr_trisurface(n, x, y, z) })
 }
+
+#[allow(clippy::unit_arg)]
+pub fn quiver(x: &[f64], y: &[f64], u: &mut [f64], v: &mut [f64], color: bool) -> Result<()> {
+    let n = x.len() * y.len();
+    check_that(n <= u.len() && n <= v.len())?;
+    let nx = x.len().try_into()?;
+    let ny = y.len().try_into()?;
+    let x = x.as_ptr().cast_mut();
+    let y = y.as_ptr().cast_mut();
+    let u = u.as_ptr().cast_mut();
+    let v = v.as_ptr().cast_mut();
+    Ok(unsafe { gr_quiver(nx, ny, x, y, u, v, color as _) })
+}
