@@ -55,6 +55,13 @@ pub const path_code_t_GR_CURVE3: path_code_t = 3;
 pub const path_code_t_GR_CURVE4: path_code_t = 4;
 pub const path_code_t_GR_CLOSEPOLY: path_code_t = 79;
 pub type path_code_t = ::core::ffi::c_uint;
+pub const xform_types_t_GR_XFORM_BOOLEAN: xform_types_t = 0;
+pub const xform_types_t_GR_XFORM_LINEAR: xform_types_t = 1;
+pub const xform_types_t_GR_XFORM_LOG: xform_types_t = 2;
+pub const xform_types_t_GR_XFORM_LOGLOG: xform_types_t = 3;
+pub const xform_types_t_GR_XFORM_CUBIC: xform_types_t = 4;
+pub const xform_types_t_GR_XFORM_EQUALIZED: xform_types_t = 5;
+pub type xform_types_t = ::core::ffi::c_uint;
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct vertex_t {
