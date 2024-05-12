@@ -442,6 +442,10 @@ impl_primitive_set! { setwscharheight, f64, f64 }
 impl_primitive_set! { setcharup, f64, f64 }
 impl_primitive_set! { setcolorrep, c_int, f64, f64, f64 }
 impl_primitive_set! { setshadow, f64, f64, f64 }
+impl_primitive_set! { setthreadnumber, c_int }
+impl_primitive_set! { setpicturesizeforvolume, c_int, c_int }
+impl_primitive_set! { setvolumebordercalculation, c_int }
+impl_primitive_set! { setapproximativecalculation, c_int }
 impl_primitive_inq! { inqscale, c_int }
 impl_primitive_function! { inqregenflags() -> c_int }
 impl_primitive_function! { precision() -> f64 }
