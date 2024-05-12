@@ -29,6 +29,21 @@ macro_rules! impl_primitive_inq {
             }
         }
     };
+
+    ($name:ident 3f64) => {
+        pub fn $name() -> (f64, f64, f64) {
+            let mut x = MaybeUninit::uninit();
+            let mut y = MaybeUninit::uninit();
+            let mut z = MaybeUninit::uninit();
+            let xp = x.as_mut_ptr();
+            let yp = y.as_mut_ptr();
+            let zp = z.as_mut_ptr();
+            unsafe {
+                paste!([<gr_$name>])(xp, yp, zp);
+                (x.assume_init(), y.assume_init(), z.assume_init())
+            }
+        }
+    };
 }
 
 macro_rules! impl_primitive_set_inq {
@@ -36,6 +51,13 @@ macro_rules! impl_primitive_set_inq {
         paste! {
             impl_primitive_set! { [<set$name>], $type }
             impl_primitive_inq! { [<inq$name>], $type }
+        }
+    };
+
+    ($name:ident 3f64) => {
+        paste! {
+            impl_primitive_set! { [<set$name>], f64, f64, f64 }
+            impl_primitive_inq! { [<inq$name>] 3f64 }
         }
     };
 }
@@ -403,6 +425,8 @@ impl_primitive_set_inq! { projectiontype, c_int }
 impl_primitive_set_inq! { textencoding, c_int }
 impl_primitive_set_inq! { charheight, f64 }
 impl_primitive_set_inq! { transparency, f64 }
+impl_primitive_set_inq! { scalefactors3d 3f64 }
+impl_primitive_set_inq! { perspectiveprojection 3f64 }
 impl_primitive_set! { selectclipxform, c_int }
 impl_primitive_inq! { inqclipxform, c_int }
 impl_primitive_set! { settextfontprec, c_int, c_int }
