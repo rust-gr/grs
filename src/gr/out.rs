@@ -2,12 +2,14 @@ use super::GrColorModel;
 use crate::gks::{GksColorIndexArray, GksPrimitive};
 use crate::gr::util::textx_opts;
 use crate::util::f64range::F64Range;
+use crate::util::region::Region;
 use core::ffi::{c_int, c_uint, CStr};
 use core::fmt;
 use core::mem::MaybeUninit;
 use core::num::TryFromIntError;
 use core::ptr;
 use gr_sys::gr::*;
+use paste::paste;
 use std::ffi::CString;
 
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -57,6 +59,15 @@ pub enum GrPathCode {
     Curve3 = path_code_t_GR_CURVE3 as _,
     Curve4 = path_code_t_GR_CURVE4 as _,
     ClosePoly = path_code_t_GR_CLOSEPOLY as _,
+}
+
+pub enum XForm {
+    Boolean = xform_types_t_GR_XFORM_BOOLEAN as _,
+    Linear = xform_types_t_GR_XFORM_LINEAR as _,
+    Log = xform_types_t_GR_XFORM_LOG as _,
+    LogLog = xform_types_t_GR_XFORM_LOGLOG as _,
+    Cubic = xform_types_t_GR_XFORM_CUBIC as _,
+    Equalized = xform_types_t_GR_XFORM_EQUALIZED as _,
 }
 
 fn check_that(x: bool) -> Result<()> {
@@ -623,6 +634,7 @@ pub fn getgraphics() -> CString {
     unsafe { CString::from_raw(gr_getgraphics()) }
 }
 
+#[allow(clippy::unit_arg)]
 pub fn trisurface(n: usize, x: &[f64], y: &[f64], z: &[f64]) -> Result<()> {
     let n = n.try_into()?;
     let x = x.as_ptr().cast_mut();
@@ -643,3 +655,44 @@ pub fn quiver(x: &[f64], y: &[f64], u: &mut [f64], v: &mut [f64], color: bool) -
     let v = v.as_ptr().cast_mut();
     Ok(unsafe { gr_quiver(nx, ny, x, y, u, v, color as _) })
 }
+
+#[allow(clippy::unit_arg)]
+pub fn shade(
+    n: usize,
+    x: &[f64],
+    y: &[f64],
+    lines: bool,
+    xform: XForm,
+    roi: Region,
+    w: usize,
+    h: usize,
+    bins: &mut [c_int],
+) -> Result<()> {
+    check_that(n <= x.len() && n <= y.len() && w * h <= bins.len())?;
+    let n = n.try_into()?;
+    let x = x.as_ptr().cast_mut();
+    let y = y.as_ptr().cast_mut();
+    let roi = roi.as_ptr().cast_mut();
+    let w = w.try_into()?;
+    let h = h.try_into()?;
+    let bins = bins.as_mut_ptr();
+    Ok(unsafe { gr_shade(n, x, y, lines as _, xform as _, roi, w, h, bins) })
+}
+
+macro_rules! impl_shade_fn {
+    ($name:ident) => {
+        #[allow(clippy::unit_arg)]
+        pub fn $name(n: usize, x: &[f64], y: &[f64], xform: XForm, w: usize, h: usize) -> Result<()> {
+            check_that(n <= x.len() && n <= y.len())?;
+            let n = n.try_into()?;
+            let x = x.as_ptr().cast_mut();
+            let y = y.as_ptr().cast_mut();
+            let w = w.try_into()?;
+            let h = h.try_into()?;
+            Ok(unsafe { paste!([<gr_$name>])(n, x, y, xform as _, w, h) })
+        }
+    };
+}
+
+impl_shade_fn! { shadepoints }
+impl_shade_fn! { shadelines }
