@@ -76,7 +76,7 @@ pub fn readimage(path: impl AsRef<CStr>) -> Option<GrImage> {
     let h = height.as_mut_ptr();
     let d = data.as_mut_ptr();
     match unsafe { gr_readimage(p, w, h, d) } {
-        -1 => return None,
+        -1 => None,
         _ => Some(unsafe {
             GrImage {
                 width: width.assume_init().try_into().ok()?,

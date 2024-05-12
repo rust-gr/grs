@@ -178,6 +178,7 @@ pub fn inqspace3d() -> Option<(f64, f64, f64, f64)> {
     }
 }
 
+#[allow(clippy::unit_arg)]
 pub fn setcolormapfromrgb(
     n: usize,
     r: &[f64],
