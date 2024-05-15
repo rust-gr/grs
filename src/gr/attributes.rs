@@ -373,6 +373,101 @@ pub fn uselinespec(linespec: impl AsRef<CStr>) -> c_int {
     unsafe { gr_uselinespec(s) }
 }
 
+pub fn setwindows3d(x: (f64, f64), y: (f64, f64), z: (f64, f64)) {
+    let (xmin, xmax) = x;
+    let (ymin, ymax) = y;
+    let (zmin, zmax) = z;
+    unsafe { gr_setwindow3d(xmin, xmax, ymin, ymax, zmin, zmax) }
+}
+
+pub fn inqwindows3d() -> ((f64, f64), (f64, f64), (f64, f64)) {
+    let mut xmin = MaybeUninit::uninit();
+    let mut xmax = MaybeUninit::uninit();
+    let mut ymin = MaybeUninit::uninit();
+    let mut ymax = MaybeUninit::uninit();
+    let mut zmin = MaybeUninit::uninit();
+    let mut zmax = MaybeUninit::uninit();
+    let xmin_ptr = xmin.as_mut_ptr();
+    let xmax_ptr = xmax.as_mut_ptr();
+    let ymin_ptr = ymin.as_mut_ptr();
+    let ymax_ptr = ymax.as_mut_ptr();
+    let zmin_ptr = zmin.as_mut_ptr();
+    let zmax_ptr = zmax.as_mut_ptr();
+    unsafe { gr_inqwindow3d(xmin_ptr, xmax_ptr, ymin_ptr, ymax_ptr, zmin_ptr, zmax_ptr) }
+    unsafe {
+        (
+            (xmin.assume_init(), xmax.assume_init()),
+            (ymin.assume_init(), ymax.assume_init()),
+            (zmin.assume_init(), zmax.assume_init()),
+        )
+    }
+}
+
+pub fn settransformationparameters(
+    camera_pos: (f64, f64, f64),
+    up: (f64, f64, f64),
+    focus_point: (f64, f64, f64),
+) {
+    let (cpx, cpy, cpz) = camera_pos;
+    let (upx, upy, upz) = up;
+    let (fpx, fpy, fpz) = focus_point;
+    unsafe { gr_settransformationparameters(cpx, cpy, cpz, upx, upy, upz, fpx, fpy, fpz) }
+}
+
+pub fn inqtransformationparameters() -> ((f64, f64, f64), (f64, f64, f64), (f64, f64, f64)) {
+    let mut arr: [MaybeUninit<f64>; 9] = unsafe { MaybeUninit::uninit().assume_init() };
+    let arr: [f64; 9] = unsafe {
+        gr_inqtransformationparameters(
+            arr[0].as_mut_ptr(),
+            arr[1].as_mut_ptr(),
+            arr[2].as_mut_ptr(),
+            arr[3].as_mut_ptr(),
+            arr[4].as_mut_ptr(),
+            arr[5].as_mut_ptr(),
+            arr[6].as_mut_ptr(),
+            arr[7].as_mut_ptr(),
+            arr[7].as_mut_ptr(),
+        );
+        mem::transmute(arr)
+    };
+    (
+        (arr[0], arr[1], arr[2]),
+        (arr[3], arr[4], arr[5]),
+        (arr[6], arr[7], arr[8]),
+    )
+}
+
+pub fn setorthographicprojection(
+    (left, right): (f64, f64),
+    (bottom, top): (f64, f64),
+    (near, far): (f64, f64),
+) {
+    unsafe { gr_setorthographicprojection(left, right, bottom, top, near, far) }
+}
+
+pub fn inqorthographicprojection() -> ((f64, f64), (f64, f64), (f64, f64)) {
+    let mut left = MaybeUninit::uninit();
+    let mut right = MaybeUninit::uninit();
+    let mut bottom = MaybeUninit::uninit();
+    let mut top = MaybeUninit::uninit();
+    let mut near = MaybeUninit::uninit();
+    let mut far = MaybeUninit::uninit();
+    let leftp = left.as_mut_ptr();
+    let rightp = right.as_mut_ptr();
+    let bottomp = bottom.as_mut_ptr();
+    let topp = top.as_mut_ptr();
+    let nearp = near.as_mut_ptr();
+    let farp = far.as_mut_ptr();
+    unsafe {
+        gr_inqorthographicprojection(leftp, rightp, bottomp, topp, nearp, farp);
+        (
+            (left.assume_init(), right.assume_init()),
+            (bottom.assume_init(), top.assume_init()),
+            (near.assume_init(), far.assume_init()),
+        )
+    }
+}
+
 macro_rules! impl_set_size {
     ($name:ident) => {
         pub fn $name(x: F64Range, y: F64Range) {
