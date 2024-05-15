@@ -1,14 +1,14 @@
 use super::util::{impl_primitive_function, textx_opts};
 use super::GrError;
 use crate::util::f64range::F64Range;
-use core::ffi::{c_int, c_uint};
+use core::ffi::{c_int, c_uint, CStr};
+use core::mem;
 use core::mem::MaybeUninit;
+use core::ptr;
 use gr_sys::gkscore::MAX_COLOR;
 use gr_sys::gr::*;
 use gr_sys::strlib::*;
 use paste::paste;
-use std::ffi::CStr;
-use std::ptr;
 
 #[rustfmt::skip]
 macro_rules! impl_primitive_set {
@@ -70,12 +70,12 @@ pub fn startlistener() -> Result<(), GrError> {
     }
 }
 
-pub fn inqtext((x, y): (f64, f64), s: impl AsRef<CStr>) -> (f64, f64) {
+pub fn inqtext((x, y): (f64, f64), s: impl AsRef<CStr>) -> ([f64; 4], [f64; 4]) {
     let s = s.as_ref().as_ptr().cast_mut();
-    let mut tbx = MaybeUninit::uninit();
-    let mut tby = MaybeUninit::uninit();
-    let tbx_ptr = tbx.as_mut_ptr();
-    let tby_ptr = tby.as_mut_ptr();
+    let mut tbx = MaybeUninit::<[f64; 4]>::uninit();
+    let mut tby = MaybeUninit::<[f64; 4]>::uninit();
+    let tbx_ptr = tbx.as_mut_ptr().cast();
+    let tby_ptr = tby.as_mut_ptr().cast();
     unsafe {
         gr_inqtext(x, y, s, tbx_ptr, tby_ptr);
         (tbx.assume_init(), tby.assume_init())
@@ -87,28 +87,46 @@ pub fn inqtextx(
     s: impl AsRef<CStr>,
     world_cooridnates: bool,
     inline_math: bool,
-) -> (f64, f64) {
+) -> ([f64; 4], [f64; 4]) {
     let s = s.as_ref().as_ptr().cast_mut();
     let f = textx_opts(world_cooridnates, inline_math);
-    let mut tbx = MaybeUninit::uninit();
-    let mut tby = MaybeUninit::uninit();
-    let tbx_ptr = tbx.as_mut_ptr();
-    let tby_ptr = tby.as_mut_ptr();
+    let mut tbx = MaybeUninit::<[f64; 4]>::uninit();
+    let mut tby = MaybeUninit::<[f64; 4]>::uninit();
+    let tbx_ptr = tbx.as_mut_ptr().cast();
+    let tby_ptr = tby.as_mut_ptr().cast();
     unsafe {
         gr_inqtextx(x, y, s, f, tbx_ptr, tby_ptr);
         (tbx.assume_init(), tby.assume_init())
     }
 }
 
-pub fn inqtextext((x, y): (f64, f64), s: impl AsRef<CStr>) -> (f64, f64) {
+pub fn inqtextext((x, y): (f64, f64), s: impl AsRef<CStr>) -> ([f64; 4], [f64; 4]) {
     let s = s.as_ref().as_ptr().cast_mut();
-    let mut tbx = MaybeUninit::uninit();
-    let mut tby = MaybeUninit::uninit();
-    let tbx_ptr = tbx.as_mut_ptr();
-    let tby_ptr = tby.as_mut_ptr();
+    let mut tbx = MaybeUninit::<[f64; 4]>::uninit();
+    let mut tby = MaybeUninit::<[f64; 4]>::uninit();
+    let tbx_ptr = tbx.as_mut_ptr().cast();
+    let tby_ptr = tby.as_mut_ptr().cast();
     unsafe {
         gr_inqtextext(x, y, s, tbx_ptr, tby_ptr);
         (tbx.assume_init(), tby.assume_init())
+    }
+}
+
+pub fn inqtext3d(
+    (x, y, z): (f64, f64, f64),
+    s: impl AsRef<CStr>,
+    axis: impl Into<c_int>,
+) -> ([[[f64; 4]; 2]; 2], [[[f64; 4]; 2]; 2]) {
+    // [MaybeUninit::<f64>::uninit(); 16] compiles but is wrong!
+    let mut xout: [MaybeUninit<f64>; 16] = unsafe { MaybeUninit::uninit().assume_init() };
+    let mut yout: [MaybeUninit<f64>; 16] = unsafe { MaybeUninit::uninit().assume_init() };
+    let p = s.as_ref().as_ptr().cast_mut();
+    let axis = axis.into();
+    let xp = xout.as_mut_ptr().cast();
+    let yp = yout.as_mut_ptr().cast();
+    unsafe {
+        gr_inqtext3d(x, y, z, p, axis, xp, yp);
+        (mem::transmute(xout), mem::transmute(yout))
     }
 }
 

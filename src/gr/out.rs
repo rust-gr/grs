@@ -192,6 +192,13 @@ pub fn textext((x, y): (f64, f64), s: impl AsRef<CStr>) -> Result<()> {
     }
 }
 
+// axis has sensible values in range [-4,4], but all are allowed
+pub fn text3d((x, y, z): (f64, f64, f64), s: impl AsRef<CStr>, axis: impl Into<c_int>) {
+    let p = s.as_ref().as_ptr().cast_mut();
+    let axis = axis.into();
+    unsafe { gr_text3d(x, y, z, p, axis) }
+}
+
 pub fn mathtex((x, y): (f64, f64), s: impl AsRef<CStr>) {
     let p = s.as_ref().as_ptr().cast_mut();
     unsafe { gr_mathtex(x, y, p) }
