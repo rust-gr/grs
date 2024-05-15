@@ -48,9 +48,9 @@ type Result<T> = ::core::result::Result<T, GksError>;
 
 #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 pub struct GksColorIndexArray<'a> {
-    data: *mut c_int,
-    dimensions: (c_int, c_int),
-    slice: PhantomData<&'a [c_int]>,
+    pub(crate) data: *mut c_int,
+    pub(crate) dimensions: (c_int, c_int),
+    pub(crate) slice: PhantomData<&'a [c_int]>,
 }
 
 #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
