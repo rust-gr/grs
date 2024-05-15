@@ -160,6 +160,31 @@ pub fn gradient(
     Ok(unsafe { gr_gradient(nx, ny, x, y, z, u, v) })
 }
 
+pub fn panzoom((x, y): (f64, f64), zoom: (f64, f64)) -> ((f64, f64), (f64, f64)) {
+    let mut xmin = MaybeUninit::uninit();
+    let mut xmax = MaybeUninit::uninit();
+    let mut ymin = MaybeUninit::uninit();
+    let mut ymax = MaybeUninit::uninit();
+    let (xz, yz) = zoom;
+    let xminp = xmin.as_mut_ptr();
+    let xmaxp = xmax.as_mut_ptr();
+    let yminp = ymin.as_mut_ptr();
+    let ymaxp = ymax.as_mut_ptr();
+    unsafe {
+        gr_panzoom(x, y, xz, yz, xminp, xmaxp, yminp, ymaxp);
+        (
+            (xmin.assume_init(), xmax.assume_init()),
+            (ymin.assume_init(), ymax.assume_init()),
+        )
+    }
+}
+
+pub fn camerainteraction(mouse_start_pos: (f64, f64), mouse_end_pos: (f64, f64)) {
+    let (msx, msy) = mouse_start_pos;
+    let (mex, mey) = mouse_end_pos;
+    unsafe { gr_camerainteraction(msx, msy, mex, mey) }
+}
+
 // Segments
 impl_primitive_function! { createseg(segment: c_int) }
 impl_primitive_function! { copysegws(segment: c_int) }
