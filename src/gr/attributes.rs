@@ -485,6 +485,29 @@ pub fn inqvpsize() -> (c_int, c_int, f64) {
     }
 }
 
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
+pub struct VolumeFlags {
+    border: c_int,
+    max_threads: c_int,
+    picture_width: c_int,
+    picture_height: c_int,
+    approximative_calculation: c_int,
+}
+
+pub fn inqvolumeflags() -> VolumeFlags {
+    let mut vf = MaybeUninit::<VolumeFlags>::uninit();
+    unsafe {
+        gr_inqvolumeflags(
+            ptr::addr_of_mut!((*vf.as_mut_ptr()).border),
+            ptr::addr_of_mut!((*vf.as_mut_ptr()).max_threads),
+            ptr::addr_of_mut!((*vf.as_mut_ptr()).picture_width),
+            ptr::addr_of_mut!((*vf.as_mut_ptr()).picture_height),
+            ptr::addr_of_mut!((*vf.as_mut_ptr()).approximative_calculation),
+        );
+        vf.assume_init()
+    }
+}
+
 macro_rules! impl_set_size {
     ($name:ident) => {
         pub fn $name(x: F64Range, y: F64Range) {

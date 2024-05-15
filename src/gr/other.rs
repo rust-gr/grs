@@ -1,4 +1,5 @@
 use super::{util::impl_primitive_function, GrError};
+use core::ptr;
 use core::{
     ffi::{c_int, CStr},
     mem::MaybeUninit,
@@ -183,6 +184,40 @@ pub fn camerainteraction(mouse_start_pos: (f64, f64), mouse_end_pos: (f64, f64))
     let (msx, msy) = mouse_start_pos;
     let (mex, mey) = mouse_end_pos;
     unsafe { gr_camerainteraction(msx, msy, mex, mey) }
+}
+
+pub enum VolumeAlgorithm {
+    Emission = volume_rendering_model_t_GR_VOLUME_EMISSION as _,
+    Absorption = volume_rendering_model_t_GR_VOLUME_ABSORPTION as _,
+    Mip = volume_rendering_model_t_GR_VOLUME_MIP as _,
+}
+
+pub fn cpubasedvolume(
+    nx: usize,
+    ny: usize,
+    nz: usize,
+    data: &[f64],
+    algo: VolumeAlgorithm,
+    mut min: Option<f64>,
+    mut max: Option<f64>,
+    min_val: Option<(f64, f64, f64)>,
+    max_val: Option<(f64, f64, f64)>,
+) -> Result<(Option<f64>, Option<f64>), GrError> {
+    if nx * ny * nz > data.len() {
+        return Err(GrError);
+    }
+    let nx = nx.try_into()?;
+    let ny = ny.try_into()?;
+    let nz = nz.try_into()?;
+    let data = data.as_ptr().cast_mut();
+    let minp = min.as_mut().map_or(ptr::null_mut(), |d| d as _);
+    let maxp = max.as_mut().map_or(ptr::null_mut(), |d| d as _);
+    let min_val = min_val.map(Into::<[f64; 3]>::into);
+    let max_val = max_val.map(Into::<[f64; 3]>::into);
+    let min_val = min_val.as_ref().map_or(ptr::null::<f64>(), |t| t as _).cast_mut();
+    let max_val = max_val.as_ref().map_or(ptr::null::<f64>(), |t| t as _).cast_mut();
+    unsafe { gr_cpubasedvolume(nx, ny, nz, data, algo as _, minp, maxp, min_val, max_val) }
+    Ok((min, max))
 }
 
 // Segments
