@@ -468,6 +468,23 @@ pub fn inqorthographicprojection() -> ((f64, f64), (f64, f64), (f64, f64)) {
     }
 }
 
+pub fn inqvpsize() -> (c_int, c_int, f64) {
+    let mut width = MaybeUninit::uninit();
+    let mut height = MaybeUninit::uninit();
+    let mut device_pixel_ratio = MaybeUninit::uninit();
+    let wp = width.as_mut_ptr();
+    let hp = height.as_mut_ptr();
+    let dpr = device_pixel_ratio.as_mut_ptr();
+    unsafe {
+        gr_inqvpsize(wp, hp, dpr);
+        (
+            width.assume_init(),
+            height.assume_init(),
+            device_pixel_ratio.assume_init(),
+        )
+    }
+}
+
 macro_rules! impl_set_size {
     ($name:ident) => {
         pub fn $name(x: F64Range, y: F64Range) {
