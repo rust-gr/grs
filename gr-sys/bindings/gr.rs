@@ -62,6 +62,11 @@ pub const xform_types_t_GR_XFORM_LOGLOG: xform_types_t = 3;
 pub const xform_types_t_GR_XFORM_CUBIC: xform_types_t = 4;
 pub const xform_types_t_GR_XFORM_EQUALIZED: xform_types_t = 5;
 pub type xform_types_t = ::core::ffi::c_uint;
+pub const interp2_method_t_GR_INTERP2_NEAREST: interp2_method_t = 0;
+pub const interp2_method_t_GR_INTERP2_LINEAR: interp2_method_t = 1;
+pub const interp2_method_t_GR_INTERP2_SPLINE: interp2_method_t = 2;
+pub const interp2_method_t_GR_INTERP2_CUBIC: interp2_method_t = 3;
+pub type interp2_method_t = ::core::ffi::c_uint;
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct vertex_t {
@@ -972,7 +977,7 @@ extern "C" {
         xq: *const f64,
         yq: *const f64,
         zq: *mut f64,
-        method: ::core::ffi::c_int,
+        method: interp2_method_t,
         extrapval: f64,
     );
 }
