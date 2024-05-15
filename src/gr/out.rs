@@ -703,3 +703,34 @@ macro_rules! impl_shade_fn {
 
 impl_shade_fn! { shadepoints }
 impl_shade_fn! { shadelines }
+
+#[allow(clippy::unit_arg)]
+pub fn path(n: usize, x: &[f64], y: &[f64], codes: impl AsRef<CStr>) -> Result<()> {
+    check_that(n <= x.len() && n <= y.len())?;
+    let n = n.try_into()?;
+    let x = x.as_ptr().cast_mut();
+    let y = y.as_ptr().cast_mut();
+    let codes = codes.as_ref().as_ptr();
+    Ok(unsafe { gr_path(n, x, y, codes) })
+}
+
+#[allow(clippy::unit_arg)]
+pub fn polygonmesh3d(
+    n: usize,
+    x: &[f64],
+    y: &[f64],
+    z: &[f64],
+    connections: &[c_int],
+    colors: &[c_int],
+) -> Result<()> {
+    check_that(n <= x.len() && n <= y.len() && n <= z.len())?;
+    check_that(connections.len() <= colors.len())?;
+    let n = n.try_into()?;
+    let x = x.as_ptr();
+    let y = y.as_ptr();
+    let z = z.as_ptr();
+    let nc = connections.len().try_into()?;
+    let conn = connections.as_ptr();
+    let col = colors.as_ptr();
+    Ok(unsafe { gr_polygonmesh3d(n, x, y, z, nc, conn, col) })
+}
