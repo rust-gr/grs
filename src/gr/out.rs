@@ -70,6 +70,13 @@ pub enum XForm {
     Equalized = xform_types_t_GR_XFORM_EQUALIZED as _,
 }
 
+pub enum Interp2Method {
+    Nearest = interp2_method_t_GR_INTERP2_NEAREST as _,
+    Linear = interp2_method_t_GR_INTERP2_LINEAR as _,
+    Spline = interp2_method_t_GR_INTERP2_SPLINE as _,
+    Cubic = interp2_method_t_GR_INTERP2_CUBIC as _,
+}
+
 fn check_that(x: bool) -> Result<()> {
     match x {
         true => Ok(()),
@@ -712,6 +719,47 @@ pub fn path(n: usize, x: &[f64], y: &[f64], codes: impl AsRef<CStr>) -> Result<(
     let y = y.as_ptr().cast_mut();
     let codes = codes.as_ref().as_ptr();
     Ok(unsafe { gr_path(n, x, y, codes) })
+}
+
+#[allow(clippy::unit_arg)]
+pub fn interp2(
+    x: &[f64],
+    y: &[f64],
+    z: &[f64],
+    target_x: &[f64],
+    target_y: &[f64],
+    zout: &mut [f64],
+    method: Interp2Method,
+    extrapolation_value: f64,
+) -> Result<()> {
+    check_that(x.len() * y.len() <= z.len())?;
+    check_that(target_x.len() * target_y.len() <= zout.len())?;
+    let nx = x.len().try_into()?;
+    let ny = y.len().try_into()?;
+    let x = x.as_ptr();
+    let y = y.as_ptr();
+    let z = z.as_ptr();
+    let tnx = target_x.len().try_into()?;
+    let tny = target_y.len().try_into()?;
+    let tx = target_x.as_ptr();
+    let ty = target_y.as_ptr();
+    let zout = zout.as_mut_ptr();
+    Ok(unsafe {
+        gr_interp2(
+            nx,
+            ny,
+            x,
+            y,
+            z,
+            tnx,
+            tny,
+            tx,
+            ty,
+            zout,
+            method as _,
+            extrapolation_value,
+        )
+    })
 }
 
 #[allow(clippy::unit_arg)]
