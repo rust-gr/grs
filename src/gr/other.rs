@@ -128,6 +128,38 @@ pub fn reducepoints(
     Ok(unsafe { gr_reducepoints(n, x, y, points, new_x, new_y) })
 }
 
+pub fn loadfont(filename: impl AsRef<CStr>) -> c_int {
+    let mut font = MaybeUninit::uninit();
+    let file = filename.as_ref().as_ptr().cast_mut();
+    let fontp = font.as_mut_ptr();
+    unsafe {
+        gr_loadfont(file, fontp);
+        font.assume_init()
+    }
+}
+
+#[allow(clippy::unit_arg)]
+pub fn gradient(
+    x: &[f64],
+    y: &[f64],
+    z: &[f64],
+    u: &mut [f64],
+    v: &mut [f64],
+) -> Result<(), GrError> {
+    let n = x.len() * y.len();
+    if [z.len(), u.len(), v.len()].into_iter().any(|l| l < n) {
+        return Err(GrError);
+    }
+    let nx = x.len().try_into()?;
+    let ny = y.len().try_into()?;
+    let x = x.as_ptr().cast_mut();
+    let y = y.as_ptr().cast_mut();
+    let z = z.as_ptr().cast_mut();
+    let u = u.as_mut_ptr();
+    let v = v.as_mut_ptr();
+    Ok(unsafe { gr_gradient(nx, ny, x, y, z, u, v) })
+}
+
 // Segments
 impl_primitive_function! { createseg(segment: c_int) }
 impl_primitive_function! { copysegws(segment: c_int) }
