@@ -148,6 +148,34 @@ pub struct format_reference_t {
     pub scientific: ::core::ffi::c_int,
     pub decimal_digits: ::core::ffi::c_int,
 }
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct tick_t {
+    pub value: f64,
+    pub is_major: ::core::ffi::c_int,
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct tick_label_t {
+    pub tick: f64,
+    pub label: *mut ::core::ffi::c_char,
+    pub width: f64,
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct axis_t {
+    pub dry_run: ::core::ffi::c_int,
+    pub axis_min: f64,
+    pub axis_max: f64,
+    pub axis_org: f64,
+    pub major_count: ::core::ffi::c_int,
+    pub num_ticks: ::core::ffi::c_int,
+    pub ticks: *mut tick_t,
+    pub num_tick_labels: ::core::ffi::c_int,
+    pub tick_label: *mut tick_label_t,
+    pub tick_size: f64,
+    pub draw_grid_line: ::core::ffi::c_int,
+}
 extern "C" {
     pub fn gr_initgr();
 }
@@ -536,6 +564,15 @@ extern "C" {
             unsafe extern "C" fn(arg1: f64, arg2: f64, arg3: *const ::core::ffi::c_char, arg4: f64),
         >,
     );
+}
+extern "C" {
+    pub fn gr_axis(arg1: ::core::ffi::c_char, arg2: *mut axis_t);
+}
+extern "C" {
+    pub fn gr_draw_axis(arg1: ::core::ffi::c_char, arg2: *mut axis_t);
+}
+extern "C" {
+    pub fn gr_free_axis(arg1: *mut axis_t);
 }
 extern "C" {
     pub fn gr_grid(
