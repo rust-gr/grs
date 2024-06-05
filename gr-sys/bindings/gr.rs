@@ -164,17 +164,16 @@ pub struct tick_label_t {
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct axis_t {
-    pub dry_run: ::core::ffi::c_int,
-    pub axis_min: f64,
-    pub axis_max: f64,
-    pub axis_org: f64,
+    pub min: f64,
+    pub max: f64,
+    pub tick: f64,
+    pub org: f64,
     pub major_count: ::core::ffi::c_int,
     pub num_ticks: ::core::ffi::c_int,
     pub ticks: *mut tick_t,
     pub num_tick_labels: ::core::ffi::c_int,
-    pub tick_label: *mut tick_label_t,
+    pub tick_labels: *mut tick_label_t,
     pub tick_size: f64,
-    pub draw_grid_line: ::core::ffi::c_int,
 }
 extern "C" {
     pub fn gr_initgr();

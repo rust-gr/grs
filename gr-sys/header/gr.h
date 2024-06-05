@@ -180,15 +180,14 @@ typedef struct
 
 typedef struct
 {
-  int dry_run;
-  double axis_min, axis_max, axis_org;
+  double min, max;
+  double tick, org;
   int major_count;
   int num_ticks;
   tick_t *ticks;
   int num_tick_labels;
-  tick_label_t *tick_label;
+  tick_label_t *tick_labels;
   double tick_size;
-  int draw_grid_line;
 } axis_t;
 
 DLLEXPORT void gr_initgr(void);
