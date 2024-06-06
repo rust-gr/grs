@@ -568,10 +568,10 @@ extern "C" {
     pub fn gr_axis(arg1: ::core::ffi::c_char, arg2: *mut axis_t);
 }
 extern "C" {
-    pub fn gr_draw_axis(arg1: ::core::ffi::c_char, arg2: *mut axis_t);
+    pub fn gr_drawaxis(arg1: ::core::ffi::c_char, arg2: *mut axis_t);
 }
 extern "C" {
-    pub fn gr_free_axis(arg1: *mut axis_t);
+    pub fn gr_freeaxis(arg1: *mut axis_t);
 }
 extern "C" {
     pub fn gr_grid(
