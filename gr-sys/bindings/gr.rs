@@ -168,6 +168,7 @@ pub struct axis_t {
     pub max: f64,
     pub tick: f64,
     pub org: f64,
+    pub position: f64,
     pub major_count: ::core::ffi::c_int,
     pub num_ticks: ::core::ffi::c_int,
     pub ticks: *mut tick_t,
@@ -568,7 +569,12 @@ extern "C" {
     pub fn gr_axis(arg1: ::core::ffi::c_char, arg2: *mut axis_t);
 }
 extern "C" {
-    pub fn gr_drawaxis(arg1: ::core::ffi::c_char, arg2: *mut axis_t);
+    pub fn gr_drawaxis(
+        arg1: ::core::ffi::c_char,
+        arg2: *mut axis_t,
+        arg3: ::core::ffi::c_int,
+        arg4: ::core::ffi::c_int,
+    );
 }
 extern "C" {
     pub fn gr_freeaxis(arg1: *mut axis_t);
