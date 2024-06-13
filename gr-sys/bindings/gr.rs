@@ -2,6 +2,8 @@
 
 pub const GR_MAX_CONTEXT: ::core::ffi::c_int = 8192;
 pub const GR_DEFAULT_MATH_FONT: ::core::ffi::c_int = 232;
+pub const GR_AXES_WITH_GRID: ::core::ffi::c_int = 1;
+pub const GR_AXES_WITH_FRAME: ::core::ffi::c_int = 2;
 pub const projection_type_t_GR_PROJECTION_DEFAULT: projection_type_t = 0;
 pub const projection_type_t_GR_PROJECTION_ORTHOGRAPHIC: projection_type_t = 1;
 pub const projection_type_t_GR_PROJECTION_PERSPECTIVE: projection_type_t = 2;
@@ -175,6 +177,7 @@ pub struct axis_t {
     pub num_tick_labels: ::core::ffi::c_int,
     pub tick_labels: *mut tick_label_t,
     pub tick_size: f64,
+    pub draw_axis_line: ::core::ffi::c_int,
 }
 extern "C" {
     pub fn gr_initgr();
@@ -569,12 +572,10 @@ extern "C" {
     pub fn gr_axis(arg1: ::core::ffi::c_char, arg2: *mut axis_t);
 }
 extern "C" {
-    pub fn gr_drawaxis(
-        arg1: ::core::ffi::c_char,
-        arg2: *mut axis_t,
-        arg3: ::core::ffi::c_int,
-        arg4: ::core::ffi::c_int,
-    );
+    pub fn gr_drawaxis(arg1: ::core::ffi::c_char, arg2: *mut axis_t);
+}
+extern "C" {
+    pub fn gr_drawaxes(arg1: *mut axis_t, arg2: *mut axis_t, arg3: ::core::ffi::c_int);
 }
 extern "C" {
     pub fn gr_freeaxis(arg1: *mut axis_t);
