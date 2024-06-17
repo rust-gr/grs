@@ -21,7 +21,7 @@
  typedef enum
  {
    GR_PROJECTION_DEFAULT,
-@@ -451,6 +436,0 @@
+@@ -452,6 +437,0 @@
 -
 -#ifdef __cplusplus
 -}

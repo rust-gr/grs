@@ -174,9 +174,10 @@ pub struct axis_t {
     pub major_count: ::core::ffi::c_int,
     pub num_ticks: ::core::ffi::c_int,
     pub ticks: *mut tick_t,
+    pub tick_size: f64,
     pub num_tick_labels: ::core::ffi::c_int,
     pub tick_labels: *mut tick_label_t,
-    pub tick_size: f64,
+    pub label_position: f64,
     pub draw_axis_line: ::core::ffi::c_int,
 }
 extern "C" {
