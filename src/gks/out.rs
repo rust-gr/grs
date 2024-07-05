@@ -300,6 +300,16 @@ impl<'a> GksColorIndexArray<'a> {
     }
 }
 
+impl<'a, const N: usize> From<&'a [[c_int; N]]> for GksColorIndexArray<'a> {
+    fn from(value: &'a [[c_int; N]]) -> Self {
+        Self {
+            data: value.as_flattened().as_ptr().cast_mut(),
+            dimensions: (value.len() as c_int, N as c_int),
+            slice: PhantomData,
+        }
+    }
+}
+
 impl fmt::Display for GksError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         f.write_str("error in GKS")

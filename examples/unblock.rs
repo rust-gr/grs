@@ -1,12 +1,45 @@
 use grs::gr;
 use std::collections::HashMap;
 use std::hash::{DefaultHasher, Hash, Hasher};
-use std::num::NonZeroUsize;
 use std::usize;
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 struct Board<const N: usize, const M: usize> {
-    data: [[i8; M]; N],
+    data: [[i32; M]; N],
+}
+
+fn show<const N: usize, const M: usize>(
+    board: &Board<N, M>,
+    pred: impl FnMut(&Board<N, M>) -> bool,
+) -> Option<()>  {
+    let path = board.solve(pred);
+    println!("number of moves: {}", path.len() - 1);
+    gr::setcolormap(1038); // GNUPLOT
+    for mut b in path {
+        for i in 0..N * M {
+            b.data[i / M][i % M] = 12 * b.data[i / M][i % M] + 10;
+        }
+        gr::cellarray(
+            ((0.0, 1.0), (0, 0)),
+            ((0.0, 1.0), (M, N)),
+            b.data.as_ref().into()
+        ).ok()?;
+        gr::updatews();
+        std::thread::sleep(std::time::Duration::from_millis(600));
+    }
+    Some(())
+}
+
+fn main() {
+    let board = [
+        [1, 2, 2, 2, 0, 3],
+        [1, 0, 4, 5, 0, 3],
+        [6, 6, 4, 5, 0, 3],
+        [0, 0, 4, 7, 8, 8],
+        [0, 9, 9, 7, 10, 0],
+        [0, 11, 11, 11, 10, 0],
+    ];
+    show(&Board { data: board }, |b| b.data[2][4] == 6 && b.data[2][5] == 6).expect("everything should work");
 }
 
 #[derive(Copy, Clone, Debug)]
@@ -144,37 +177,4 @@ impl<const N: usize, const M: usize> Board<N, M> {
         }
         path
     }
-}
-
-fn show<const N: usize, const M: usize>(
-    board: &Board<N, M>,
-    pred: impl FnMut(&Board<N, M>) -> bool,
-) -> Option<()>  {
-    let path = board.solve(pred);
-    println!("number of moves: {}", path.len() - 1);
-    gr::setcolormap(1038); // GNUPLOT
-    for b in path {
-        let data: Vec<i32> = b.data.into_iter().flatten().map(|x| x as i32).map(|v| 12 * v + 10).collect();
-        let col = gr::GrColorIndexArray::with_stride(&data, NonZeroUsize::new(M)?).ok()?;
-        gr::cellarray(
-            ((0.0, 1.0), (0, 0)),
-            ((0.0, 1.0), (M, N)),
-            col
-        ).ok()?;
-        gr::updatews();
-        std::thread::sleep(std::time::Duration::from_millis(600));
-    }
-    Some(())
-}
-
-fn main() {
-    let board = [
-        [1, 2, 2, 2, 0, 3],
-        [1, 0, 4, 5, 0, 3],
-        [6, 6, 4, 5, 0, 3],
-        [0, 0, 4, 7, 8, 8],
-        [0, 9, 9, 7, 10, 0],
-        [0, 11, 11, 11, 10, 0],
-    ];
-    show(&Board { data: board }, |b| b.data[2][4] == 6 && b.data[2][5] == 6).expect("everything should work");
 }
