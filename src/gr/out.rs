@@ -24,6 +24,7 @@ impl fmt::Display for GrError {
 
 impl std::error::Error for GrError {}
 
+#[doc(hidden)]
 impl From<TryFromIntError> for GrError {
     fn from(_value: TryFromIntError) -> Self {
         GrError
@@ -691,7 +692,7 @@ pub fn shade(
     let n = n.try_into()?;
     let x = x.as_ptr().cast_mut();
     let y = y.as_ptr().cast_mut();
-    let roi = roi.as_ptr().cast_mut();
+    let roi = roi.as_ref().as_ptr().cast_mut();
     let w = w.try_into()?;
     let h = h.try_into()?;
     let bins = bins.as_mut_ptr();

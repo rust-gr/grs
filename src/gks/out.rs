@@ -295,6 +295,7 @@ impl fmt::Display for GksError {
 
 impl std::error::Error for GksError {}
 
+#[doc(hidden)]
 impl From<TryFromIntError> for GksError {
     fn from(_value: TryFromIntError) -> Self {
         GksError
