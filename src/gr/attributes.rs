@@ -142,6 +142,7 @@ pub fn inqmathtex((x, y): (f64, f64), s: impl AsRef<CStr>) -> (f64, f64) {
     }
 }
 
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 pub enum ScientificFormatOption {
     E = SCIENTIFIC_FORMAT_OPTION_E as _,
     TexTex = SCIENTIFIC_FORMAT_OPTION_TEXTEX as _,
@@ -310,11 +311,13 @@ pub fn beginprint(pathname: impl AsRef<CStr>) {
     unsafe { gr_beginprint(p) }
 }
 
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 pub enum GrColorMode {
     GrayScale,
     Color,
 }
 
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 pub enum GrOrientation {
     Landscape,
     Portrait,

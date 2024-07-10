@@ -34,6 +34,7 @@ pub type GrColorIndexArray<'a> = GksColorIndexArray<'a>;
 pub type GrPrimitive = GksPrimitive;
 pub type GrVertex = vertex_t;
 
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 pub enum GrSurfaceOption {
     Lines = surface_option_t_GR_OPTION_LINES as _,
     Mesh = surface_option_t_GR_OPTION_MESH as _,
@@ -45,6 +46,7 @@ pub enum GrSurfaceOption {
     Mesh3D = surface_option_t_GR_OPTION_3D_MESH as _,
 }
 
+#[derive(Clone, Copy, Debug)]
 pub enum GrContourHeights<'a> {
     Default,
     N(usize),
@@ -52,6 +54,7 @@ pub enum GrContourHeights<'a> {
 }
 
 #[repr(u8)]
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 pub enum GrPathCode {
     Stop = path_code_t_GR_STOP as _,
     MoveTo = path_code_t_GR_MOVETO as _,
@@ -61,6 +64,7 @@ pub enum GrPathCode {
     ClosePoly = path_code_t_GR_CLOSEPOLY as _,
 }
 
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 pub enum XForm {
     Boolean = xform_types_t_GR_XFORM_BOOLEAN as _,
     Linear = xform_types_t_GR_XFORM_LINEAR as _,
@@ -70,6 +74,7 @@ pub enum XForm {
     Equalized = xform_types_t_GR_XFORM_EQUALIZED as _,
 }
 
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 pub enum Interp2Method {
     Nearest = interp2_method_t_GR_INTERP2_NEAREST as _,
     Linear = interp2_method_t_GR_INTERP2_LINEAR as _,
@@ -100,7 +105,7 @@ pub fn closegks() {
     unsafe { gr_closegks() }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct DisplaySize {
     pub meters: (f64, f64),
     pub pixels: (c_int, c_int),

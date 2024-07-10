@@ -29,6 +29,7 @@ pub struct GrImage {
     data: *mut c_int,
 }
 
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 pub enum GrColorModel {
     RGB = color_model_t_GR_MODEL_RGB as _,
     HSV = color_model_t_GR_MODEL_HSV as _,
@@ -186,6 +187,7 @@ pub fn camerainteraction(mouse_start_pos: (f64, f64), mouse_end_pos: (f64, f64))
     unsafe { gr_camerainteraction(msx, msy, mex, mey) }
 }
 
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 pub enum VolumeAlgorithm {
     Emission = volume_rendering_model_t_GR_VOLUME_EMISSION as _,
     Absorption = volume_rendering_model_t_GR_VOLUME_ABSORPTION as _,
