@@ -194,6 +194,7 @@ pub enum VolumeAlgorithm {
     Mip = volume_rendering_model_t_GR_VOLUME_MIP as _,
 }
 
+#[allow(clippy::too_many_arguments)]
 pub fn cpubasedvolume(
     nx: usize,
     ny: usize,

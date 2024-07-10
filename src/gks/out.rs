@@ -264,6 +264,9 @@ impl<'a> GksColorIndexArray<'a> {
         })
     }
 
+    /// # Safety
+    ///
+    /// `data` must point to at least `columns * rows` elements, consecutively stored in memory.
     pub unsafe fn new_unchecked(
         data: *const c_int,
         columns: impl Into<c_int>,

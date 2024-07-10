@@ -4,6 +4,7 @@ use std::path::PathBuf;
 #[derive(Clone, Debug)]
 pub struct Searcher(Option<PathBuf>);
 
+#[allow(clippy::new_without_default)]
 impl Searcher {
     pub fn new() -> Searcher {
         println!("Searching GR:");
@@ -14,7 +15,7 @@ impl Searcher {
         let None = &self.0 else {
             return self;
         };
-        const EXTENSION: &'static str = if cfg!(windows) {
+        const EXTENSION: &str = if cfg!(windows) {
             "lib"
         } else if cfg!(target_vendor = "apple") {
             "dylib"
