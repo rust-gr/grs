@@ -217,8 +217,14 @@ pub fn cpubasedvolume(
     let maxp = max.as_mut().map_or(ptr::null_mut(), |d| d as _);
     let min_val = min_val.map(Into::<[f64; 3]>::into);
     let max_val = max_val.map(Into::<[f64; 3]>::into);
-    let min_val = min_val.as_ref().map_or(ptr::null::<f64>(), |t| t as _).cast_mut();
-    let max_val = max_val.as_ref().map_or(ptr::null::<f64>(), |t| t as _).cast_mut();
+    let min_val = min_val
+        .as_ref()
+        .map_or(ptr::null::<f64>(), |t| t as _)
+        .cast_mut();
+    let max_val = max_val
+        .as_ref()
+        .map_or(ptr::null::<f64>(), |t| t as _)
+        .cast_mut();
     unsafe { gr_cpubasedvolume(nx, ny, nz, data, algo as _, minp, maxp, min_val, max_val) }
     Ok((min, max))
 }

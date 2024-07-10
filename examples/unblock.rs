@@ -11,7 +11,7 @@ struct Board<const N: usize, const M: usize> {
 fn show<const N: usize, const M: usize>(
     board: &Board<N, M>,
     pred: impl FnMut(&Board<N, M>) -> bool,
-) -> Option<()>  {
+) -> Option<()> {
     let path = board.solve(pred);
     println!("number of moves: {}", path.len() - 1);
     gr::setcolormap(1038); // GNUPLOT
@@ -22,8 +22,9 @@ fn show<const N: usize, const M: usize>(
         gr::cellarray(
             ((0.0, 1.0), (0, 0)),
             ((0.0, 1.0), (M, N)),
-            b.data.as_ref().into()
-        ).ok()?;
+            b.data.as_ref().into(),
+        )
+        .ok()?;
         gr::updatews();
         std::thread::sleep(std::time::Duration::from_millis(600));
     }
@@ -39,7 +40,10 @@ fn main() {
         [0, 9, 9, 7, 10, 0],
         [0, 11, 11, 11, 10, 0],
     ];
-    show(&Board { data: board }, |b| b.data[2][4] == 6 && b.data[2][5] == 6).expect("everything should work");
+    show(&Board { data: board }, |b| {
+        b.data[2][4] == 6 && b.data[2][5] == 6
+    })
+    .expect("everything should work");
 }
 
 #[derive(Copy, Clone, Debug)]

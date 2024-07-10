@@ -43,13 +43,13 @@ impl AsMut<[f64; 4]> for Region {
 
 impl AsRef<[f64; 4]> for Region {
     fn as_ref(&self) -> &[f64; 4] {
-        & self.0
+        &self.0
     }
 }
 
 impl Borrow<[f64; 4]> for Region {
     fn borrow(&self) -> &[f64; 4] {
-        & self.0
+        &self.0
     }
 }
 
