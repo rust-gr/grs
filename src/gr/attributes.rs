@@ -112,6 +112,7 @@ pub fn inqtextext((x, y): (f64, f64), s: impl AsRef<CStr>) -> ([f64; 4], [f64; 4
     }
 }
 
+/// `axis` specifies, in which direction the text is drawn (1: YX-plane, 2: XY plane, 3: YZ plane, 4: XZ plane). Negative values invert shearing.
 pub fn inqtext3d(
     (x, y, z): (f64, f64, f64),
     s: impl AsRef<CStr>,
