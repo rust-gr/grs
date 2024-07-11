@@ -1,4 +1,4 @@
-use grs::gr::{self, NO_LABEL_FUNCTION};
+use gr::gr;
 use std::{
     ffi::{CStr, CString},
     io::{stdin, Read},
@@ -30,7 +30,7 @@ fn main() {
         (Some(5), Some(10)),
         0.02,
         Some(|p, s, v| ticker.callback(p, s, v)),
-        NO_LABEL_FUNCTION,
+        gr::NO_LABEL_FUNCTION,
     )
     .unwrap();
     assert_eq!(ticker.invocations, 3);

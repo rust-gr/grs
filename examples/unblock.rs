@@ -1,4 +1,4 @@
-use grs::gr;
+use gr::gr;
 use std::collections::HashMap;
 use std::hash::{DefaultHasher, Hash, Hasher};
 use std::usize;

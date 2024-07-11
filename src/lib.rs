@@ -30,11 +30,11 @@
 //! There is a similar example shipped with this crate: `gks-simple`.
 //! ```
 //! # use std::error::Error;
-//! # use grs::gr;
+//! # use gr::gr::*;
 //!
 //! # fn main() -> Result<(), Box<dyn Error>> {
-//! gr::polyline(2, &[0.0, 1.0], &[0.0, 1.0])?;
-//! gr::updatews();
+//! polyline(2, &[0.0, 1.0], &[0.0, 1.0])?;
+//! updatews();
 //! #   Ok(())
 //! # }
 //! ```

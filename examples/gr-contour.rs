@@ -1,4 +1,4 @@
-use grs::gr;
+use gr::gr;
 use std::error::Error;
 use std::io::{stdin, Read};
 

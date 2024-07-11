@@ -1,4 +1,4 @@
-use grs::gks::{Gks, GksRegenerationFlag};
+use gr::gks::{Gks, GksRegenerationFlag};
 use std::io::{stdin, Read};
 
 fn main() {
