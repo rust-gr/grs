@@ -1,5 +1,6 @@
 use gr_sys::gks::{gks_inq_operating_state, GKS_K_GKCL, GKS_K_SGOP, GKS_K_WSAC, GKS_K_WSOP};
 
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 pub(super) enum GksState {
     Closed = GKS_K_GKCL as _,
     Open = GKS_K_WSOP as _,

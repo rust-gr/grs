@@ -36,7 +36,7 @@ pub struct SegmentGksWs<'a> {
     id: NonZeroI32,
 }
 
-#[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 pub enum GksRegenerationFlag {
     Postpone = GKS_K_POSTPONE_FLAG as _,
     Perform = GKS_K_PERFORM_FLAG as _,

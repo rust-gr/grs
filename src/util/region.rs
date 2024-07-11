@@ -1,6 +1,5 @@
 use core::borrow::{Borrow, BorrowMut};
 use core::convert::{AsMut, AsRef};
-use core::ops::{Deref, DerefMut};
 
 #[repr(C)]
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -30,6 +29,12 @@ impl From<[f64; 4]> for Region {
     }
 }
 
+impl From<Region> for [f64; 4] {
+    fn from(value: Region) -> Self {
+        value.0
+    }
+}
+
 impl AsMut<[f64; 4]> for Region {
     fn as_mut(&mut self) -> &mut [f64; 4] {
         &mut self.0
@@ -38,32 +43,18 @@ impl AsMut<[f64; 4]> for Region {
 
 impl AsRef<[f64; 4]> for Region {
     fn as_ref(&self) -> &[f64; 4] {
-        self
+        &self.0
     }
 }
 
 impl Borrow<[f64; 4]> for Region {
     fn borrow(&self) -> &[f64; 4] {
-        self
+        &self.0
     }
 }
 
 impl BorrowMut<[f64; 4]> for Region {
     fn borrow_mut(&mut self) -> &mut [f64; 4] {
-        self
-    }
-}
-
-impl Deref for Region {
-    type Target = [f64; 4];
-
-    fn deref(&self) -> &Self::Target {
-        &self.0
-    }
-}
-
-impl DerefMut for Region {
-    fn deref_mut(&mut self) -> &mut Self::Target {
         &mut self.0
     }
 }

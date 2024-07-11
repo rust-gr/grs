@@ -29,6 +29,7 @@ pub struct GrImage {
     data: *mut c_int,
 }
 
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 pub enum GrColorModel {
     RGB = color_model_t_GR_MODEL_RGB as _,
     HSV = color_model_t_GR_MODEL_HSV as _,
@@ -186,12 +187,14 @@ pub fn camerainteraction(mouse_start_pos: (f64, f64), mouse_end_pos: (f64, f64))
     unsafe { gr_camerainteraction(msx, msy, mex, mey) }
 }
 
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 pub enum VolumeAlgorithm {
     Emission = volume_rendering_model_t_GR_VOLUME_EMISSION as _,
     Absorption = volume_rendering_model_t_GR_VOLUME_ABSORPTION as _,
     Mip = volume_rendering_model_t_GR_VOLUME_MIP as _,
 }
 
+#[allow(clippy::too_many_arguments)]
 pub fn cpubasedvolume(
     nx: usize,
     ny: usize,
@@ -214,8 +217,14 @@ pub fn cpubasedvolume(
     let maxp = max.as_mut().map_or(ptr::null_mut(), |d| d as _);
     let min_val = min_val.map(Into::<[f64; 3]>::into);
     let max_val = max_val.map(Into::<[f64; 3]>::into);
-    let min_val = min_val.as_ref().map_or(ptr::null::<f64>(), |t| t as _).cast_mut();
-    let max_val = max_val.as_ref().map_or(ptr::null::<f64>(), |t| t as _).cast_mut();
+    let min_val = min_val
+        .as_ref()
+        .map_or(ptr::null::<f64>(), |t| t as _)
+        .cast_mut();
+    let max_val = max_val
+        .as_ref()
+        .map_or(ptr::null::<f64>(), |t| t as _)
+        .cast_mut();
     unsafe { gr_cpubasedvolume(nx, ny, nz, data, algo as _, minp, maxp, min_val, max_val) }
     Ok((min, max))
 }

@@ -1,10 +1,21 @@
 [package]
-name = "grs"
+name = "gr"
 version = "0.1.0"
+authors = ["G. Vincenti"]
 edition = "2021"
+description = "Rust wrapper for the GR framework"
+# documentation = "<implicitly docs.rs URL>"
+readme = "README.md"
+homepage = "https://gr-framework.org"
+repository = "https://github.com/rust-gr/grs.git"
+license = "MIT"
+# license-file = "LICENSE" not specified because MIT is an SPDX expression
+keywords = ["gr", "visualization", "visualisation", "plotting", "graphics"]
+categories = ["graphics", "rendering", "science", "visualization"]
+exclude = [".*"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-gr-sys = { path = "gr-sys" }
+gr-sys = { path = "gr-sys", version = "0.1.0" }
 paste = "1.0.14"

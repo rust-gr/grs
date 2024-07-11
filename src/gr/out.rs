@@ -24,6 +24,7 @@ impl fmt::Display for GrError {
 
 impl std::error::Error for GrError {}
 
+#[doc(hidden)]
 impl From<TryFromIntError> for GrError {
     fn from(_value: TryFromIntError) -> Self {
         GrError
@@ -34,6 +35,7 @@ pub type GrColorIndexArray<'a> = GksColorIndexArray<'a>;
 pub type GrPrimitive = GksPrimitive;
 pub type GrVertex = vertex_t;
 
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 pub enum GrSurfaceOption {
     Lines = surface_option_t_GR_OPTION_LINES as _,
     Mesh = surface_option_t_GR_OPTION_MESH as _,
@@ -45,6 +47,7 @@ pub enum GrSurfaceOption {
     Mesh3D = surface_option_t_GR_OPTION_3D_MESH as _,
 }
 
+#[derive(Clone, Copy, Debug)]
 pub enum GrContourHeights<'a> {
     Default,
     N(usize),
@@ -52,6 +55,7 @@ pub enum GrContourHeights<'a> {
 }
 
 #[repr(u8)]
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 pub enum GrPathCode {
     Stop = path_code_t_GR_STOP as _,
     MoveTo = path_code_t_GR_MOVETO as _,
@@ -61,6 +65,7 @@ pub enum GrPathCode {
     ClosePoly = path_code_t_GR_CLOSEPOLY as _,
 }
 
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 pub enum XForm {
     Boolean = xform_types_t_GR_XFORM_BOOLEAN as _,
     Linear = xform_types_t_GR_XFORM_LINEAR as _,
@@ -70,6 +75,7 @@ pub enum XForm {
     Equalized = xform_types_t_GR_XFORM_EQUALIZED as _,
 }
 
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 pub enum Interp2Method {
     Nearest = interp2_method_t_GR_INTERP2_NEAREST as _,
     Linear = interp2_method_t_GR_INTERP2_LINEAR as _,
@@ -100,7 +106,7 @@ pub fn closegks() {
     unsafe { gr_closegks() }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct DisplaySize {
     pub meters: (f64, f64),
     pub pixels: (c_int, c_int),
@@ -670,27 +676,43 @@ pub fn quiver(x: &[f64], y: &[f64], u: &mut [f64], v: &mut [f64], color: bool) -
     Ok(unsafe { gr_quiver(nx, ny, x, y, u, v, color as _) })
 }
 
-#[allow(clippy::unit_arg)]
-pub fn shade(
+#[allow(clippy::too_many_arguments, clippy::unit_arg)]
+pub fn shade<'a>(
     n: usize,
     x: &[f64],
     y: &[f64],
     lines: bool,
     xform: XForm,
     roi: Region,
-    w: usize,
-    h: usize,
-    bins: &mut [c_int],
-) -> Result<()> {
-    check_that(n <= x.len() && n <= y.len() && w * h <= bins.len())?;
+    (width, height): (usize, usize),
+    bins: &'a mut [MaybeUninit<c_int>],
+) -> Result<&'a mut [c_int]> {
+    check_that(n <= x.len() && n <= y.len() && width * height <= bins.len())?;
     let n = n.try_into()?;
     let x = x.as_ptr().cast_mut();
     let y = y.as_ptr().cast_mut();
-    let roi = roi.as_ptr().cast_mut();
-    let w = w.try_into()?;
-    let h = h.try_into()?;
-    let bins = bins.as_mut_ptr();
-    Ok(unsafe { gr_shade(n, x, y, lines as _, xform as _, roi, w, h, bins) })
+    let roi = roi.as_ref().as_ptr().cast_mut();
+    let w = width.try_into()?;
+    let h = height.try_into()?;
+    let bins_ptr = bins.as_mut_ptr().cast();
+    unsafe { gr_shade(n, x, y, lines as _, xform as _, roi, w, h, bins_ptr) }
+    Ok(unsafe { MaybeUninit::slice_assume_init_mut(bins) })
+}
+
+pub fn shade_alloc(
+    n: usize,
+    x: &[f64],
+    y: &[f64],
+    lines: bool,
+    xform: XForm,
+    roi: Region,
+    (width, height): (usize, usize),
+) -> Result<Vec<c_int>> {
+    let mut bins = vec![];
+    bins.resize(width * height, MaybeUninit::uninit());
+    shade(n, x, y, lines, xform, roi, (width, height), bins.as_mut())?;
+    let (ptr, len, cap) = bins.into_raw_parts();
+    Ok(unsafe { Vec::from_raw_parts(ptr.cast(), len, cap) })
 }
 
 macro_rules! impl_shade_fn {
@@ -721,17 +743,17 @@ pub fn path(n: usize, x: &[f64], y: &[f64], codes: impl AsRef<CStr>) -> Result<(
     Ok(unsafe { gr_path(n, x, y, codes) })
 }
 
-#[allow(clippy::unit_arg)]
-pub fn interp2(
+#[allow(clippy::too_many_arguments, clippy::unit_arg)]
+pub fn interp2<'a>(
     x: &[f64],
     y: &[f64],
     z: &[f64],
     target_x: &[f64],
     target_y: &[f64],
-    zout: &mut [f64],
+    zout: &'a mut [MaybeUninit<f64>],
     method: Interp2Method,
     extrapolation_value: f64,
-) -> Result<()> {
+) -> Result<&'a mut [f64]> {
     check_that(x.len() * y.len() <= z.len())?;
     check_that(target_x.len() * target_y.len() <= zout.len())?;
     let nx = x.len().try_into()?;
@@ -743,8 +765,8 @@ pub fn interp2(
     let tny = target_y.len().try_into()?;
     let tx = target_x.as_ptr();
     let ty = target_y.as_ptr();
-    let zout = zout.as_mut_ptr();
-    Ok(unsafe {
+    let zout_ptr = zout.as_mut_ptr().cast();
+    unsafe {
         gr_interp2(
             nx,
             ny,
@@ -755,11 +777,37 @@ pub fn interp2(
             tny,
             tx,
             ty,
-            zout,
+            zout_ptr,
             method as _,
             extrapolation_value,
         )
-    })
+    }
+    Ok(unsafe { MaybeUninit::slice_assume_init_mut(zout) })
+}
+
+pub fn interp2_alloc(
+    x: &[f64],
+    y: &[f64],
+    z: &[f64],
+    target_x: &[f64],
+    target_y: &[f64],
+    method: Interp2Method,
+    extrapolation_value: f64,
+) -> Result<Vec<f64>> {
+    let mut zout = Vec::with_capacity(x.len() * y.len());
+    zout.resize(x.len() * y.len(), MaybeUninit::uninit());
+    interp2(
+        x,
+        y,
+        z,
+        target_x,
+        target_y,
+        &mut zout,
+        method,
+        extrapolation_value,
+    )?;
+    let (ptr, len, cap) = zout.into_raw_parts();
+    Ok(unsafe { Vec::from_raw_parts(ptr.cast(), len, cap) })
 }
 
 #[allow(clippy::unit_arg)]

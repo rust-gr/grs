@@ -112,11 +112,12 @@ pub fn inqtextext((x, y): (f64, f64), s: impl AsRef<CStr>) -> ([f64; 4], [f64; 4
     }
 }
 
+/// `axis` specifies, in which direction the text is drawn (1: YX-plane, 2: XY plane, 3: YZ plane, 4: XZ plane). Negative values invert shearing.
 pub fn inqtext3d(
     (x, y, z): (f64, f64, f64),
     s: impl AsRef<CStr>,
     axis: impl Into<c_int>,
-) -> ([[[f64; 4]; 2]; 2], [[[f64; 4]; 2]; 2]) {
+) -> ([f64; 16], [f64; 16]) {
     // [MaybeUninit::<f64>::uninit(); 16] compiles but is wrong!
     let mut xout: [MaybeUninit<f64>; 16] = unsafe { MaybeUninit::uninit().assume_init() };
     let mut yout: [MaybeUninit<f64>; 16] = unsafe { MaybeUninit::uninit().assume_init() };
@@ -126,6 +127,7 @@ pub fn inqtext3d(
     let yp = yout.as_mut_ptr().cast();
     unsafe {
         gr_inqtext3d(x, y, z, p, axis, xp, yp);
+        #[allow(clippy::missing_transmute_annotations)]
         (mem::transmute(xout), mem::transmute(yout))
     }
 }
@@ -142,6 +144,7 @@ pub fn inqmathtex((x, y): (f64, f64), s: impl AsRef<CStr>) -> (f64, f64) {
     }
 }
 
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 pub enum ScientificFormatOption {
     E = SCIENTIFIC_FORMAT_OPTION_E as _,
     TexTex = SCIENTIFIC_FORMAT_OPTION_TEXTEX as _,
@@ -310,11 +313,13 @@ pub fn beginprint(pathname: impl AsRef<CStr>) {
     unsafe { gr_beginprint(p) }
 }
 
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 pub enum GrColorMode {
     GrayScale,
     Color,
 }
 
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 pub enum GrOrientation {
     Landscape,
     Portrait,
@@ -403,18 +408,21 @@ pub fn inqwindows3d() -> ((f64, f64), (f64, f64), (f64, f64)) {
     }
 }
 
-pub fn settransformationparameters(
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct GrTransformationParameters {
     camera_pos: (f64, f64, f64),
     up: (f64, f64, f64),
     focus_point: (f64, f64, f64),
-) {
-    let (cpx, cpy, cpz) = camera_pos;
-    let (upx, upy, upz) = up;
-    let (fpx, fpy, fpz) = focus_point;
+}
+
+pub fn settransformationparameters(tp: GrTransformationParameters) {
+    let (cpx, cpy, cpz) = tp.camera_pos;
+    let (upx, upy, upz) = tp.up;
+    let (fpx, fpy, fpz) = tp.focus_point;
     unsafe { gr_settransformationparameters(cpx, cpy, cpz, upx, upy, upz, fpx, fpy, fpz) }
 }
 
-pub fn inqtransformationparameters() -> ((f64, f64, f64), (f64, f64, f64), (f64, f64, f64)) {
+pub fn inqtransformationparameters() -> GrTransformationParameters {
     let mut arr: [MaybeUninit<f64>; 9] = unsafe { MaybeUninit::uninit().assume_init() };
     let arr: [f64; 9] = unsafe {
         gr_inqtransformationparameters(
@@ -430,11 +438,11 @@ pub fn inqtransformationparameters() -> ((f64, f64, f64), (f64, f64, f64), (f64,
         );
         mem::transmute(arr)
     };
-    (
-        (arr[0], arr[1], arr[2]),
-        (arr[3], arr[4], arr[5]),
-        (arr[6], arr[7], arr[8]),
-    )
+    GrTransformationParameters {
+        camera_pos: (arr[0], arr[1], arr[2]),
+        up: (arr[3], arr[4], arr[5]),
+        focus_point: (arr[6], arr[7], arr[8]),
+    }
 }
 
 pub fn setorthographicprojection(

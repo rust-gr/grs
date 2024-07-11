@@ -22,6 +22,13 @@ impl Gks {
         }
     }
 
+    /// Like [`Gks::open`], but doesn't actually call the `gks_open_gks` C function.
+    ///
+    /// # Safety
+    ///
+    /// This function shouldn't be called if you aren't sure, that `gks_open_gks` has been called.
+    /// If GKS was closed it needs to be reopened again before calling `assume_open`.
+    /// There is no need to worry about any of this if you don't use GR's C functions.
     pub unsafe fn assume_open() -> Option<Self> {
         match mem::replace(lock().deref_mut(), true) {
             true => None,

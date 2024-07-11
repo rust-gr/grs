@@ -6,34 +6,11 @@ use core::ffi::{c_int, CStr};
 use core::fmt;
 use core::marker::PhantomData;
 use core::num::{NonZeroUsize, TryFromIntError};
-use gr_sys::gks::{
-    gks_cellarray, gks_fillarea, gks_ft_gdp, gks_gdp, gks_polyline, gks_polymarker,
-    gks_set_pline_color_index, gks_set_pline_linetype, gks_set_pline_linewidth,
-    gks_set_pmark_color_index, gks_set_pmark_size, gks_set_pmark_type, gks_set_resize_behaviour,
-    gks_set_text_color_index, gks_set_text_expfac, gks_set_text_fontprec, gks_set_text_height,
-    gks_set_text_spacing, gks_set_transparency, gks_set_viewport, gks_set_window, gks_text,
-    GKS_K_GDP_DRAW_LINES, GKS_K_GDP_DRAW_MARKERS, GKS_K_GDP_DRAW_PATH, GKS_K_GDP_DRAW_TRIANGLES,
-    GKS_K_GDP_FILL_POLYGONS, GKS_K_LINETYPE_DASHED, GKS_K_LINETYPE_DASHED_DOTTED,
-    GKS_K_LINETYPE_DASH_2_DOT, GKS_K_LINETYPE_DASH_3_DOT, GKS_K_LINETYPE_DOTTED,
-    GKS_K_LINETYPE_DOUBLE_DOT, GKS_K_LINETYPE_LONG_DASH, GKS_K_LINETYPE_LONG_SHORT_DASH,
-    GKS_K_LINETYPE_SOLID, GKS_K_LINETYPE_SPACED_DASH, GKS_K_LINETYPE_SPACED_DOT,
-    GKS_K_LINETYPE_TRIPLE_DOT, GKS_K_MARKERTYPE_ASTERISK, GKS_K_MARKERTYPE_BOWTIE,
-    GKS_K_MARKERTYPE_CIRCLE, GKS_K_MARKERTYPE_DIAGONAL_CROSS, GKS_K_MARKERTYPE_DIAMOND,
-    GKS_K_MARKERTYPE_DOT, GKS_K_MARKERTYPE_HEPTAGON, GKS_K_MARKERTYPE_HEXAGON,
-    GKS_K_MARKERTYPE_HLINE, GKS_K_MARKERTYPE_HOLLOW_PLUS, GKS_K_MARKERTYPE_HOURGLASS,
-    GKS_K_MARKERTYPE_OCTAGON, GKS_K_MARKERTYPE_OMARK, GKS_K_MARKERTYPE_PENTAGON,
-    GKS_K_MARKERTYPE_PLUS, GKS_K_MARKERTYPE_SOLID_BOWTIE, GKS_K_MARKERTYPE_SOLID_CIRCLE,
-    GKS_K_MARKERTYPE_SOLID_DIAMOND, GKS_K_MARKERTYPE_SOLID_HGLASS, GKS_K_MARKERTYPE_SOLID_PLUS,
-    GKS_K_MARKERTYPE_SOLID_SQUARE, GKS_K_MARKERTYPE_SOLID_STAR, GKS_K_MARKERTYPE_SOLID_TRI_DOWN,
-    GKS_K_MARKERTYPE_SOLID_TRI_LEFT, GKS_K_MARKERTYPE_SOLID_TRI_RIGHT,
-    GKS_K_MARKERTYPE_SOLID_TRI_UP, GKS_K_MARKERTYPE_SQUARE, GKS_K_MARKERTYPE_STAR,
-    GKS_K_MARKERTYPE_STAR_4, GKS_K_MARKERTYPE_STAR_5, GKS_K_MARKERTYPE_STAR_6,
-    GKS_K_MARKERTYPE_STAR_7, GKS_K_MARKERTYPE_STAR_8, GKS_K_MARKERTYPE_TRIANGLE_DOWN,
-    GKS_K_MARKERTYPE_TRIANGLE_UP, GKS_K_MARKERTYPE_TRI_UP_DOWN, GKS_K_MARKERTYPE_VLINE,
-};
+use gr_sys::gks::*;
 
 pub const MAX_COLOR_INDEX: usize = MAX_COLOR as _;
 
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 pub enum GksPrimitive {
     Path = GKS_K_GDP_DRAW_PATH as _,
     Lines = GKS_K_GDP_DRAW_LINES as _,
@@ -287,6 +264,9 @@ impl<'a> GksColorIndexArray<'a> {
         })
     }
 
+    /// # Safety
+    ///
+    /// `data` must point to at least `columns * rows` elements, consecutively stored in memory.
     pub unsafe fn new_unchecked(
         data: *const c_int,
         columns: impl Into<c_int>,
@@ -318,6 +298,7 @@ impl fmt::Display for GksError {
 
 impl std::error::Error for GksError {}
 
+#[doc(hidden)]
 impl From<TryFromIntError> for GksError {
     fn from(_value: TryFromIntError) -> Self {
         GksError

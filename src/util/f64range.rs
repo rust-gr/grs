@@ -24,6 +24,11 @@ impl F64Range {
         }
     }
 
+    /// # Safety
+    ///
+    /// This should only be called if `min < max`.
+    /// There is rarely ever a performance concern, where the check done by [`F64Range::new`] is
+    /// the culprit so normally it's the better choice.
     pub const unsafe fn new_unchecked(min: f64, max: f64) -> F64Range {
         F64Range { min, max }
     }
