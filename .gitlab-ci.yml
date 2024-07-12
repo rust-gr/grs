@@ -18,7 +18,7 @@ pages:
   script:
     - cargo doc
     - mv target/doc public
-    - echo '<!DOCTYPE HTML><html><head><meta charset="UTF-8" http-equiv="refresh" content="0; url=grs/index.html"><title>Redirect</title></head><body></body></html>' > public/index.html
+    - echo '<!DOCTYPE HTML><html><head><meta charset="UTF-8" http-equiv="refresh" content="0; url=gr/index.html"><title>Redirect</title></head><body></body></html>' > public/index.html
   artifacts:
     paths:
       - public
