@@ -1,9 +1,9 @@
 #![warn(unsafe_op_in_unsafe_fn)]
 #![feature(allocator_api, maybe_uninit_slice, new_uninit, vec_into_raw_parts)]
 
-//! # GRS
+//! # GR crate
 //!
-//! GRS provides a wrapper for the GR framework, which is a library written in C.
+//! The GR crate provides a wrapper for the GR framework, which is a library written in C.
 //!
 //! ## GR - a universal framework for visualization applications
 //!

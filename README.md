@@ -21,7 +21,7 @@ Florian Rhiem (*GR3*) and Christian Felder (qtgr, setup.py).
 
 For further information please refer to the [GR home page](http://gr-framework.org).
 
-Using the *GRS* Rust-crate
+Using the *GR* Rust-crate
 --------------------------
 
 1. [Install *GR*](https://gr-framework.org/c.html#installation)
@@ -33,7 +33,7 @@ Using the *GRS* Rust-crate
         - `/usr/gr` (ie. implicit `GRLIB=/usr/gr/lib`)
         - `/usr/local/gr` (ie. implicit `GRLIB=/usr/local/gr/lib`)
     - This variable is only needed at compile-time
-1. *GRS*' build-script outputs a path as `cargo:lib_dir`
+1. The crate's build-script outputs a path as `cargo:lib_dir`
     - The Rust program will need to load libraries from that path!
       **Make it accessible!**\
       You may want to put this into your `PATH` or your binaries' rpaths.
@@ -42,7 +42,7 @@ Using the *GRS* Rust-crate
 
 To test your setup, try compiling and running this simple application:
 ```rs
-use grs::gr;
+use ::gr::gr;
 use std::io::{stdin, Read};
 
 fn main() {

@@ -1,4 +1,4 @@
-# Also see grs' Cargo.toml file
+# Also see gr's Cargo.toml file
 
 [package]
 name = "gr-sys"
