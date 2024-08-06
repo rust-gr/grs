@@ -31,7 +31,6 @@
 //! ```
 //! # use std::error::Error;
 //! # use gr::gr::*;
-//!
 //! # fn main() -> Result<(), Box<dyn Error>> {
 //! polyline(2, &[0.0, 1.0], &[0.0, 1.0])?;
 //! updatews();
