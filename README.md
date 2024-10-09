@@ -36,13 +36,13 @@ Using the *GR* Rust-crate
 1. The crate's build-script outputs a path as `cargo:lib_dir`
     - The Rust program will need to load libraries from that path!
       **Make it accessible!**\
-      You may want to put this into your `PATH` or your binaries' rpaths.
+      You may want to put this into your `PATH` (Windows), `LD_LIBRARY_PATH` (Linux), `DYLD_LIBRARY_PATH` (Mac) or your binaries' rpaths.
     - On Windows this is **not** the same as `GRLIB`!\
       It will point to the `bin` folder, which contains the `.dll`s.
 
 To test your setup, try compiling and running this simple application:
 ```rs
-use ::gr::gr;
+use gr::gr;
 use std::io::{stdin, Read};
 
 fn main() {
