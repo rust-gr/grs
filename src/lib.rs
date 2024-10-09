@@ -1,5 +1,5 @@
 #![warn(unsafe_op_in_unsafe_fn)]
-#![feature(allocator_api, maybe_uninit_slice, new_uninit, vec_into_raw_parts)]
+#![feature(allocator_api, maybe_uninit_slice, vec_into_raw_parts)]
 
 //! # GR crate
 //!

@@ -16,6 +16,7 @@ macro_rules! impl_axes_fn {
     ($name:ident, $global:ident) => {
         // only called while thread holds mutex
         unsafe extern "C" fn $name(x: f64, y: f64, s: *const c_char, v: f64) {
+            #[allow(static_mut_refs)]
             let f = unsafe { $global.take() }.unwrap(); // should never fail because axeslbl should set this
             f((x, y), unsafe { CStr::from_ptr(s) }, v);
             unsafe {

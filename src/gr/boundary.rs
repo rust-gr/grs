@@ -12,6 +12,7 @@ static MUTEX: Mutex<()> = Mutex::new(());
 pub const NO_RADIUS_FUNCTION: Option<RadiusFunction> = None;
 
 unsafe extern "C" fn c_r_function(x: f64, y: f64) -> f64 {
+    #[allow(static_mut_refs)]
     let f = unsafe { FP.take().unwrap_unchecked() };
     let r = f(x, y);
     unsafe {
