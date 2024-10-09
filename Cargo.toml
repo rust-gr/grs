@@ -1,6 +1,6 @@
 [package]
 name = "gr"
-version = "0.2.1"
+version = "0.2.2"
 authors = ["G. Vincenti"]
 edition = "2021"
 description = "Rust wrapper for the GR framework"
