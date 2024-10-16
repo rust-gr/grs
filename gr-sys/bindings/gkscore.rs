@@ -97,6 +97,7 @@ pub const SELECT_CLIP_XFORM: ::core::ffi::c_int = 208;
 pub const INQ_WS_STATE: ::core::ffi::c_int = 209;
 pub const SAMPLE_LOCATOR: ::core::ffi::c_int = 210;
 pub const SET_CLIP_REGION: ::core::ffi::c_int = 211;
+pub const SET_CLIP_SECTOR: ::core::ffi::c_int = 212;
 pub const BEGIN_SELECTION: ::core::ffi::c_int = 250;
 pub const END_SELECTION: ::core::ffi::c_int = 251;
 pub const MOVE_SELECTION: ::core::ffi::c_int = 252;
@@ -155,9 +156,11 @@ pub struct gks_state_list_t {
     pub bwidth: f64,
     pub bcoli: ::core::ffi::c_int,
     pub clip_tnr: ::core::ffi::c_int,
+    pub clip_region: ::core::ffi::c_int,
+    pub clip_start_angle: f64,
+    pub clip_end_angle: f64,
     pub resize_behaviour: ::core::ffi::c_int,
     pub aspect_ratio: f64,
-    pub clip_region: ::core::ffi::c_int,
     pub callback: ::core::option::Option<
         unsafe extern "C" fn(arg1: *const ::core::ffi::c_char) -> *mut ::core::ffi::c_char,
     >,

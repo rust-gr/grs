@@ -1033,6 +1033,16 @@ extern "C" {
     pub fn gks_inq_clip_region(errind: *mut ::core::ffi::c_int, region: *mut ::core::ffi::c_int);
 }
 extern "C" {
+    pub fn gks_set_clip_sector(start_angle: f64, end_angle: f64);
+}
+extern "C" {
+    pub fn gks_inq_clip_sector(
+        errind: *mut ::core::ffi::c_int,
+        start_angle: *mut f64,
+        end_angle: *mut f64,
+    );
+}
+extern "C" {
     pub fn gopengks(arg1: *mut Gfile, arg2: Glong) -> ::core::ffi::c_int;
 }
 extern "C" {

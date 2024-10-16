@@ -2,8 +2,9 @@
 
 pub const GR_MAX_CONTEXT: ::core::ffi::c_int = 8192;
 pub const GR_DEFAULT_MATH_FONT: ::core::ffi::c_int = 232;
-pub const GR_AXES_WITH_GRID: ::core::ffi::c_int = 1;
-pub const GR_AXES_WITH_FRAME: ::core::ffi::c_int = 2;
+pub const GR_AXES_SIMPLE_AXES: ::core::ffi::c_int = 1;
+pub const GR_AXES_TWIN_AXES: ::core::ffi::c_int = 2;
+pub const GR_AXES_WITH_GRID: ::core::ffi::c_int = 4;
 pub const projection_type_t_GR_PROJECTION_DEFAULT: projection_type_t = 0;
 pub const projection_type_t_GR_PROJECTION_ORTHOGRAPHIC: projection_type_t = 1;
 pub const projection_type_t_GR_PROJECTION_PERSPECTIVE: projection_type_t = 2;
@@ -1367,6 +1368,12 @@ extern "C" {
 }
 extern "C" {
     pub fn gr_inqclipregion(region: *mut ::core::ffi::c_int);
+}
+extern "C" {
+    pub fn gr_setclipsector(start_angle: f64, end_angle: f64);
+}
+extern "C" {
+    pub fn gr_inqclipsector(start_angle: *mut f64, end_angle: *mut f64);
 }
 extern "C" {
     pub fn gr_settextoffset(xoff: f64, yoff: f64);
