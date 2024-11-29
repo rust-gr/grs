@@ -83,7 +83,7 @@ pub const EVAL_XFORM_MATRIX: ::core::ffi::c_int = 105;
 pub const SET_ENCODING: ::core::ffi::c_int = 106;
 pub const INQ_ENCODING: ::core::ffi::c_int = 107;
 pub const SET_RESAMPLE_METHOD: ::core::ffi::c_int = 108;
-pub const SET_RESIZE_BEHAVIOUR: ::core::ffi::c_int = 109;
+pub const SET_NOMINAL_SIZE: ::core::ffi::c_int = 109;
 pub const INQ_TEXT: ::core::ffi::c_int = 110;
 pub const SET_TEXT_SLANT: ::core::ffi::c_int = 200;
 pub const DRAW_IMAGE: ::core::ffi::c_int = 201;
@@ -159,7 +159,7 @@ pub struct gks_state_list_t {
     pub clip_region: ::core::ffi::c_int,
     pub clip_start_angle: f64,
     pub clip_end_angle: f64,
-    pub resize_behaviour: ::core::ffi::c_int,
+    pub nominal_size: f64,
     pub aspect_ratio: f64,
     pub callback: ::core::option::Option<
         unsafe extern "C" fn(arg1: *const ::core::ffi::c_char) -> *mut ::core::ffi::c_char,

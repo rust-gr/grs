@@ -170,8 +170,6 @@ pub const GKS_K_GDP_DRAW_LINES: ::core::ffi::c_int = 2;
 pub const GKS_K_GDP_DRAW_MARKERS: ::core::ffi::c_int = 3;
 pub const GKS_K_GDP_DRAW_TRIANGLES: ::core::ffi::c_int = 4;
 pub const GKS_K_GDP_FILL_POLYGONS: ::core::ffi::c_int = 5;
-pub const GKS_K_NO_RESIZE: ::core::ffi::c_int = 0;
-pub const GKS_K_RESIZE: ::core::ffi::c_int = 1;
 pub const GKS_K_NO_ERROR: ::core::ffi::c_int = 0;
 pub const GKS_K_ERROR: ::core::ffi::c_int = 1;
 pub type Gfile = ::core::ffi::c_void;
@@ -1021,10 +1019,10 @@ extern "C" {
     pub fn gks_state() -> *mut ::core::ffi::c_void;
 }
 extern "C" {
-    pub fn gks_set_resize_behaviour(flag: ::core::ffi::c_int);
+    pub fn gks_set_nominal_size(factor: f64);
 }
 extern "C" {
-    pub fn gks_inq_resize_behaviour(flag: *mut ::core::ffi::c_int);
+    pub fn gks_inq_nominal_size(factor: *mut f64);
 }
 extern "C" {
     pub fn gks_set_clip_region(region: ::core::ffi::c_int);

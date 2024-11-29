@@ -440,10 +440,10 @@ extern "C" {
     pub fn gr_inqfillcolorind(arg1: *mut ::core::ffi::c_int);
 }
 extern "C" {
-    pub fn gr_setresizebehaviour(arg1: ::core::ffi::c_int);
+    pub fn gr_setnominalsize(arg1: f64);
 }
 extern "C" {
-    pub fn gr_inqresizebehaviour(arg1: *mut ::core::ffi::c_int);
+    pub fn gr_inqnominalsize(arg1: *mut f64);
 }
 extern "C" {
     pub fn gr_setcolorrep(arg1: ::core::ffi::c_int, arg2: f64, arg3: f64, arg4: f64);
