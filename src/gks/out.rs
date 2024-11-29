@@ -113,9 +113,8 @@ impl_each! {(Gks, ActiveGks, SegmentGks) {
         unsafe { gks_set_viewport(tnr, xmin, xmax, ymin, ymax) }
     }
 
-    pub fn set_resize_behavior(&mut self, resize: bool) {
-        let flag = resize.into();
-        unsafe { gks_set_resize_behaviour(flag) }
+    pub fn set_nominal_size(&mut self, factor: f64) {
+        unsafe { gks_set_nominal_size(factor) }
     }
 
     pub fn set_polyline_type(&mut self, ltype: impl Into<c_int>) {

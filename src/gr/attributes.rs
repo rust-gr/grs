@@ -577,7 +577,7 @@ impl_primitive_set_inq! { textcolorind, c_int }
 impl_primitive_set_inq! { fillintstyle, c_int }
 impl_primitive_set_inq! { fillstyle, c_int }
 impl_primitive_set_inq! { fillcolorind, c_int }
-impl_primitive_set_inq! { resizebehaviour, c_int }
+impl_primitive_set_inq! { nominalsize, f64 }
 impl_primitive_set_inq! { colormap, c_int }
 impl_primitive_set_inq! { resamplemethod, c_uint }
 impl_primitive_set_inq! { borderwidth, f64 }
