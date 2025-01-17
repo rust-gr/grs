@@ -164,6 +164,7 @@ pub struct gks_state_list_t {
     pub callback: ::core::option::Option<
         unsafe extern "C" fn(arg1: *const ::core::ffi::c_char) -> *mut ::core::ffi::c_char,
     >,
+    pub in_exit_handler: ::core::ffi::c_int,
     pub debug: ::core::ffi::c_int,
 }
 #[repr(C)]
