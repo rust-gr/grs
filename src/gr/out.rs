@@ -696,7 +696,7 @@ pub fn shade<'a>(
     let h = height.try_into()?;
     let bins_ptr = bins.as_mut_ptr().cast();
     unsafe { gr_shade(n, x, y, lines as _, xform as _, roi, w, h, bins_ptr) }
-    Ok(unsafe { MaybeUninit::slice_assume_init_mut(bins) })
+    Ok(unsafe { std::mem::transmute(bins) })
 }
 
 pub fn shade_alloc(
@@ -782,7 +782,7 @@ pub fn interp2<'a>(
             extrapolation_value,
         )
     }
-    Ok(unsafe { MaybeUninit::slice_assume_init_mut(zout) })
+    Ok(unsafe { std::mem::transmute(zout) })
 }
 
 pub fn interp2_alloc(
