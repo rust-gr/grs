@@ -961,6 +961,12 @@ extern "C" {
     pub fn gks_cancel_bbox_callback();
 }
 extern "C" {
+    pub fn gks_set_background();
+}
+extern "C" {
+    pub fn gks_clear_background();
+}
+extern "C" {
     pub fn gks_inq_bbox(
         errind: *mut ::core::ffi::c_int,
         xmin: *mut f64,

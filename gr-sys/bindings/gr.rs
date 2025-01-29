@@ -934,6 +934,12 @@ extern "C" {
     pub fn gr_inqbbox(arg1: *mut f64, arg2: *mut f64, arg3: *mut f64, arg4: *mut f64);
 }
 extern "C" {
+    pub fn gr_setbackground();
+}
+extern "C" {
+    pub fn gr_clearbackground();
+}
+extern "C" {
     pub fn gr_precision() -> f64;
 }
 extern "C" {

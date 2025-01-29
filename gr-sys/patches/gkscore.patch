@@ -28,7 +28,7 @@ diff -u old/gkscore.h new/gkscore.h
  #ifdef __cplusplus
  extern "C" {
  #endif
-@@ -180,13 +167,6 @@
+@@ -183,13 +170,6 @@
    int debug;
  } gks_state_list_t;
  
@@ -42,7 +42,7 @@ diff -u old/gkscore.h new/gkscore.h
  typedef struct
  {
    int wkid;
-@@ -220,15 +200,6 @@
+@@ -223,15 +203,6 @@
  
  typedef struct
  {
@@ -58,7 +58,7 @@ diff -u old/gkscore.h new/gkscore.h
    int width;
    int height;
    double device_pixel_ratio;
-@@ -241,109 +212,29 @@
+@@ -244,109 +215,29 @@
    int status;
  } gks_locator_t;
  
@@ -168,7 +168,7 @@ diff -u old/gkscore.h new/gkscore.h
  DLLEXPORT void gks_gs_plugin(int fctid, int dx, int dy, int dimx, int *i_arr, int len_f_arr_1, double *f_arr_1,
                               int len_f_arr_2, double *f_arr_2, int len_c_arr, char *c_arr, void **ptr);
  
-@@ -385,33 +276,13 @@
+@@ -388,33 +279,13 @@
  
  #else
  
