@@ -180,6 +180,7 @@ pub struct axis_t {
     pub tick_labels: *mut tick_label_t,
     pub label_position: f64,
     pub draw_axis_line: ::core::ffi::c_int,
+    pub label_orientation: ::core::ffi::c_int,
 }
 extern "C" {
     pub fn gr_initgr();
