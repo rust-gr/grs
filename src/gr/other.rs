@@ -7,7 +7,6 @@ use core::{
 };
 use gr_sys::{gkscore::gks_free, gr::*};
 use paste::paste;
-use std::alloc;
 
 pub fn samplelocator() -> (f64, f64, c_int) {
     let mut x = MaybeUninit::uninit();
@@ -89,7 +88,7 @@ pub fn readimage(path: impl AsRef<CStr>) -> Option<GrImage> {
     }
 }
 
-pub fn delaunay(n: usize, x: &[f64], y: &[f64]) -> Result<Box<[c_int], alloc::System>, GrError> {
+pub fn delaunay(n: usize, x: &[f64], y: &[f64]) -> Result<Vec<c_int>, GrError> {
     let mut ntri = MaybeUninit::uninit();
     let mut tri = MaybeUninit::uninit();
     let n = n.try_into()?;
@@ -103,12 +102,17 @@ pub fn delaunay(n: usize, x: &[f64], y: &[f64]) -> Result<Box<[c_int], alloc::Sy
         true => ntri.unwrap(),
         false => unsafe { ntri.unwrap_unchecked() },
     };
-    Ok(unsafe {
-        Box::from_raw_in(
-            slice::from_raw_parts_mut(tri.assume_init(), ntri),
-            alloc::System,
-        )
-    })
+    let ptr = unsafe { tri.assume_init() };
+    let res = unsafe { slice::from_raw_parts_mut(ptr, ntri) }.to_vec();
+    unsafe { gks_free(ptr.cast()) }
+    Ok(res)
+    // #![feature(allocator_api)]
+    // Ok(unsafe {
+    //     Box::from_raw_in(
+    //         slice::from_raw_parts_mut(tri.assume_init(), ntri),
+    //         alloc::System,
+    //     )
+    // })
 }
 
 #[allow(clippy::unit_arg)]
