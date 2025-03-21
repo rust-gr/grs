@@ -1,5 +1,4 @@
 #![warn(unsafe_op_in_unsafe_fn)]
-#![feature(allocator_api, vec_into_raw_parts)]
 
 //! # GR crate
 //!

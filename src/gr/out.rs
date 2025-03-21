@@ -711,8 +711,10 @@ pub fn shade_alloc(
     let mut bins = vec![];
     bins.resize(width * height, MaybeUninit::uninit());
     shade(n, x, y, lines, xform, roi, (width, height), bins.as_mut())?;
-    let (ptr, len, cap) = bins.into_raw_parts();
-    Ok(unsafe { Vec::from_raw_parts(ptr.cast(), len, cap) })
+    Ok(unsafe { std::mem::transmute(bins) })
+    // #![feature(vec_into_raw_parts)]
+    // let (ptr, len, cap) = bins.into_raw_parts();
+    // Ok(unsafe { Vec::from_raw_parts(ptr.cast(), len, cap) })
 }
 
 macro_rules! impl_shade_fn {
@@ -806,8 +808,10 @@ pub fn interp2_alloc(
         method,
         extrapolation_value,
     )?;
-    let (ptr, len, cap) = zout.into_raw_parts();
-    Ok(unsafe { Vec::from_raw_parts(ptr.cast(), len, cap) })
+    Ok(unsafe { std::mem::transmute(zout) })
+    // #![feature(vec_into_raw_parts)]
+    // let (ptr, len, cap) = zout.into_raw_parts();
+    // Ok(unsafe { Vec::from_raw_parts(ptr.cast(), len, cap) })
 }
 
 #[allow(clippy::unit_arg)]
