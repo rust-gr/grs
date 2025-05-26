@@ -233,7 +233,7 @@ DLLEXPORT int gks_dl_read_item(char *dl, gks_state_list_t **gkss,
                                void (*fn)(int fctid, int dx, int dy, int dimx, int *ia, int lr1, double *r1, int lr2,
                                           double *r2, int lc, char *chars, void **ptr));
 
-#ifndef EMSCRIPTEN
+#ifndef __EMSCRIPTEN__
 
 DLLEXPORT void gks_x11_plugin(int fctid, int dx, int dy, int dimx, int *i_arr, int len_f_arr_1, double *f_arr_1,
                               int len_f_arr_2, double *f_arr_2, int len_c_arr, char *c_arr, void **ptr);

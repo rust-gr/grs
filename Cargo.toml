@@ -1,6 +1,6 @@
 [package]
 name = "gr"
-version = "0.3.1"
+version = "0.3.2"
 authors = ["G. Vincenti"]
 edition = "2021"
 description = "Rust wrapper for the GR framework"
@@ -17,5 +17,5 @@ exclude = [".*"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-gr-sys = { path = "gr-sys", version = "0.1.4" }
+gr-sys = { path = "gr-sys", version = "0.1.5" }
 paste = "1.0.14"
