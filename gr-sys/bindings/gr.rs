@@ -938,6 +938,12 @@ extern "C" {
     pub fn gr_startlistener() -> ::core::ffi::c_int;
 }
 extern "C" {
+    pub fn gr_inqgrplotport() -> ::core::ffi::c_int;
+}
+extern "C" {
+    pub fn gr_setgrplotport(arg1: ::core::ffi::c_int) -> ::core::ffi::c_int;
+}
+extern "C" {
     pub fn gr_mathtex(arg1: f64, arg2: f64, arg3: *mut ::core::ffi::c_char);
 }
 extern "C" {

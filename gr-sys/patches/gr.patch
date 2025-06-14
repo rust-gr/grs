@@ -21,7 +21,7 @@
  typedef enum
  {
    GR_PROJECTION_DEFAULT,
-@@ -526,9 +511,3 @@
+@@ -528,9 +513,3 @@
  DLLEXPORT char *gr_ftoa(char *string, double value, format_reference_t *reference);
  DLLEXPORT void gr_getformat(format_reference_t *result, double origin, double min, double max, double tick_width,
                              int major);
