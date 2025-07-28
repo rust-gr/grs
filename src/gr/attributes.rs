@@ -1,10 +1,12 @@
 use super::util::{impl_primitive_function, textx_opts};
 use super::GrError;
 use crate::util::f64range::F64Range;
+use crate::util::region::Region;
 use core::ffi::{c_int, c_uint, CStr};
 use core::mem;
 use core::mem::MaybeUninit;
 use core::ptr;
+use gr_sys::gks::{GKS_K_CLIP, GKS_K_NOCLIP};
 use gr_sys::gkscore::MAX_COLOR;
 use gr_sys::gr::*;
 use gr_sys::strlib::*;
@@ -506,13 +508,26 @@ pub fn inqvolumeflags() -> VolumeFlags {
     let mut vf = MaybeUninit::<VolumeFlags>::uninit();
     unsafe {
         gr_inqvolumeflags(
-            ptr::addr_of_mut!((*vf.as_mut_ptr()).border),
-            ptr::addr_of_mut!((*vf.as_mut_ptr()).max_threads),
-            ptr::addr_of_mut!((*vf.as_mut_ptr()).picture_width),
-            ptr::addr_of_mut!((*vf.as_mut_ptr()).picture_height),
-            ptr::addr_of_mut!((*vf.as_mut_ptr()).approximative_calculation),
+            &raw mut (*vf.as_mut_ptr()).border,
+            &raw mut (*vf.as_mut_ptr()).max_threads,
+            &raw mut (*vf.as_mut_ptr()).picture_width,
+            &raw mut (*vf.as_mut_ptr()).picture_height,
+            &raw mut (*vf.as_mut_ptr()).approximative_calculation,
         );
         vf.assume_init()
+    }
+}
+
+pub fn inqclip() -> Option<Region> {
+    let mut clipping = MaybeUninit::<c_int>::uninit();
+    let mut region = MaybeUninit::<[f64; 4]>::uninit();
+    match unsafe {
+        gr_inqclip(clipping.as_mut_ptr(), region.as_mut_ptr().cast());
+        clipping.assume_init()
+    } {
+        no if no == GKS_K_NOCLIP => None,
+        yes if yes == GKS_K_CLIP => Some(unsafe { region.assume_init() }.into()),
+        _ => unreachable!(),
     }
 }
 
