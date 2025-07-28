@@ -1200,6 +1200,9 @@ extern "C" {
     pub fn gr_inqclipxform(arg1: *mut ::core::ffi::c_int);
 }
 extern "C" {
+    pub fn gr_inqclip(arg1: *mut ::core::ffi::c_int, arg2: *mut f64);
+}
+extern "C" {
     pub fn gr_setprojectiontype(arg1: ::core::ffi::c_int);
 }
 extern "C" {
